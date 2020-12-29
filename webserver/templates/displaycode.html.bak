@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <h2 class="position-absolute top-0 start-50 translate-middle-x shadow p-3 mb-5 bg-white rounded">eVote</h2>
+            <div class="position-absolute top-50 start-50 translate-middle shadow p-3 mb-5 bg-white rounded">
+                <h3>Success!</h3>
+                <h4>Please store the secret code safely. It is required when you login</h4>
+                <br/>
+                <div class="mb-3">
+                    <label>Voter ID</label>
+                    <br/>
+                    {% if voter_id %}
+                    <div class="alert alert-info" role="alert">{{ voter_id }}</div>
+                    {% else %}
+                    <div class="alert alert-danger" role="alert">Error! Please contact support</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label>Name</label>
+                    <br/>
+                    {% if voter_name %}
+                    <div class="alert alert-info" role="alert">{{ voter_name }}</div>
+                    {% else %}
+                    <div class="alert alert-danger" role="alert">Error! Please contact support</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label>Date of Birth</label>
+                    <br/>
+                    {% if voter_dob %}
+                    <div class="alert alert-info" role="alert">{{ voter_dob }}</div>
+                    {% else %}
+                    <div class="alert alert-danger" role="alert">Error! Please contact support</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label>Secret Code</label>
+                    <br/>
+                    {% if voter_secretkey %}
+                    <div id="secret_key" class="alert alert-info" role="alert">
+                        {{ voter_secretkey }}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-danger" role="alert">Error! Please contact support</div>
+                    {% endif %}
+                </div>
+                <button id="login_redirect" type="button" class="btn btn-link">Take me to Login</button>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+        <script>
+            window.console.log("hello");
+            console.log(document.querySelector("#login_redirect"));
+            // document.querySelector("#login_redirect").addEventListener("click", function(e) {
+            //     e.preventDefault();
+            //     let url_redirect = "http://localhost:8000/";
+
+            //     window.location.href = url_redirect;
+            // }, true);
+
+            // element.onClick = function() {
+            //     console.log("yay");
+            //     window.confirm("Do you want to continue?");
+            //     console.log("im herre");
+
+            //     if(return_val == true) {
+            //         let url_redirect = "http://localhost:8000/";
+                    
+            //         window.location.href = url_redirect;
+            //     }
+            // }
+        </script>
+    </body>
+</html>
