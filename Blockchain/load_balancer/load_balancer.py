@@ -79,7 +79,7 @@ def receiveAck():
     emptyTempQueue()
     next_timeout = datetime.now() + timedelta(minutes=2)
 
-@app.route('/castvote', methods =['POST'])
+@app.route('/castvote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
     # Check if we should put data into temp_q

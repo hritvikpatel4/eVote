@@ -1,7 +1,7 @@
 import docker, time
 import logging
 
-logging.basicConfig(filename="deploy.log", encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
+logging.basicConfig(filename="deploy.log", filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 def spawnContainer(type_of_container, orderer_flag, container_number):
     client = docker.from_env()
