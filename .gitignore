@@ -1,3 +1,6 @@
 imp.txt
 env*
 venv*
+.vscode/
+.DS_Store
+*.log

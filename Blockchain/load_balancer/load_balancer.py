@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, request
+from queue import Queue
 import docker, os, random, re, requests, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
@@ -13,13 +14,20 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 app = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
-portnum = 80 # fixed port no. on which all lbc and orderer containers run their Flask servers
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 next_timeout = None
+HOLD_VOTES_TEMPORARY = False
+temp_q = Queue(maxsize=0)
 
 logging.basicConfig(filename=LOG_FILE, encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
+
+def emptyTempQueue():
+    while not temp_q.empty():
+        vote = temp_q.get()
+
+        requests.post("http://localhost:80/castvote", json=vote)
 
 # Timer function
 def timerfunc():
@@ -28,22 +36,30 @@ def timerfunc():
     while True:
         while datetime.now() != next_timeout:
             pass
-        
-        next_timeout = datetime.now() + timedelta(minutes=2)
 
         logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
 
-        # client = docker.from_env()
-        # container_list = client.containers.list()
+        # Put extra votes into another temp queue
+        HOLD_VOTES_TEMPORARY = True
+        
+        # Call API on the orderers to execute batching
+        client = docker.from_env()
+        container_list = client.containers.list()
+        ip_list = []
+        
+        for container in container_list:
+            if re.search("^orderer[1-9][0-9]*", container.name):
+                out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+                ip_list.append(out.output.decode().split("\n")[0])
+        
+        logging.debug("Calling batching API on peer orderers")
 
-        # counter = 0
+        for ip in ip_list:
+            requests.get("http://" + ip + "/api/orderer/startbatching")
         
-        # for container in container_list:
-        #     if re.search("^orderer[1-9][0-9]*", container.name):
-        #         counter += 1
-        
-        # # update the count of orderers
-        # number_of_orderers = counter
+        logging.debug("Finished calling batching API on peer orderers")
+
+        # Wait till we receive ack from random orderer. GOTO /receiveack
 
 # Init timer
 def init_timer():
@@ -55,31 +71,45 @@ def init_timer():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
+@app.route("/api/lb/receiveack", methods=["GET"])
+# Receives ack from random orderer that intersection is done and now send the temp votes back
+def receiveAck():
+    HOLD_VOTES_TEMPORARY = False
+
+    emptyTempQueue()
+    next_timeout = datetime.now() + timedelta(minutes=2)
+
 @app.route('/castvote', methods =['POST'])
+# forwards vote from webserver to lbc
 def castVote():
-    client = docker.from_env()
-    clist = client.containers.list()
+    # Check if we should put data into temp_q
+    if HOLD_VOTES_TEMPORARY:
+        temp_q.put(request.get_json())
+    
+    else:
+        client = docker.from_env()
+        clist = client.containers.list()
 
-    ip_list = []
+        ip_list = []
 
-    for container in clist:
-        if re.search("^lbc[1-9][0-9]*", container.name):
-            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-            ip_list.append(out.output.decode().split("\n")[0])
+        for container in clist:
+            if re.search("^lbc[1-9][0-9]*", container.name):
+                out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+                ip_list.append(out.output.decode().split("\n")[0])
 
-    if(len(ip_list) == 0):
-        return jsonify({"status": "No LBC containers running"}, 400)
+        if(len(ip_list) == 0):
+            return jsonify({"status": "No LBC containers running"}, 400)
 
-    rand_lbc_ip = random.choice(ip_list)
-    print("ip list = ", ip_list)
+        rand_lbc_ip = random.choice(ip_list)
+        print("ip list = ", ip_list)
 
-    params = request.get_json()
+        params = request.get_json()
 
-    requests.post("http://" + rand_lbc_ip + ":" + str(portnum) + "/api/lbc/receivevote", json=params)
-    print("rand lbc ip = ", rand_lbc_ip)
-    print()
+        requests.post("http://" + rand_lbc_ip + ":80" + "/api/lbc/receivevote", json=params)
+        print("rand lbc ip = ", rand_lbc_ip)
+        print()
 
-    return jsonify({}, 200)
+    return make_response("", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

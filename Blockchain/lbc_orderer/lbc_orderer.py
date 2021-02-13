@@ -1,8 +1,8 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
-import docker, json, logging, os, re, requests, subprocess, threading, time
 from queue import Queue
+import docker, json, logging, os, re, requests, subprocess, threading, time
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -20,12 +20,13 @@ ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
 logging.basicConfig(filename=ORDERER_LOG_FILE, encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
-timer = None
+# timer = None
 receiver_q = Queue(maxsize=0)   # This Q contains votes from LBC to orderer
 batchvotes = []                 # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 orderer_sets_received = 0       # This is a counter to check whether we have received all the batches from other orderers on the network
 number_of_orderers = 3          # total number of orderers in each hierarchy
 orderer_number = 0              # the current orderer number which is running
+unique_votes = {}               # This is a structure which is used for detecting duplicate votes
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -122,17 +123,11 @@ def intersect_votes():
         
         for batch in transformed_batchvotes:
             logging.debug("Current batch: {}".format(batch))
-            ans = ans.intersection(set(batch))
+            ans = ans.union(set(batch))
         
         logging.debug("ans: {}".format(ans))
         ans = deTransformBatch(list(ans))
         logging.debug("ans 'detransformed': {}".format(ans))
-        
-        # All the votes which are not in the final intersection, must be pushed back to the receiver_queue
-        for batch in batchvotes:
-            for vote in batch:
-                if vote not in ans:
-                    receiver_q.put(vote)
         
         # convert set to list and sort it based on vote_id
         # ans = list(ans).sort(key=lambda x: x["vote_id"])
@@ -143,37 +138,40 @@ def intersect_votes():
         
         return ans
 
-# Timer function
-def timerfunc():
-    while True:
-        time.sleep(90) # comment after testing is done
-        # time.sleep(60 * 2) # 2 minute interval
+# # Timer function
+# def timerfunc():
+#     while True:
+#         # datetime.now() and extract seconds. If seconds is ==30 then call batching
 
-        logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
 
-        # client = docker.from_env()
-        # container_list = client.containers.list()
+#         time.sleep(90) # comment after testing is done
+#         # time.sleep(60 * 2) # 2 minute interval
 
-        # counter = 0
+#         logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
+
+#         # client = docker.from_env()
+#         # container_list = client.containers.list()
+
+#         # counter = 0
         
-        # for container in container_list:
-        #     if re.search("^orderer[1-9][0-9]*", container.name):
-        #         counter += 1
+#         # for container in container_list:
+#         #     if re.search("^orderer[1-9][0-9]*", container.name):
+#         #         counter += 1
         
-        # # update the count of orderers
-        # number_of_orderers = counter
+#         # # update the count of orderers
+#         # number_of_orderers = counter
         
-        # execute the batching of votes
-        logging.info("Running send_batch_votes()")
-        send_batch_votes()
+#         # execute the batching of votes
+#         # logging.info("Running send_batch_votes()")
+#         # send_batch_votes()
 
-# Init timer
-def init_timer():
-    global timer
+# # Init timer
+# def init_timer():
+#     global timer
 
-    if not timer:
-        timer = threading.Thread(target = timerfunc)
-        timer.start()
+#     if not timer:
+#         timer = threading.Thread(target = timerfunc)
+#         timer.start()
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -226,9 +224,23 @@ def receiveVoteFromOrderer():
     params = request.get_json()
     logging.debug("Received vote data from peer orderer")
 
-    receiver_q.put(params)
+    # Detect duplicate votes
+    if params["vote_id"] not in unique_votes:
+        receiver_q.put(params)
+        unique_votes[params["vote_id"]] = True
 
-    return make_response("Added to orderer receive queue", 200)
+        return make_response("Added vote into receiver_q", 200)
+
+    return make_response("Duplicate vote received", 400)
+
+@orderer.route("/api/orderer/startbatching", methods=["GET"])
+# Receives the decision to start batching
+def startBatching():
+    # execute the batching of votes
+    logging.info("Running send_batch_votes()")
+    send_batch_votes()
+
+    return make_response("", 200)
 
 @orderer.route("/api/orderer/receivebatch", methods=["POST"])
 # Receives all vote sets from peer orderers. Finds the intersection [on every 2 minute interval]
@@ -299,6 +311,20 @@ def receiveBatchVotesFromOrderers():
 
             logging.info("Broadcasting final batch to LBC DONE")
 
+            # Send ack back to load balancer that intersection is done
+            container_list = client.containers.list()
+            ip_list = []
+            
+            for container in container_list:
+                if re.search("^load_balancer[1-9][0-9]*", container.name):
+                    out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+                    ip_list.append(out.output.decode().split("\n")[0])
+
+            for ip in ip_list:
+                requests.get("http://" + ip + "/api/lb/receiveack")
+            
+            client.close()
+
         # re-initialize global variables
         orderer_sets_received = 0
         batchvotes = []
@@ -314,7 +340,7 @@ if __name__ == '__main__':
     orderer_name = process_output.stdout.decode()
     orderer_number = orderer_name[len("orderer"):]
     
-    logging.info("Timer started!")
-    init_timer()
+    # logging.info("Timer started!")
+    # init_timer()
 
     orderer.run(debug=True, port=port, host=host, use_reloader=False)
