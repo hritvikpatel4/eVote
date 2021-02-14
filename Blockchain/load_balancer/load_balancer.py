@@ -89,6 +89,26 @@ def receiveAck():
 
     return make_response("", 200)
 
+@app.route("/api/test", methods=["POST"])
+# Test API
+def testAPI():
+    params = request.get_json()
+
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    ip_list = []
+    
+    for container in container_list:
+        if re.search("^lbc[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            ip_list.append(out.output.decode().split("\n")[0])
+    
+    for ip in ip_list:
+        requests.post("http://" + ip + ":80" + "/api/lbc/recordvotes", json=params)
+    
+    return make_response("Done testing recordvotes", 200)
+
 @app.route('/castvote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
