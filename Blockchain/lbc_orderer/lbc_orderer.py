@@ -186,7 +186,7 @@ def receiveVoteFromOrderer():
         }
     """
     params = request.get_json()
-    logging.debug("Received vote data from peer orderer")
+    logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
     if params["vote_id"] not in unique_votes:
