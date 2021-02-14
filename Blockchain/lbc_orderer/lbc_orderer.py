@@ -322,7 +322,7 @@ def receiveBatchVotesFromOrderers():
 
             for ip in ip_list:
                 logging.debug("load balancer ip: ", ip)
-                requests.get("http://" + ip + ":8080" + "/api/lb/receiveack")
+                requests.get("http://" + ip + ":80" + "/api/lb/receiveack")
             
             client.close()
 
