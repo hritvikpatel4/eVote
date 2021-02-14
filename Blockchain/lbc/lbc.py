@@ -28,7 +28,7 @@ def generateHash(vote_list):
     return hashed_s
 
 def writeToBlockchain(vote_id, candidate_id):
-    f = open("lbc.csv", "ab")
+    f = open("lbc.csv", "a")
 
     # last_line 
     last_line = subprocess.run(["tail", "-1", "lbc.csv"], shell=False, capture_output=True).stdout.decode()
@@ -89,20 +89,17 @@ def recordVotesFromOrderer():
     
     logging.debug("Params {} received from peer orderer {}".format(params, request.remote_addr))
     
-    logging.info("Writing batch vote data to csv file")
+    logging.info("Writing batch vote data to csv file")    
+
+    batch_vote = params["final_batch"]
+
+    for vote in batch_vote:
+        vote_id = vote["vote_id"]
+        candidate_id = vote["candidate_id"]
+
+        writeToBlockchain(vote_id, candidate_id)
     
-    try:
-        batch_vote = params["final_batch"]
-
-        for vote in batch_vote:
-            vote_id = vote["vote_id"]
-            candidate_id = vote["candidate_id"]
-
-            writeToBlockchain(vote_id, candidate_id)
-        
-        logging.info("Finished Writing vote data to csv file")
-    except err:
-        logging.error("Error faced in recordvotes api: ", err)
+    logging.info("Finished Writing vote data to csv file")
 
     return make_response("", 200)
 
