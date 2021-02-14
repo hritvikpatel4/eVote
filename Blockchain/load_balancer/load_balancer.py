@@ -93,6 +93,12 @@ def receiveAck():
 # Test API
 def testAPI():
     params = request.get_json()
+    batch1 = {
+        "get_batch": [{"vote_id": 10, "candidate_id": 20}, {"vote_id": 20, "candidate_id": 30}]
+    }
+    batch2 = {
+        "get_batch": [{"vote_id": 11, "candidate_id": 21}, {"vote_id": 21, "candidate_id": 31}]
+    }
 
     client = docker.from_env()
     container_list = client.containers.list()
@@ -100,14 +106,15 @@ def testAPI():
     ip_list = []
     
     for container in container_list:
-        if re.search("^lbc[1-9][0-9]*", container.name):
+        if re.search("^orderer[1-9][0-9]*", container.name):
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
             ip_list.append(out.output.decode().split("\n")[0])
-    
+
     for ip in ip_list:
-        requests.post("http://" + ip + ":80" + "/api/lbc/recordvotes", json=params)
+        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=batch1)
+        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=batch2)
     
-    return make_response("Done testing recordvotes", 200)
+    return make_response("Done testing receivebatch", 200)
 
 @app.route('/castvote', methods=['POST'])
 # forwards vote from webserver to lbc

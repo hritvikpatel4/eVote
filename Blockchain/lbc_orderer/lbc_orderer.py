@@ -20,7 +20,6 @@ ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
 logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
-# timer = None
 receiver_q = Queue(maxsize=0)   # This Q contains votes from LBC to orderer
 batchvotes = []                 # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 orderer_sets_received = 0       # This is a counter to check whether we have received all the batches from other orderers on the network
@@ -109,7 +108,7 @@ def send_batch_votes():
     logging.debug("Sent batch votedata to all the peer orderers")
 
 # Intersect the batched votes
-def intersect_votes():
+def union_votes():
     global batchvotes
     
     if len(batchvotes) > 0:
@@ -137,41 +136,6 @@ def intersect_votes():
         logging.debug("Intersecion batch {}".format(ans))
         
         return ans
-
-# # Timer function
-# def timerfunc():
-#     while True:
-#         # datetime.now() and extract seconds. If seconds is ==30 then call batching
-
-
-#         time.sleep(90) # comment after testing is done
-#         # time.sleep(60 * 2) # 2 minute interval
-
-#         logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
-
-#         # client = docker.from_env()
-#         # container_list = client.containers.list()
-
-#         # counter = 0
-        
-#         # for container in container_list:
-#         #     if re.search("^orderer[1-9][0-9]*", container.name):
-#         #         counter += 1
-        
-#         # # update the count of orderers
-#         # number_of_orderers = counter
-        
-#         # execute the batching of votes
-#         # logging.info("Running send_batch_votes()")
-#         # send_batch_votes()
-
-# # Init timer
-# def init_timer():
-#     global timer
-
-#     if not timer:
-#         timer = threading.Thread(target = timerfunc)
-#         timer.start()
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -272,7 +236,7 @@ def receiveBatchVotesFromOrderers():
     
     # once all vote batches from all peer orderers except itself have been received, find intersection & broadcast to all LBC nodes
     if orderer_sets_received == number_of_orderers - 1:
-        intersection_batch = intersect_votes()
+        intersection_batch = union_votes()
 
         logging.info("Checking which orderer will broadcast the final batch")
 
