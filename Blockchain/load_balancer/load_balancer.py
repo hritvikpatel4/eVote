@@ -94,8 +94,16 @@ def receiveAck():
 def castVote():
     # Check if we should put data into temp_q
     if HOLD_VOTES_TEMPORARY:
-        logging.debug("Pushing requests temporarily to another queue")
-        temp_q.put(request.get_json())
+        params = request.get_json()
+        vote_id_type = isinstance(params["vote_id"], int)
+        candidate_id_type = isinstance(params["candidate_id"], int)
+        
+        if vote_id_type and candidate_id_type:
+            logging.debug("Pushing requests temporarily to another queue")
+            temp_q.put(request.get_json())
+        
+        else:
+            return make_response("", 400)
     
     else:
         client = docker.from_env()
@@ -115,10 +123,16 @@ def castVote():
         print("ip list = ", ip_list)
 
         params = request.get_json()
-
-        requests.post("http://" + rand_lbc_ip + ":80" + "/api/lbc/receivevote", json=params)
-        print("rand lbc ip = ", rand_lbc_ip)
-        print()
+        vote_id_type = isinstance(params["vote_id"], int)
+        candidate_id_type = isinstance(params["candidate_id"], int)
+        
+        if vote_id_type and candidate_id_type:
+            requests.post("http://" + rand_lbc_ip + ":80" + "/api/lbc/receivevote", json=params)
+            print("rand lbc ip = ", rand_lbc_ip)
+            print()
+        
+        else:
+            return make_response("", 400)
 
     return make_response("", 200)
 
