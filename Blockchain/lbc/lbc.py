@@ -91,15 +91,18 @@ def recordVotesFromOrderer():
     
     logging.info("Writing batch vote data to csv file")
     
-    batch_vote = params["final_batch"]
+    try:
+        batch_vote = params["final_batch"]
 
-    for vote in batch_vote:
-        vote_id = vote["vote_id"]
-        candidate_id = vote["candidate_id"]
+        for vote in batch_vote:
+            vote_id = vote["vote_id"]
+            candidate_id = vote["candidate_id"]
 
-        writeToBlockchain(vote_id, candidate_id)
-    
-    logging.info("Finished Writing vote data to csv file")
+            writeToBlockchain(vote_id, candidate_id)
+        
+        logging.info("Finished Writing vote data to csv file")
+    except err:
+        logging.error("Error faced in recordvotes api: ", err)
 
     return make_response("", 200)
 
