@@ -15,3 +15,5 @@ git clone https://github.com/hritvikpatel4/eVote.git
 sudo chmod +x eVote/Blockchain/create_image.sh
 sudo chmod +x eVote/docker_clean.sh
 sudo chmod +x eVote/docker_list.sh
+mkdir -p /home/blockchain
+sudo chmod -R 777 /home/blockchain
