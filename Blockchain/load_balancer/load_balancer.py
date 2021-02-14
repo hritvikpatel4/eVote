@@ -40,11 +40,11 @@ def timerfunc():
     global next_timeout
 
     while True:
-        while datetime.now() != next_timeout:
+        while datetime.now().strftime("%s") != next_timeout:
             pass
 
         logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
-        logging.debug("Timer next_timeout: {}".format(next_timeout))
+        logging.debug("Timeout next_timeout: {}".format(next_timeout))
 
         # Put extra votes into another temp queue
         HOLD_VOTES_TEMPORARY = True
@@ -86,7 +86,7 @@ def receiveAck():
     logging.debug("emptying temp queue")
     emptyTempQueue()
     logging.debug("emptied temp queue")
-    next_timeout = datetime.now() + timedelta(seconds=60)
+    next_timeout = (datetime.now() + timedelta(seconds=60)).strftime("%s")
     logging.debug("receiveack next_timeout: {}".format(next_timeout))
 
     return make_response("", 200)
@@ -170,7 +170,7 @@ def castVote():
 if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
 
-    next_timeout = datetime.now() + timedelta(seconds=60)
+    next_timeout = (datetime.now() + timedelta(seconds=60)).strftime("%s")
     logging.debug("INIT next_timeout: {}".format(next_timeout))
     init_timer()
     
