@@ -32,11 +32,11 @@ def writeToBlockchain(vote_id, candidate_id):
 
     # last_line 
     last_line = subprocess.run(["tail", "-1", "lbc.csv"], shell=False, capture_output=True).stdout.decode()
-    logging.debug("Last line: ", last_line)
+    # logging.debug("Last line: {}".format(last_line))
     vote_list = last_line.split(",")
     prev_hash = generateHash(vote_list)
     new_block = "{},{},{}\n".format(vote_id, candidate_id, prev_hash)
-    logging.debug("new block to write to csv: ", new_block)
+    # logging.debug("new block to write to csv: {}".format(new_block))
     f.write(new_block)
     f.close()
     os.sync()
