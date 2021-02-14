@@ -28,7 +28,12 @@ def emptyTempQueue():
     while not temp_q.empty():
         vote = temp_q.get()
 
-        requests.post("http://localhost:80/castvote", json=vote)
+        res = requests.post("http://localhost:80/castvote", json=vote)
+        
+        if res.status_code == 200:
+            continue
+        else:
+            logging.debug("Failed to send this vote {}".format(vote))
 
 # Timer function
 def timerfunc():
@@ -77,7 +82,9 @@ def init_timer():
 def receiveAck():
     HOLD_VOTES_TEMPORARY = False
 
+    logging.debug("emptying temp queue")
     emptyTempQueue()
+    logging.debug("emptied temp queue")
     next_timeout = datetime.now() + timedelta(seconds=30)
 
     return make_response("", 200)
@@ -87,6 +94,7 @@ def receiveAck():
 def castVote():
     # Check if we should put data into temp_q
     if HOLD_VOTES_TEMPORARY:
+        logging.debug("Pushing requests temporarily to another queue")
         temp_q.put(request.get_json())
     
     else:

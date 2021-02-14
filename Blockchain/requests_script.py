@@ -6,5 +6,6 @@ for i in range(1, 21):
         "candidate_id": 20
     }
     requests.post("http://146.148.43.144:80/castvote", json=data)
+    print("sent request number {}".format(i))
 
 print("DONE!")
