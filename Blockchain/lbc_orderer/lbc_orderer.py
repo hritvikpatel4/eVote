@@ -321,7 +321,7 @@ def receiveBatchVotesFromOrderers():
                     ip_list.append(out.output.decode().split("\n")[0])
 
             for ip in ip_list:
-                requests.get("http://" + ip + ":80" + "/api/lb/receiveack")
+                requests.get("http://" + ip + ":8080" + "/api/lb/receiveack")
             
             client.close()
 
