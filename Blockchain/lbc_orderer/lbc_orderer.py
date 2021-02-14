@@ -104,7 +104,7 @@ def send_batch_votes():
     
     # broadcast the current vote batch to all peer orderers (all orderers but itself)
     for ip in ip_list:
-        requests.post("http://" + ip + "/api/orderer/receivebatch", json=data)
+        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=data)
     
     logging.debug("Sent batch votedata to all the peer orderers")
 
@@ -205,7 +205,7 @@ def receiveVoteFromLBC():
 
     # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
     for ip in ip_list:
-        requests.post("http://" + ip + "/api/orderer/receiveorderer", json=params)
+        requests.post("http://" + ip + ":80" + "/api/orderer/receiveorderer", json=params)
     
     logging.debug("Broadcast Finished")
 
@@ -307,7 +307,7 @@ def receiveBatchVotesFromOrderers():
 
             # broadcast to all the LBC
             for ip in ip_list:
-                requests.post("http://" + ip + "/api/lbc/recordvotes", json=data)
+                requests.post("http://" + ip + ":80" + "/api/lbc/recordvotes", json=data)
 
             logging.info("Broadcasting final batch to LBC DONE")
 
@@ -321,7 +321,7 @@ def receiveBatchVotesFromOrderers():
                     ip_list.append(out.output.decode().split("\n")[0])
 
             for ip in ip_list:
-                requests.get("http://" + ip + "/api/lb/receiveack")
+                requests.get("http://" + ip + ":8080" + "/api/lb/receiveack")
             
             client.close()
 

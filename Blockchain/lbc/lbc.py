@@ -32,9 +32,11 @@ def writeToBlockchain(vote_id, candidate_id):
 
     # last_line 
     last_line = subprocess.run(["tail", "-1", "lbc.csv"], shell=False, capture_output=True).stdout.decode()
+    logging.debug("Last line: ", last_line)
     vote_list = last_line.split(",")
     prev_hash = generateHash(vote_list)
     new_block = "{},{},{}\n".format(vote_id, candidate_id, prev_hash)
+    logging.debug("new block to write to csv: ", new_block)
     f.write(new_block)
     f.close()
     os.sync()
@@ -73,7 +75,7 @@ def receiveVoteFromWebServer():
     
     logging.debug("Random orderer with IP {} selected".format(rand_ord_ip))
 
-    requests.post("http://" + rand_ord_ip + "/api/orderer/receivelbc", json=params)
+    requests.post("http://" + rand_ord_ip + ":80" + "/api/orderer/receivelbc", json=params)
 
     logging.info("Vote data forwarded to random orderer")
     client.close()
