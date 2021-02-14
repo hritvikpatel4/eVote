@@ -47,7 +47,7 @@ def receiveVoteFromWebServer():
     """
         params = {
             "vote_id": int,
-            "candidate_id": str
+            "candidate_id": int
         }
     """
 
