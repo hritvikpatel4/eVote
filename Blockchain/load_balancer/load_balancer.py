@@ -11,6 +11,7 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode()
 
+timer = None
 app = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
@@ -77,7 +78,7 @@ def receiveAck():
     HOLD_VOTES_TEMPORARY = False
 
     emptyTempQueue()
-    next_timeout = datetime.now() + timedelta(minutes=2)
+    next_timeout = datetime.now() + timedelta(seconds=30)
 
 @app.route('/castvote', methods=['POST'])
 # forwards vote from webserver to lbc
@@ -116,7 +117,7 @@ def castVote():
 if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
 
-    next_timeout = datetime.now() + timedelta(minutes=2)
+    next_timeout = datetime.now() + timedelta(seconds=30)
     init_timer()
     
     app.run(debug=True, host=host, port=port, use_reloader=False)
