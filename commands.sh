@@ -11,9 +11,6 @@ sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 sudo pip3 install docker requests
-git clone https://github.com/hritvikpatel4/eVote.git
-sudo chmod +x eVote/Blockchain/create_image.sh
-sudo chmod +x eVote/docker_clean.sh
-sudo chmod +x eVote/docker_list.sh
-mkdir -p /home/blockchain
-sudo chmod -R 777 /home/blockchain
+sudo chmod +x /home/blockchain/eVote/Blockchain/create_image.sh
+sudo chmod +x /home/blockchain/eVote/docker_clean.sh
+sudo chmod +x /home/blockchain/eVote/docker_list.sh

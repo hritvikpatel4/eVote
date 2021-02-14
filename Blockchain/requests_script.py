@@ -1,6 +1,6 @@
 import requests, time
 
-for i in range(30, 36):
+for i in range(1, 11):
     data = {
         "vote_id": i,
         "candidate_id": 20
