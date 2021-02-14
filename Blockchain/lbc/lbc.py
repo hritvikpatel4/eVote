@@ -14,7 +14,7 @@ host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 LBC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
-logging.basicConfig(filename=LBC_LOG_FILE, encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
+logging.basicConfig(filename=LBC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 

@@ -13,7 +13,7 @@ def spawnContainer(type_of_container, orderer_flag, container_number):
         image_to_run += "_orderer"
         container_name = "orderer" + str(container_number)
     
-    container = client.containers.run(image=image_to_run, detach=True, network="blockchain", name=container_name, hostname=container_name, environment=["CUSTOM_PORT=80"], volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'}, '/home/hritvik/logs/': {'bind': '/usr/src/app/logs', 'mode': 'rw'}})
+    container = client.containers.run(image=image_to_run, detach=True, network="blockchain", name=container_name, hostname=container_name, environment=["CUSTOM_PORT=80"], volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'}, '/home/$HOME/logs/': {'bind': '/usr/src/app/logs', 'mode': 'rw'}})
     
     time.sleep(10)
     process = container.top()

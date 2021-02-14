@@ -18,7 +18,7 @@ port = os.environ["CUSTOM_PORT"]
 
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
-logging.basicConfig(filename=ORDERER_LOG_FILE, encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
+logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # timer = None
 receiver_q = Queue(maxsize=0)   # This Q contains votes from LBC to orderer

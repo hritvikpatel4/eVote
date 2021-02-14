@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, request
 from queue import Queue
-import docker, os, random, re, requests, threading
+import docker, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -19,7 +19,7 @@ next_timeout = None
 HOLD_VOTES_TEMPORARY = False
 temp_q = Queue(maxsize=0)
 
-logging.basicConfig(filename=LOG_FILE, encoding='utf-8', filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
+logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
