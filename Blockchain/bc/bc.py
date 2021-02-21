@@ -56,6 +56,7 @@ def receiveVoteFromLowLevel():
             "candidate_id_1": num_votes,
             "candidate_id_2": num_votes,
             "candidate_id_3": num_votes,
+            "batch_id": unique_int
             ...
         }
     """

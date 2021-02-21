@@ -9,7 +9,6 @@ class RepeatedTimer(object):
         self.args       = args
         self.kwargs     = kwargs
         self.is_running = False
-        self.next_call  = time.time()
 
     def _run(self):
         self.is_running = False
@@ -19,8 +18,7 @@ class RepeatedTimer(object):
     def start(self):
         print("start")
         if not self.is_running:
-            self.next_call += self.interval
-            self._timer = Timer(self.next_call - time.time(), self._run)
+            self._timer = Timer(self.interval, self._run)
             self._timer.start()
             self.is_running = True
     
