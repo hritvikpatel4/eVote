@@ -218,7 +218,9 @@ def startBatching():
 @orderer.route("/api/orderer/receiveBatchesFromPeerOrderer", methods=["POST"])
 # Before calculating intersection, this API collects batches from every peer orderer
 def receiveBatchesFromPeerOrderer():
+    global orderer_sets_received
     orderer_sets_received += 1
+    
     batch_data_received = request.get_json()["batch_data"]
     batched_batchvotes.append(batch_data_received)
 
@@ -230,8 +232,8 @@ def receiveBatchesFromPeerOrderer():
     if orderer_sets_received == number_of_orderers - 1:
         intersection_batch = intersect_batches()
         
-        # orderer_sets_received = 0
-        # batched_batchvotes = []
+        orderer_sets_received = 0
+        batched_batchvotes = []
     
     return make_response("Done calculating intersection batch", 200)
 
