@@ -68,6 +68,8 @@ def timerfunc():
 
         # Wait till we receive ack from random orderer. GOTO /receiveack
 
+####### IDEA to kill old thread and start new thread
+
 # Init timer
 def init_timer():
     global timer
