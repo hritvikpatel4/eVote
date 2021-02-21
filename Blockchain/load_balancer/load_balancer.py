@@ -145,7 +145,7 @@ def toy():
     bc_ip_list = getBCIPs()
     rand_lbc_ip = random.choice(bc_ip_list)
 
-    requests.post("http://" + rand_lbc_ip + str(bc_port) + "/api/bc/receiveVoteFromLowerLevel", json=params)
+    requests.post("http://" + rand_lbc_ip + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
 
     return make_response("Success!", 200)
 
