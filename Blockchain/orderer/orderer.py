@@ -225,6 +225,7 @@ def receiveBatchesFromPeerOrderer():
 
     number_of_orderers = getNumberOfOrderers()
 
+    # This executes only when all batches from peers have been received
     if orderer_sets_received == number_of_orderers - 1:
         intersection_batch = intersect_batches()
         
