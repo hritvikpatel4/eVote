@@ -56,6 +56,15 @@ def transformBatch(data):
     
     return temp
 
+# Convert list(dict) to list(str)
+def transformRecQ(data):
+    temp = []
+
+    for i in range(len(data)):
+        temp.append(json.dumps(data[i]))
+    
+    return temp
+
 def getNumberOfOrderers():
     counter = 0
     client = docker.from_env()
@@ -130,7 +139,8 @@ def intersect_batches():
         for batch in transformed_batched_batchvotes:
             ans = ans.intersection(batch)
         
-        extra_batch = receiver_q.difference(ans)
+        transformed_rec_q = set(transformRecQ(receiver_q))
+        extra_batch = transformed_rec_q.difference(ans)
 
         ans = deTransformBatch(list(ans))
         
@@ -139,6 +149,7 @@ def intersect_batches():
 
         ans = sorted(ans, key=lambda x: x["batch_id"])
         logging.debug("Intersection batch {}".format(ans))
+        
         return ans
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
