@@ -155,5 +155,6 @@ if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
     print("timer started")
     timer = RepeatedTimer(60, callOrdererBatching)
+    timer.start()
     
     app.run(debug=True, host=host, port=port, use_reloader=False)
