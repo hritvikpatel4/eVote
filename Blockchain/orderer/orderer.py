@@ -138,7 +138,7 @@ def intersect_batches():
             extra_batch_q.append(data)
 
         ans = sorted(ans, key=lambda x: x["batch_id"])
-
+        logging.debug("Intersection batch {}".format(ans))
         return ans
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
@@ -167,7 +167,7 @@ def receiveFromBCNode():
     # ip_list contains ip addresses of all orderers
     orderer_ip_list = getOrdererIPs()
     
-    logging.debug("Now broadcasting to peer orderers")
+    # logging.debug("Now broadcasting to peer orderers")
 
     # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
     for ip in orderer_ip_list:
@@ -196,7 +196,7 @@ def receiveVoteFromOrderer():
         }
     """
     params = request.get_json()
-    logging.debug("Received vote data from peer orderer {}".format(params))
+    # logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
     if params["batch_id"] not in unique_votes:

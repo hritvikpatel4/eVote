@@ -80,8 +80,8 @@ def callOrdererBatching():
     
     orderer_ip_list = getOrdererIPs()
 
-    # for ip in orderer_ip_list:
-        # requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startbatching")
+    for ip in orderer_ip_list:
+        requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startBatching")
     
     logging.debug("Finished calling batching API on peer orderers")
 
