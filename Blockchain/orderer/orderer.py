@@ -76,15 +76,15 @@ def getOrdererIPs():
     container_list = client.containers.list()
 
     # ip_list contains ip addresses of all orderers
-    ip_list = []
+    orderer_ip_list = []
     
     for container in container_list:
         if re.search("^orderer[1-9][0-9]*", container.name) and container.name != current_orderer_name:
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-            ip_list.append(out.output.decode().split("\n")[0])
+            orderer_ip_list.append(out.output.decode().split("\n")[0])
     
     client.close()
-    return ip_list
+    return orderer_ip_list
 
 def getBCIPs():
     """
@@ -94,15 +94,15 @@ def getBCIPs():
     container_list = client.containers.list()
 
     # ip_list contains ip addresses of all orderers
-    ip_list = []
+    bc_ip_list = []
     
     for container in container_list:
-        if re.search("^bc[1-9][0-9]*", container.name) and container.name != current_orderer_name:
+        if re.search("^bc[1-9][0-9]*", container.name):
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-            ip_list.append(out.output.decode().split("\n")[0])
+            bc_ip_list.append(out.output.decode().split("\n")[0])
     
     client.close()
-    return ip_list
+    return bc_ip_list
 
 def send_batch_votes():
     data = {

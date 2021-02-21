@@ -54,7 +54,7 @@ def getOrdererIPs():
     orderer_ip_list = []
 
     for container in container_list:
-        if re.search("^bc[1-9][0-9]*", container.name):
+        if re.search("^orderer[1-9][0-9]*", container.name):
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
             orderer_ip_list.append(out.output.decode().split("\n")[0])
         
