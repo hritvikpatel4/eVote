@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from datetime import datetime, timedelta
+from repeatedtimer import RepeatedTimer
 from flask import Flask, make_response, jsonify, request
 from queue import Queue
 import docker, logging, os, random, re, requests, subprocess, threading
@@ -16,8 +16,8 @@ app = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 bc_port = 80
+orderer_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
-next_timeout = None
 HOLD_VOTES_TEMPORARY = False
 temp_q = Queue(maxsize=0)
 
@@ -39,8 +39,27 @@ def getBCIPs():
         if re.search("^bc[1-9][0-9]*", container.name):
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
             bc_ip_list.append(out.output.decode().split("\n")[0])
-        
+    
+    client.close()
     return bc_ip_list
+
+def getOrdererIPs():
+    """
+    returns list of ip addr
+    """
+
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    orderer_ip_list = []
+
+    for container in container_list:
+        if re.search("^bc[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            orderer_ip_list.append(out.output.decode().split("\n")[0])
+        
+    client.close()
+    return orderer_ip_list
 
 def emptyTempQueue():
     while not temp_q.empty():
@@ -53,48 +72,21 @@ def emptyTempQueue():
         else:
             logging.debug("Failed to send this vote {}".format(vote))
 
-# Timer function
-def timerfunc():
-    global next_timeout
+def callOrdererBatching():
+    timer.pause()
 
-    while True:
-        while datetime.now().strftime("%s") != next_timeout:
-            pass
+    # Put extra votes into another temp queue
+    HOLD_VOTES_TEMPORARY = True
+    
+    orderer_ip_list = getOrdererIPs()
 
-        logging.debug("Timeout! Updating the number of orderers and executing batching of votes")
-        logging.debug("Timeout next_timeout: {}".format(next_timeout))
+    for ip in orderer_ip_list:
+        # requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startbatching")
+    
+    logging.debug("Finished calling batching API on peer orderers")
 
-        # Put extra votes into another temp queue
-        HOLD_VOTES_TEMPORARY = True
-        
-        # Call API on the orderers to execute batching
-        client = docker.from_env()
-        container_list = client.containers.list()
-        ip_list = []
-        
-        for container in container_list:
-            if re.search("^orderer[1-9][0-9]*", container.name):
-                out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-                ip_list.append(out.output.decode().split("\n")[0])
-        
-        logging.debug("Calling batching API on peer orderers")
-
-        for ip in ip_list:
-            requests.get("http://" + ip + "/api/orderer/startbatching")
-        
-        logging.debug("Finished calling batching API on peer orderers")
-
-        # Wait till we receive ack from random orderer. GOTO /receiveack
-
-####### IDEA to kill old thread and start new thread
-
-# Init timer
-def init_timer():
-    global timer
-
-    if not timer:
-        timer = threading.Thread(target = timerfunc)
-        timer.start()
+    # Wait till we receive ack from random orderer. GOTO /receiveack
+    return
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -106,37 +98,10 @@ def receiveAck():
     logging.debug("emptying temp queue")
     emptyTempQueue()
     logging.debug("emptied temp queue")
-    next_timeout = (datetime.now() + timedelta(seconds=60)).strftime("%s")
-    logging.debug("receiveack next_timeout: {}".format(next_timeout))
+    
+    timer.start()
 
     return make_response("", 200)
-
-@app.route("/api/test", methods=["POST"])
-# Test API
-def testAPI():
-    params = request.get_json()
-    batch1 = {
-        "get_batch": [{"vote_id": 10, "candidate_id": 20}, {"vote_id": 20, "candidate_id": 30}]
-    }
-    batch2 = {
-        "get_batch": [{"vote_id": 11, "candidate_id": 21}, {"vote_id": 21, "candidate_id": 31}]
-    }
-
-    client = docker.from_env()
-    container_list = client.containers.list()
-
-    ip_list = []
-    
-    for container in container_list:
-        if re.search("^orderer[1-9][0-9]*", container.name):
-            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-            ip_list.append(out.output.decode().split("\n")[0])
-
-    for ip in ip_list:
-        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=batch1)
-        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=batch2)
-    
-    return make_response("Done testing receivebatch", 200)
 
 @app.route("/toy", methods=["POST"])
 def toy():
@@ -155,54 +120,40 @@ def castVote():
     # Check if we should put data into temp_q
     if HOLD_VOTES_TEMPORARY:
         params = request.get_json()
-        vote_id_type = isinstance(params["vote_id"], int)
-        candidate_id_type = isinstance(params["candidate_id"], int)
         
-        if vote_id_type and candidate_id_type:
-            logging.debug("Pushing requests temporarily to another queue")
-            temp_q.put(request.get_json())
+        for data in params:
+            if isinstance(params[data], int) == False:
+                return make_response("Invalid data sent!", 400)
         
-        else:
-            return make_response("", 400)
+        logging.debug("Pushing requests temporarily to another queue")
+        temp_q.put(request.get_json())
     
     else:
-        client = docker.from_env()
-        clist = client.containers.list()
+        bc_ip_list = getBCIPs()
 
-        ip_list = []
-
-        for container in clist:
-            if re.search("^bc[1-9][0-9]*", container.name):
-                out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-                ip_list.append(out.output.decode().split("\n")[0])
-
-        if(len(ip_list) == 0):
+        if(len(bc_ip_list) == 0):
             return jsonify({"status": "No LBC containers running"}, 400)
 
-        rand_lbc_ip = random.choice(ip_list)
-        print("ip list = ", ip_list)
+        rand_bc_ip = random.choice(bc_ip_list)
+        print("bc ip list = ", bc_ip_list)
 
         params = request.get_json()
-        vote_id_type = isinstance(params["vote_id"], int)
-        candidate_id_type = isinstance(params["candidate_id"], int)
         
-        if vote_id_type and candidate_id_type:
-            requests.post("http://" + rand_lbc_ip + ":80" + "/api/lbc/receivevote", json=params)
-            print("rand lbc ip = ", rand_lbc_ip)
-            print()
+        for data in params:
+            if isinstance(params[data], int) == False:
+                return make_response("Invalid data sent!", 400)
         
-        else:
-            return make_response("", 400)
+        requests.post("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
+        print("rand lbc ip = ", rand_bc_ip)
+        print()
 
-    return make_response("", 200)
+    return make_response("Sent vote to BC", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 
 if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
 
-    next_timeout = (datetime.now() + timedelta(seconds=60)).strftime("%s")
-    logging.debug("INIT next_timeout: {}".format(next_timeout))
-    init_timer()
+    timer = RepeatedTimer(60, callOrdererBatching)
     
     app.run(debug=True, host=host, port=port, use_reloader=False)
