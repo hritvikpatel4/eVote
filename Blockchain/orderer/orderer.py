@@ -220,6 +220,7 @@ def startBatching():
 def receiveBatchesFromPeerOrderer():
     global orderer_sets_received
     global batched_batchvotes
+    
     orderer_sets_received += 1
     
     batch_data_received = request.get_json()["batch_data"]
