@@ -1,7 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
-from queue import Queue
 import docker, json, logging, os, re, requests, subprocess, threading, time
 
 # ---------------------------------------- CONFIGS ----------------------------------------
@@ -16,38 +15,23 @@ orderer = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
+orderer_port = 80
+bc_port = 80
 
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
 logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
-receiver_q = Queue(maxsize=0)   # This Q contains votes from LBC to orderer
-batchvotes = []                 # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
+receiver_q = []                 # This Q contains batch from BC to orderer
+temp_q = []                     # This Q contains the batches which were sent by the BC during the batching logic
+extra_batch_q = []              # This Q contains the extra batches which are not in the internsection_batch
+batched_batchvotes = []         # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 orderer_sets_received = 0       # This is a counter to check whether we have received all the batches from other orderers on the network
 number_of_orderers = 3          # total number of orderers in each hierarchy
 orderer_number = 0              # the current orderer number which is running
-unique_votes = {}               # This is a structure which is used for detecting duplicate votes
+unique_votes = {}               # This is a structure which is used for detecting duplicate batches
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
-
-'''
-When timer hits 5 minutes, everything is transferred from rec_q to validvotes_q.
-Orderer nodes broadcast their validvotes_q's to each other. The intersection is calculated,
-and broadcast to all the LBC nodes. The LBC nodes add these votes to their blockchains.
-In each orderer, all votes that are not part of the intersection are pushed back into their
-respective rec_q's, following which the validvotes_q's are emptied.
-
-- AS, HP convinced by some explanation given by AP
-'''
-
-# Convert any queue.Queue to a list
-def convertQueueToList(receiver_q):
-    temp = []
-    
-    while not receiver_q.empty():
-        temp.append(receiver_q.get())
-    
-    return temp
 
 # Convert set(str) to list(dict)
 def deTransformBatch(data):
@@ -72,70 +56,89 @@ def transformBatch(data):
     
     return temp
 
-# Send the receiver_q as a list to all peer orderers
-def send_batch_votes():
-    # convert the internal receiver_queue to a list
-    batch_votedata = convertQueueToList(receiver_q)
-
-    logging.debug("batch_votedata: {}".format(batch_votedata))
-    
-    # add the batched votedata to the batchvotes list
-    global batchvotes
-    batchvotes.append(batch_votedata)
-
-    logging.debug("batchvotes: {}".format(batchvotes))
-    
-    data = {
-        "get_batch": batch_votedata
-    }
-
+def getNumberOfOrderers():
+    counter = 0
     client = docker.from_env()
     container_list = client.containers.list()
 
-    # ip_list contains ip addresses of peer orderers (all orderers but itself)
-    ip_list = []
+    for container in container_list:
+        if re.search("^orderer[1-9][0-9]*", container.name):
+            counter += 1
+    
+    client.close()
+    return counter
 
-    logging.debug("Sending batch votedata to all the peer orderers")
+def getOrdererIPs():
+    """
+    return -> list of ip addr
+    """
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    # ip_list contains ip addresses of all orderers
+    ip_list = []
     
     for container in container_list:
         if re.search("^orderer[1-9][0-9]*", container.name) and container.name != current_orderer_name:
             out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
             ip_list.append(out.output.decode().split("\n")[0])
     
-    # broadcast the current vote batch to all peer orderers (all orderers but itself)
-    for ip in ip_list:
-        requests.post("http://" + ip + ":80" + "/api/orderer/receivebatch", json=data)
-    
-    logging.debug("Sent batch votedata to all the peer orderers")
+    client.close()
+    return ip_list
 
-# Intersect the batched votes
-def union_votes():
-    global batchvotes
+def getBCIPs():
+    """
+    return -> list of ip addr
+    """
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    # ip_list contains ip addresses of all orderers
+    ip_list = []
     
-    if len(batchvotes) > 0:
-        # use the set intersection operation
-        # init ans to the first entry in batchvotes
-        transformed_batchvotes = transformBatch(batchvotes)
-        logging.debug("batchvotes: {}".format(batchvotes))
-        logging.debug("transformed_batchvotes: {}".format(transformed_batchvotes))
-        ans = set(transformed_batchvotes[0])
-        logging.debug("ans: {}".format(ans))
+    for container in container_list:
+        if re.search("^bc[1-9][0-9]*", container.name) and container.name != current_orderer_name:
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            ip_list.append(out.output.decode().split("\n")[0])
+    
+    client.close()
+    return ip_list
+
+def send_batch_votes():
+    data = {
+        "batch_data": receiver_q
+    }
+
+    orderer_ip_list = getOrdererIPs()
+
+    logging.debug("Starting broadcast to peer orderers with the receiver_q")
+
+    for ip in orderer_ip_list:
+        res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchesFromPeerOrderer", json=data)
+
+        if res.status_code != 200:
+            logging.error("Failed to send receiver_q to peer orderer with IP = {}".format(ip))
+    
+    logging.debug("Sent batch to all peer orderers")
+
+def intersect_batches():
+    if len(batched_batchvotes) > 0:
+        logging.debug("Starting intersection")
+        transformed_batched_batchvotes = transformBatch(batched_batchvotes)
+        ans = set(transformed_batched_batchvotes[0])
+
+        for batch in transformed_batched_batchvotes:
+            ans = ans.intersection(batch)
         
-        for batch in transformed_batchvotes:
-            logging.debug("Current batch: {}".format(batch))
-            ans = ans.union(set(batch))
-        
-        logging.debug("ans: {}".format(ans))
+        extra_batch = receiver_q.difference(ans)
+
         ans = deTransformBatch(list(ans))
-        logging.debug("ans 'detransformed': {}".format(ans))
         
-        # convert set to list and sort it based on vote_id
-        # ans = list(ans).sort(key=lambda x: x["vote_id"])
-        ans = sorted(ans, key=lambda x: x["vote_id"])
-        logging.debug("ans 'sorted': {}".format(ans))
-        
-        logging.debug("Intersecion batch {}".format(ans))
-        
+        for data in list(extra_batch):
+            extra_batch_q.append(data)
+
+        ans = sorted(ans, key=lambda x: x["batch_id"])
+
         return ans
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
@@ -155,56 +158,80 @@ def receiveFromBCNode():
     """
     params = request.get_json()
 
-    print("We reached here!")
-    logging.debug("We reached here from the lower level!")
-    logging.debug("PARAMS {}".format(params))
-    # logging.info("Params {} received from LBC with IP {}".format(params, request.remote_addr))
+    # logging.info("Params {} received from BC with IP = {}".format(params, request.remote_addr))
 
-    # # add the vote into the queue
-    # receiver_q.put(params)
+    # add the vote into the queue
+    receiver_q.append(params)
 
-    # client = docker.from_env()
-    # container_list = client.containers.list()
-
-    # # ip_list contains ip addresses of all orderers
-    # ip_list = []
+    # ip_list contains ip addresses of all orderers
+    orderer_ip_list = getOrdererIPs()
     
-    # for container in container_list:
-    #     if re.search("^orderer[1-9][0-9]*", container.name) and container.name != current_orderer_name:
-    #         out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
-    #         ip_list.append(out.output.decode().split("\n")[0])
-    
-    # logging.debug("Now broadcasting to peer orderers")
+    logging.debug("Now broadcasting to peer orderers")
 
-    # # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
-    # for ip in ip_list:
-    #     requests.post("http://" + ip + ":80" + "/api/orderer/receiveorderer", json=params)
+    # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
+    for ip in orderer_ip_list:
+        res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
+
+        if res.status_code != 200:
+            logging.error("could not forward to peer orderer with IP = {}".format(ip))
     
     # logging.debug("Broadcast Finished")
 
-    return make_response("Added to orderer receive queue", 200)
+    return make_response("Added to orderer receiver_q", 200)
 
-@orderer.route("/api/orderer/receiveorderer", methods=["POST"])
-# Receives vote from peer orderers.
+@orderer.route("/api/orderer/receiveBatchFromPeerOrderer", methods=["POST"])
+# Receives batch from peer orderers.
 # The vote comes from a peer orderer that itself received from a LBC node
 def receiveVoteFromOrderer():
     """
         params = {
-            "vote_id": int,
-            "candidate_id": str
+            string: int
+            
+            "candidate_id_1": num_votes,
+            "candidate_id_2": num_votes,
+            "candidate_id_3": num_votes,
+            "batch_id": unique_int
+            ...
         }
     """
     params = request.get_json()
     logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
-    if params["vote_id"] not in unique_votes:
-        receiver_q.put(params)
-        unique_votes[params["vote_id"]] = True
+    if params["batch_id"] not in unique_votes:
+        receiver_q.append(params)
+        unique_votes[params["batch_id"]] = True
 
-        return make_response("Added vote into receiver_q", 200)
+        return make_response("Added to orderer receiver_q", 200)
 
-    return make_response("Duplicate vote received", 400)
+    return make_response("Duplicate batch received", 400)
+
+@orderer.route("/api/orderer/startBatching", methods=["GET"])
+# Receives the signal from load balancer to send batch
+def startBatching():
+    logging.info("Running send_batch_votes()")
+    send_batch_votes()
+
+    return make_response("Received signal to start batching", 200)
+
+@orderer.route("/api/orderer/receiveBatchesFromPeerOrderer", methods=["POST"])
+# Before calculating intersection, this API collects batches from every peer orderer
+def receiveBatchesFromPeerOrderer():
+    orderer_sets_received += 1
+    batch_data_received = request.get_json()["batch_data"]
+    batched_batchvotes.append(batch_data_received)
+
+    logging.debug("Received batch from an orderer with params {}".format(batch_data_received))
+
+    number_of_orderers = getNumberOfOrderers()
+
+    if orderer_sets_received == number_of_orderers - 1:
+        intersection_batch = intersect_batches()
+        
+        # orderer_sets_received = 0
+        # batched_batchvotes = []
+    
+    return make_response("Done calculating intersection batch", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

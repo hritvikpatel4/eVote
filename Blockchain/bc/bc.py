@@ -13,6 +13,8 @@ LBC = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
+bc_port = 80
+higher_level_port = 80
 LBC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
 
@@ -39,29 +41,6 @@ def getOrdererIPs():
     
     return ip_list
 
-def generateHash(vote_list):
-    # vote_list -> list generated from last line in the csv file
-    # ["1", "narendra_modi", prevHash_SHA]
-    
-    s = ":::".join(vote_list)
-    hashed_s = hashlib.sha256(s.encode()).hexdigest()
-
-    return hashed_s
-
-def writeToBlockchain(vote_id, candidate_id):
-    f = open("lbc.csv", "a")
-
-    # last_line 
-    last_line = subprocess.run(["tail", "-1", "lbc.csv"], shell=False, capture_output=True).stdout.decode()
-    # logging.debug("Last line: {}".format(last_line))
-    vote_list = last_line.split(",")
-    prev_hash = generateHash(vote_list)
-    new_block = "{},{},{}\n".format(vote_id, candidate_id, prev_hash)
-    # logging.debug("new block to write to csv: {}".format(new_block))
-    f.write(new_block)
-    f.close()
-    os.sync()
-
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
 @LBC.route("/api/bc/receiveVoteFromLowLevel", methods=["POST"])
@@ -83,7 +62,7 @@ def receiveVoteFromLowLevel():
 
     params = request.get_json()
     
-    logging.debug("Data {} received from lower level with IP = {}".format(params, request.remote_addr))
+    # logging.debug("Data {} received from lower level with IP = {}".format(params, request.remote_addr))
 
     # select a random orderer from the orderer_ip_list to forward the votedata received from lower level using params
     orderer_ip_list = getOrdererIPs()
@@ -96,8 +75,8 @@ def receiveVoteFromLowLevel():
         return make_response("vote error occurred", 400)
     
     else:
-        logging.info("Vote data forwarded to random orderer with IP = {}".format(rand_ord_ip))
-        return make_response("", 200)
+        # logging.info("Vote data forwarded to random orderer with IP = {}".format(rand_ord_ip))
+        return make_response("vote successfully forwarded to orderer", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

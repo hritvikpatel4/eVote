@@ -74,8 +74,6 @@ def emptyTempQueue():
 
 def callOrdererBatching():
     timer.pause()
-    print("timer paused")
-    print("inside callOrdererBatching")
 
     # Put extra votes into another temp queue
     HOLD_VOTES_TEMPORARY = True
