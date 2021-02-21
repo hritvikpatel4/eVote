@@ -89,7 +89,7 @@ def receiveVoteFromLowLevel():
     orderer_ip_list = getOrdererIPs()
     rand_ord_ip = random.choice(orderer_ip_list)
 
-    res = requests.post("http://" + rand_ord_ip + str(orderer_port) + "/api/orderer/receiveFromBCNode", json=params)
+    res = requests.post("http://" + rand_ord_ip + ":" + str(orderer_port) + "/api/orderer/receiveFromBCNode", json=params)
 
     if res.status_code != 200:
         logging.error("Vote data forwarding to random orderer failed!")
