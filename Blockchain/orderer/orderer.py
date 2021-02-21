@@ -145,11 +145,11 @@ def union_votes():
 def receiveFromBCNode():
     """
         params = {
-            int: int
+            string: int
             
-            candidate_id_1: num_votes,
-            candidate_id_2: num_votes,
-            candidate_id_3: num_votes,
+            "candidate_id_1": num_votes,
+            "candidate_id_2": num_votes,
+            "candidate_id_3": num_votes,
             ...
         }
     """
@@ -157,6 +157,7 @@ def receiveFromBCNode():
 
     print("We reached here!")
     logging.debug("We reached here from the lower level!")
+    logging.debug("PARAMS {}".format(params))
     # logging.info("Params {} received from LBC with IP {}".format(params, request.remote_addr))
 
     # # add the vote into the queue

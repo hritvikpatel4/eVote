@@ -14,7 +14,7 @@ host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
 LBC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
-LEVEL_NUMBER = os.environ["LEVEL"] # This indicates the level of the cluster in the hierarchy
+LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
 
 logging.basicConfig(filename=LBC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
@@ -72,11 +72,11 @@ def receiveVoteFromLowLevel():
         return -> 200, 400
         
         params = {
-            int: int
+            string: int
             
-            candidate_id_1: num_votes,
-            candidate_id_2: num_votes,
-            candidate_id_3: num_votes,
+            "candidate_id_1": num_votes,
+            "candidate_id_2": num_votes,
+            "candidate_id_3": num_votes,
             ...
         }
     """

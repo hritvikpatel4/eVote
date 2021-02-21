@@ -9,4 +9,4 @@ COPY . .
 EXPOSE 80
 
 RUN mkdir -p /usr/src/app/logs && pip install -r requirements.txt
-CMD ["sh", "-c", "python lbc_orderer.py"]
+CMD ["sh", "-c", "python bc.py"]

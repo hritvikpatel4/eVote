@@ -15,6 +15,7 @@ timer = None
 app = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
+bc_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 next_timeout = None
 HOLD_VOTES_TEMPORARY = False
@@ -23,6 +24,23 @@ temp_q = Queue(maxsize=0)
 logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
+
+def getBCIPs():
+    """
+    returns list of ip addr
+    """
+
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    bc_ip_list = []
+
+    for container in container_list:
+        if re.search("^bc[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            bc_ip_list.append(out.output.decode().split("\n")[0])
+        
+    return bc_ip_list
 
 def emptyTempQueue():
     while not temp_q.empty():
@@ -120,6 +138,17 @@ def testAPI():
     
     return make_response("Done testing receivebatch", 200)
 
+@app.route("/toy", methods=["POST"])
+def toy():
+    params = request.get_json()
+    
+    bc_ip_list = getBCIPs()
+    rand_lbc_ip = random.choice(bc_ip_list)
+
+    requests.post("http://" + rand_lbc_ip + str(bc_port) + "/api/bc/receiveVoteFromLowerLevel", json=params)
+
+    return make_response("Success!", 200)
+
 @app.route('/castvote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
@@ -143,7 +172,7 @@ def castVote():
         ip_list = []
 
         for container in clist:
-            if re.search("^lbc[1-9][0-9]*", container.name):
+            if re.search("^bc[1-9][0-9]*", container.name):
                 out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
                 ip_list.append(out.output.decode().split("\n")[0])
 
