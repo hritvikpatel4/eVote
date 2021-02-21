@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from repeatedtimer import RepeatedTimer
+from custom_timer import RepeatedTimer
 from flask import Flask, make_response, jsonify, request
 from queue import Queue
 import docker, logging, os, random, re, requests, subprocess, threading
@@ -80,7 +80,7 @@ def callOrdererBatching():
     
     orderer_ip_list = getOrdererIPs()
 
-    for ip in orderer_ip_list:
+    # for ip in orderer_ip_list:
         # requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startbatching")
     
     logging.debug("Finished calling batching API on peer orderers")
