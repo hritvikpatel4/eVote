@@ -219,6 +219,7 @@ def startBatching():
 # Before calculating intersection, this API collects batches from every peer orderer
 def receiveBatchesFromPeerOrderer():
     global orderer_sets_received
+    global batched_batchvotes
     orderer_sets_received += 1
     
     batch_data_received = request.get_json()["batch_data"]
