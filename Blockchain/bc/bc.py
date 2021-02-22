@@ -9,16 +9,16 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode()
 
-LBC = Flask(__name__)
+BC = Flask(__name__)
 host = "0.0.0.0"
 port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
 bc_port = 80
 higher_level_port = 80
-LBC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
+BC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
 
-logging.basicConfig(filename=LBC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
+logging.basicConfig(filename=BC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -43,8 +43,8 @@ def getOrdererIPs():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
-@LBC.route("/api/bc/receiveVoteFromLowLevel", methods=["POST"])
-# Receive vote from lower level in the hierarchy and passes to orderer
+@BC.route("/api/bc/receiveVoteFromLowLevel", methods=["POST"])
+# Receive batch from lower level in the hierarchy and passes to orderer
 def receiveVoteFromLowLevel():
     """
         input -> params which is received from lower level in the hierarchy
@@ -79,9 +79,14 @@ def receiveVoteFromLowLevel():
         # logging.info("Vote data forwarded to random orderer with IP = {}".format(rand_ord_ip))
         return make_response("vote successfully forwarded to orderer", 200)
 
+@BC.route("/api/bc/writeToBlockchain", methods=["POST"])
+# Receive intersection batch from orderer and write to blockchain
+def writeToBlockchain():
+    print("Got intersection batch from orderer {}".format(request.get_json()["final_batch"]))
+
 # ---------------------------------------- MAIN ----------------------------------------
 
 if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
 
-    LBC.run(debug=True, port=port, host=host, use_reloader=False)
+    BC.run(debug=True, port=port, host=host, use_reloader=False)

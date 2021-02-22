@@ -17,14 +17,15 @@ port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
 orderer_port = 80
 bc_port = 80
+lb_port = 80
 
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
 logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 receiver_q = []                 # This Q contains batch from BC to orderer
-temp_q = []                     # This Q contains the batches which were sent by the BC during the batching logic
-extra_batch_q = []              # This Q contains the extra batches which are not in the internsection_batch
+during_timeout_q = []           # This Q contains the batches which were sent by the BC during the batching logic
+diff_batch_q = []               # This Q contains the extra batches which are not in the internsection_batch
 batched_batchvotes = []         # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 orderer_sets_received = 0       # This is a counter to check whether we have received all the batches from other orderers on the network
 number_of_orderers = 3          # total number of orderers in each hierarchy
@@ -64,6 +65,28 @@ def transformRecQ(data):
         temp.append(json.dumps(data[i]))
     
     return temp
+
+def flushTimeoutQ():
+    """
+    Forwards all the batches to PEER ORDERERS present in the during_timeout_q.
+    The batches enter that queue when we are basically executing intersection logic and have received
+    timeout from the load balancer
+    """
+    pass
+
+def flushDiffQ():
+    """
+    Forwards the batches from this queue to PEER ORDERERS.
+    Batches enter this queue from the output of the difference between receiver_q and the intersection batch
+    """
+    pass
+
+def emptyReceiverQ():
+    """
+    Empties the receiver_q
+    """
+    
+    receiver_q.clear()
 
 def getNumberOfOrderers():
     counter = 0
@@ -113,6 +136,24 @@ def getBCIPs():
     client.close()
     return bc_ip_list
 
+def getLBIPs():
+    """
+    return -> list of ip addr
+    """
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    # ip_list contains ip addresses of all orderers
+    lb_ip_list = []
+    
+    for container in container_list:
+        if re.search("^load_balancer[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            lb_ip_list.append(out.output.decode().split("\n")[0])
+    
+    client.close()
+    return lb_ip_list
+
 def send_batch_votes():
     data = {
         "batch_data": receiver_q
@@ -140,12 +181,12 @@ def intersect_batches():
             ans = ans.intersection(batch)
         
         transformed_rec_q = set(transformRecQ(receiver_q))
-        extra_batch = transformed_rec_q.difference(ans)
+        diff_batch = transformed_rec_q.difference(ans)
 
         ans = deTransformBatch(list(ans))
         
-        for data in list(extra_batch):
-            extra_batch_q.append(data)
+        for data in list(diff_batch):
+            diff_batch_q.append(data)
 
         ans = sorted(ans, key=lambda x: x["batch_id"])
         logging.debug("Intersection batch {}".format(ans))
@@ -244,11 +285,54 @@ def receiveBatchesFromPeerOrderer():
     # This executes only when all batches from peers have been received
     if orderer_sets_received == number_of_orderers - 1:
         intersection_batch = intersect_batches()
+
+        # Find which random orderer will broadcast
+        rand_ord_num = 0
+        for vote in intersection_batch:
+            rand_ord_num += (vote["batch_id"])
+        
+        rand_ord_num = (rand_ord_num % number_of_orderers) + 1
+
+        logging.debug("Random orderer {} will broadcast".format(rand_ord_num))
+
+        if rand_ord_num == int(orderer_number):
+            data = {
+                "final_batch": intersection_batch
+            }
+
+            bc_ip_list = getBCIPs()
+
+            logging.debug("I will broadcast to lower level. My orderer number is {}".format(rand_ord_num))
+
+            for ip in bc_ip_list:
+                res = requests.post("http://" + ip + ":" + str(bc_port) + "/api/bc/writeToBlockchain", json=data)
+
+                if res.status_code != 200:
+                    logging.error("Error broadcasting to lower level with IP = {}".format(ip))
+            
+            logging.debug("Broadcast finished to lower level")
+
+            lb_ip_list = getLBIPs()
+
+            for ip in lb_ip_list:
+                res = requests.get("http://" + ip + ":" + str(lb_port) + "/api/lb/receiveAck")
+
+                if res.status_code != 200:
+                    logging.error("Error sending ACK to LB with IP = {}".format(ip))
         
         orderer_sets_received = 0
         batched_batchvotes = []
+
+        emptyReceiverQ()
+        flushTimeoutQ()
+        flushDiffQ()
     
     return make_response("Done calculating intersection batch", 200)
+
+###### Forward data from diff_batch_q and clear rec_q once intersection is done!
+###### Work on forwarding data to HBC
+###### Encrypt CSV
+###### RSA auth
 
 # ---------------------------------------- MAIN ----------------------------------------
 

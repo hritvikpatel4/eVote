@@ -90,7 +90,7 @@ def callOrdererBatching():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
-@app.route("/api/lb/receiveack", methods=["GET"])
+@app.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
     HOLD_VOTES_TEMPORARY = False
@@ -114,7 +114,7 @@ def toy():
 
     return make_response("Success!", 200)
 
-@app.route('/castvote', methods=['POST'])
+@app.route('/castVote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
     # Check if we should put data into temp_q
