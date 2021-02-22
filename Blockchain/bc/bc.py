@@ -82,7 +82,10 @@ def receiveVoteFromLowLevel():
 @BC.route("/api/bc/writeToBlockchain", methods=["POST"])
 # Receive intersection batch from orderer and write to blockchain
 def writeToBlockchain():
-    print("Got intersection batch from orderer {}".format(request.get_json()["final_batch"]))
+    params = request.get_json()["final_batch"]
+    print("Got intersection batch from orderer {}".format(params))
+
+    return make_response("Successfully written to blockchain", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 
