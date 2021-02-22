@@ -17,7 +17,7 @@ port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
 orderer_port = 80
 bc_port = 80
-lb_port = 80
+lb_port = 8080
 
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 
