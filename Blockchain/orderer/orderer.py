@@ -279,9 +279,9 @@ def receiveVoteFromOrderer():
     # logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
-    if params["batch_id"] not in unique_votes:
+    if str(params["batch_id"]) not in unique_votes:
         receiver_q.append(params)
-        unique_votes[params["batch_id"]] = True
+        unique_votes[str(params["batch_id"])] = True
 
         return make_response("Added to orderer receiver_q", 200)
 
