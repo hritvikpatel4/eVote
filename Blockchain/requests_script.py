@@ -1,11 +1,15 @@
 import requests, time
 
-for i in range(1, 21):
+for i in range(100, 121):
     data = {
-        "vote_id": i,
-        "candidate_id": 20
+        "batch_id": i,
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
     }
-    requests.post("http://146.148.43.144:80/castvote", json=data)
+    requests.post("http://146.148.43.144:80/castVote", json=data)
     print("sent request number {}".format(i))
 
 print("DONE!")

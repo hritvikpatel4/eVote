@@ -83,6 +83,8 @@ def receiveVoteFromLowLevel():
 # Receive intersection batch from orderer and write to blockchain
 def writeToBlockchain():
     params = request.get_json()["final_batch"]
+    ###### IF EMPTY BATCH, dont write to blockchain
+    
     print("Got intersection batch from orderer {}".format(params))
 
     return make_response("Successfully written to blockchain", 200)

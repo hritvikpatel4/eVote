@@ -73,6 +73,7 @@ def emptyTempQueue():
             logging.debug("Failed to send this vote {}".format(vote))
 
 def callOrdererBatching():
+    global HOLD_VOTES_TEMPORARY
     timer.pause()
 
     # Put extra votes into another temp queue
@@ -93,6 +94,7 @@ def callOrdererBatching():
 @app.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
+    global HOLD_VOTES_TEMPORARY
     HOLD_VOTES_TEMPORARY = False
 
     logging.debug("emptying temp queue")
@@ -126,7 +128,7 @@ def castVote():
                 return make_response("Invalid data sent!", 400)
         
         logging.debug("Pushing requests temporarily to another queue")
-        temp_q.put(request.get_json())
+        temp_q.put(params)
     
     else:
         bc_ip_list = getBCIPs()

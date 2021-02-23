@@ -18,8 +18,8 @@ lower_level_port = 80
 orderer_port = 80
 bc_port = 80
 lb_port = 8080
-
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
+PUT_IN_TIMEOUT_Q = False
 
 logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
@@ -72,14 +72,33 @@ def flushTimeoutQ():
     The batches enter that queue when we are basically executing intersection logic and have received
     timeout from the load balancer
     """
-    pass
+    orderer_ip_list = getOrdererIPs()
+
+    for ip in orderer_ip_list:
+        for batch in during_timeout_q:
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
+
+            if res.status_code != 200:
+                logging.error("Error sending batch to orderer with IP = {}".format(ip))
+    
+    during_timeout_q.clear()
 
 def flushDiffQ():
     """
     Forwards the batches from this queue to PEER ORDERERS.
     Batches enter this queue from the output of the difference between receiver_q and the intersection batch
     """
-    pass
+
+    orderer_ip_list = getOrdererIPs()
+
+    for ip in orderer_ip_list:
+        for batch in diff_batch_q:
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
+
+            if res.status_code != 200:
+                logging.error("Error sending batch to orderer with IP = {}".format(ip))
+
+    diff_batch_q.clear()
 
 def emptyReceiverQ():
     """
@@ -104,6 +123,7 @@ def getOrdererIPs():
     """
     return -> list of ip addr
     """
+
     client = docker.from_env()
     container_list = client.containers.list()
 
@@ -122,6 +142,7 @@ def getBCIPs():
     """
     return -> list of ip addr
     """
+
     client = docker.from_env()
     container_list = client.containers.list()
 
@@ -140,6 +161,7 @@ def getLBIPs():
     """
     return -> list of ip addr
     """
+
     client = docker.from_env()
     container_list = client.containers.list()
 
@@ -209,26 +231,32 @@ def receiveFromBCNode():
             ...
         }
     """
-    params = request.get_json()
+    if PUT_IN_TIMEOUT_Q:
+        params = request.get_json()
 
-    # logging.info("Params {} received from BC with IP = {}".format(params, request.remote_addr))
-
-    # add the vote into the queue
-    receiver_q.append(params)
-
-    # ip_list contains ip addresses of all orderers
-    orderer_ip_list = getOrdererIPs()
+        during_timeout_q.append(params)
     
-    # logging.debug("Now broadcasting to peer orderers")
+    else:
+        params = request.get_json()
 
-    # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
-    for ip in orderer_ip_list:
-        res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
+        # logging.info("Params {} received from BC with IP = {}".format(params, request.remote_addr))
 
-        if res.status_code != 200:
-            logging.error("could not forward to peer orderer with IP = {}".format(ip))
-    
-    # logging.debug("Broadcast Finished")
+        # add the vote into the queue
+        receiver_q.append(params)
+
+        # ip_list contains ip addresses of all orderers
+        orderer_ip_list = getOrdererIPs()
+        
+        # logging.debug("Now broadcasting to peer orderers")
+
+        # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
+        for ip in orderer_ip_list:
+            res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
+
+            if res.status_code != 200:
+                logging.error("could not forward to peer orderer with IP = {}".format(ip))
+        
+        # logging.debug("Broadcast Finished")
 
     return make_response("Added to orderer receiver_q", 200)
 
@@ -262,6 +290,9 @@ def receiveVoteFromOrderer():
 @orderer.route("/api/orderer/startBatching", methods=["GET"])
 # Receives the signal from load balancer to send batch
 def startBatching():
+    global PUT_IN_TIMEOUT_Q
+    PUT_IN_TIMEOUT_Q = True
+    
     logging.info("Running send_batch_votes()")
     send_batch_votes()
 
@@ -272,6 +303,7 @@ def startBatching():
 def receiveBatchesFromPeerOrderer():
     global orderer_sets_received
     global batched_batchvotes
+    global PUT_IN_TIMEOUT_Q
     
     orderer_sets_received += 1
     
@@ -326,12 +358,13 @@ def receiveBatchesFromPeerOrderer():
         emptyReceiverQ()
         flushTimeoutQ()
         flushDiffQ()
+
+        PUT_IN_TIMEOUT_Q = False
     
     return make_response("Done calculating intersection batch", 200)
 
-###### Forward data from diff_batch_q and clear rec_q once intersection is done!
-###### Work on forwarding data to HBC
 ###### Encrypt CSV
+###### Work on forwarding data to HBC
 ###### RSA auth
 
 # ---------------------------------------- MAIN ----------------------------------------
