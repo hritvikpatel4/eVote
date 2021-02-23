@@ -279,17 +279,16 @@ def receiveVoteFromOrderer():
             ...
         }
     """
-    # params = request.get_json()
-    # print(type(params))
-    # print(params)
+    params = request.get_json()
+    print(type(params))
     # logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
-    # if str(params["batch_id"]) not in unique_votes:
-    #     receiver_q.append(params)
-    #     unique_votes[str(params["batch_id"])] = True
+    if str(params["batch_id"]) not in unique_votes:
+        receiver_q.append(params)
+        unique_votes[str(params["batch_id"])] = True
 
-    #     return make_response("Added to orderer receiver_q", 200)
+        return make_response("Added to orderer receiver_q", 200)
 
     return make_response("Duplicate batch received", 400)
 
