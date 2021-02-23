@@ -76,6 +76,7 @@ def flushTimeoutQ():
 
     for ip in orderer_ip_list:
         for batch in during_timeout_q:
+            batch = json.loads(batch)
             print("flush Timeout Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
@@ -94,6 +95,7 @@ def flushDiffQ():
 
     for ip in orderer_ip_list:
         for batch in diff_batch_q:
+            batch = json.loads(batch)
             print("flush Diff Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
