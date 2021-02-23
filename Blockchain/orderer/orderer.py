@@ -76,6 +76,7 @@ def flushTimeoutQ():
 
     for ip in orderer_ip_list:
         for batch in during_timeout_q:
+            print("flush Timeout Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -93,6 +94,7 @@ def flushDiffQ():
 
     for ip in orderer_ip_list:
         for batch in diff_batch_q:
+            print("flush Diff Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -275,17 +277,17 @@ def receiveVoteFromOrderer():
             ...
         }
     """
-    params = json.loads(request.get_json())
-    print(type(params))
-    print(params)
+    # params = request.get_json()
+    # print(type(params))
+    # print(params)
     # logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
-    if str(params["batch_id"]) not in unique_votes:
-        receiver_q.append(params)
-        unique_votes[str(params["batch_id"])] = True
+    # if str(params["batch_id"]) not in unique_votes:
+    #     receiver_q.append(params)
+    #     unique_votes[str(params["batch_id"])] = True
 
-        return make_response("Added to orderer receiver_q", 200)
+    #     return make_response("Added to orderer receiver_q", 200)
 
     return make_response("Duplicate batch received", 400)
 
