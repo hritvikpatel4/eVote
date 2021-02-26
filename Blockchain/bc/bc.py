@@ -1,7 +1,7 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
-import docker, hashlib, logging, os, random, re, requests, subprocess
+import csv, docker, hashlib, logging, os, random, re, requests, subprocess
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -17,6 +17,12 @@ bc_port = 80
 higher_level_port = 80
 BC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
+curr_tail_ptr = 1
+prev_tail_ptr = 0
+csv_header_fields = []
+INIT_CSV_HEADER = False
+
+# when sending to higher BC node, send values in the range [prev_tail_ptr + 1, curr_tail_ptr + 1)
 
 logging.basicConfig(filename=BC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
@@ -40,6 +46,53 @@ def getOrdererIPs():
     client.close()
     
     return ip_list
+
+def initCsvHeader(csv_header):
+    global csv_header_fields
+    
+    csv_header_fields = list(csv_header.keys())
+    csv_header_fields.append("prevHash")
+
+    genesisBlock = {}
+
+    for i in range(len(csv_header_fields)):
+        genesisBlock[csv_header_fields[i]] = 0
+
+    with open("bc.csv", "a") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
+        writer.writeheader()
+        writer.writerow(genesisBlock)
+
+        csvfile.flush()
+
+def generateHash(block):
+    s = ":::".join(block)
+    hashed_s = hashlib.sha256(s.encode()).hexdigest()
+
+    return hashed_s
+
+def writeToBlockchain(dataToWrite):
+    global curr_tail_ptr
+
+    with open("bc.csv", "a") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
+        #do magic
+
+        for block in dataToWrite:
+            last_line = subprocess.run(["tail" "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
+            batch = last_line.split(",")
+            prev_hash = generateHash(batch)
+
+            new_block = block
+            new_block["prevHash"] = prev_hash
+
+            writer.writerow(new_block)
+
+        csvfile.flush()
+    
+    ps = subprocess.Popen(('wc', 'test.py'), stdout=subprocess.PIPE)
+    curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
+    ps.wait()
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -83,9 +136,16 @@ def receiveVoteFromLowLevel():
 # Receive intersection batch from orderer and write to blockchain
 def writeToBlockchain():
     params = request.get_json()["final_batch"]
-    ###### IF EMPTY BATCH, dont write to blockchain
+
+    if len(params) == 0:
+        return make_response("Empty batch received", 202)
+    
+    if not os.path.exists("bc.csv"):
+        initCsvHeader(params[0])
     
     print("Got intersection batch from orderer {}".format(params))
+
+    writeToBlockchain(params)
 
     return make_response("Successfully written to blockchain", 200)
 

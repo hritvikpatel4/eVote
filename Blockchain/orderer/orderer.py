@@ -77,7 +77,6 @@ def flushTimeoutQ():
     for ip in orderer_ip_list:
         for batch in during_timeout_q:
             batch = json.loads(batch)
-            print("flush Timeout Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -96,7 +95,6 @@ def flushDiffQ():
     for ip in orderer_ip_list:
         for batch in diff_batch_q:
             batch = json.loads(batch)
-            print("flush Diff Q", type(batch))
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -280,7 +278,6 @@ def receiveVoteFromOrderer():
         }
     """
     params = request.get_json()
-    print(type(params))
     # logging.debug("Received vote data from peer orderer {}".format(params))
 
     # Detect duplicate votes
@@ -368,7 +365,7 @@ def receiveBatchesFromPeerOrderer():
     
     return make_response("Done calculating intersection batch", 200)
 
-###### Encrypt CSV
+###### writetocsv & Encrypt CSV
 ###### Work on forwarding data to HBC
 ###### RSA auth
 
