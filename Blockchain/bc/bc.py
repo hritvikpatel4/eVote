@@ -71,7 +71,7 @@ def generateHash(block):
 
     return hashed_s
 
-def writeToBlockchain(dataToWrite):
+def writeToCSV(dataToWrite):
     global curr_tail_ptr
 
     with open("bc.csv", "a") as csvfile:
@@ -145,7 +145,7 @@ def writeToBlockchain():
     
     print("Got intersection batch from orderer {}".format(params))
 
-    writeToBlockchain(params)
+    writeToCSV(params)
 
     return make_response("Successfully written to blockchain", 200)
 
