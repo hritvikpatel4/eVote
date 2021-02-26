@@ -90,7 +90,7 @@ def writeToBlockchain(dataToWrite):
 
         csvfile.flush()
     
-    ps = subprocess.Popen(('wc', 'test.py'), stdout=subprocess.PIPE)
+    ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
     curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
     ps.wait()
 

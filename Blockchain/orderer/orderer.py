@@ -287,7 +287,7 @@ def receiveVoteFromOrderer():
 
         return make_response("Added to orderer receiver_q", 200)
 
-    return make_response("Duplicate batch received", 400)
+    return make_response("Duplicate batch received", 200)
 
 @orderer.route("/api/orderer/startBatching", methods=["GET"])
 # Receives the signal from load balancer to send batch
