@@ -79,7 +79,7 @@ def writeToCSV(dataToWrite):
         #do magic
 
         for block in dataToWrite:
-            last_line = subprocess.run(["tail" "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
+            last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
             batch = last_line.split(",")
             prev_hash = generateHash(batch)
 
@@ -143,7 +143,7 @@ def writeToBlockchain():
     if not os.path.exists("bc.csv"):
         initCsvHeader(params[0])
     
-    print("Got intersection batch from orderer {}".format(params))
+    print("Got intersection batch from orderer IP {} {}".format(request.remote_addr, params))
 
     writeToCSV(params)
 
