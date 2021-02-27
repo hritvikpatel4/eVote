@@ -189,10 +189,19 @@ def send_batch_votes():
         "batch_data": receiver_q
     }
     
-    batchids = getOnlyBatchIDs(receiver_q)
+    batchids_rec = getOnlyBatchIDs(receiver_q)
+    batchids_timeout = getOnlyBatchIDs(during_timeout_q)
+    batchids_diff = getOnlyBatchIDs(diff_batch_q)
+    batchids_sent = getOnlyBatchIDs(data["batch_data"])
     
     logging.debug("----------------------------------------------------------------")
-    logging.debug("send_batch_votes() batch_ids = {}".format(batchids))
+    logging.debug("Receiver_Q {}".format(batchids_rec))
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("Timeout_Q {}".format(batchids_timeout))
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("Diff_Q {}".format(batchids_diff))
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("Data sent {}".format(batchids_sent))
     logging.debug("----------------------------------------------------------------")
 
     orderer_ip_list = getOrdererIPs()
@@ -214,6 +223,9 @@ def intersect_batches():
         ans = set(transformed_batched_batchvotes[0])
 
         for batch in transformed_batched_batchvotes:
+            temp_ids = getOnlyBatchIDs(batch)
+            print("Batch taken for intersection {}".format(temp_ids))
+            
             ans = ans.intersection(batch)
         
         transformed_rec_q = set(transformRecQ(receiver_q))
