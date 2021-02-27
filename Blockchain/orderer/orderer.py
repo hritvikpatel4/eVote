@@ -27,7 +27,6 @@ receiver_q = []                 # This Q contains batch from BC to orderer
 during_timeout_q = []           # This Q contains the batches which were sent by the BC during the batching logic
 diff_batch_q = []               # This Q contains the extra batches which are not in the internsection_batch
 batched_batchvotes = []         # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
-orderer_sets_received = 0       # This is a counter to check whether we have received all the batches from other orderers on the network
 number_of_orderers = 3          # total number of orderers in each hierarchy
 orderer_number = 0              # the current orderer number which is running
 unique_votes = {}               # This is a structure which is used for detecting duplicate batches
@@ -214,6 +213,8 @@ def emptyReceiverQ():
     receiver_q.clear()
 
 def send_batch_votes():
+    global batched_batchvotes
+
     batchids_rec = getOnlyBatchIDs(receiver_q)
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
@@ -229,6 +230,8 @@ def send_batch_votes():
     orderer_ip_list = getOrdererIPs()
 
     # logging.debug("Starting broadcast to peer orderers with the receiver_q")
+
+    batched_batchvotes.append(receiver_q)
 
     for ip in orderer_ip_list:
         data = {
@@ -431,11 +434,8 @@ def startBatching():
 @orderer.route("/api/orderer/receiveBatchesFromPeerOrderer", methods=["POST"])
 # Before calculating intersection, this API collects batches from every peer orderer
 def receiveBatchesFromPeerOrderer():
-    global orderer_sets_received
     global batched_batchvotes
     global PUT_IN_TIMEOUT_Q
-    
-    orderer_sets_received += 1
     
     batch_data_received = request.get_json()["batch_data"]
     batched_batchvotes.append(batch_data_received)
@@ -451,7 +451,7 @@ def receiveBatchesFromPeerOrderer():
     number_of_orderers = getNumberOfOrderers()
 
     # This executes only when all batches from peers have been received
-    if orderer_sets_received == number_of_orderers - 1:
+    if len(batched_batchvotes) == number_of_orderers:
         batchids_rec = getOnlyBatchIDs(receiver_q)
         batchids_timeout = getOnlyBatchIDs(during_timeout_q)
         batchids_diff = getOnlyBatchIDs(diff_batch_q)
@@ -500,8 +500,7 @@ def receiveBatchesFromPeerOrderer():
                 if res.status_code != 200:
                     logging.error("Error sending ACK to LB with IP = {}".format(ip))
         
-        orderer_sets_received = 0
-        batched_batchvotes = []
+        batched_batchvotes.clear()
 
         emptyReceiverQ()
         flushTimeoutQ()
