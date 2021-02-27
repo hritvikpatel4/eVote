@@ -180,8 +180,8 @@ def flushTimeoutQ():
 
     for batch in during_timeout_q:
         for ip in orderer_ip_list:
-            data = json.loads(batch)
-            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=data)
+            # data = json.loads(batch)
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
@@ -198,8 +198,8 @@ def flushDiffQ():
     
     for batch in diff_batch_q:
         for ip in orderer_ip_list:
-            data = json.loads(batch)
-            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=data)
+            # data = json.loads(batch)
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
