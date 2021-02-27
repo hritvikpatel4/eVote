@@ -16,8 +16,8 @@ class RepeatedTimer(object):
         self.function(*self.args, **self.kwargs)
 
     def start(self):
-        print("start")
         if not self.is_running:
+            print("start")
             self._timer = Timer(self.interval, self._run)
             self._timer.start()
             self.is_running = True

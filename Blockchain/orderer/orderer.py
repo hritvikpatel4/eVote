@@ -66,61 +66,6 @@ def transformRecQ(data):
     
     return temp
 
-def flushTimeoutQ():
-    """
-    Forwards all the batches to PEER ORDERERS present in the during_timeout_q.
-    The batches enter that queue when we are basically executing intersection logic and have received
-    timeout from the load balancer
-    """
-    orderer_ip_list = getOrdererIPs()
-
-    for ip in orderer_ip_list:
-        for batch in during_timeout_q:
-            batch = json.loads(batch)
-            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
-
-            if res.status_code != 200:
-                logging.error("Error sending batch to orderer with IP = {}".format(ip))
-    
-    during_timeout_q.clear()
-
-def flushDiffQ():
-    """
-    Forwards the batches from this queue to PEER ORDERERS.
-    Batches enter this queue from the output of the difference between receiver_q and the intersection batch
-    """
-
-    orderer_ip_list = getOrdererIPs()
-
-    for ip in orderer_ip_list:
-        for batch in diff_batch_q:
-            batch = json.loads(batch)
-            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
-
-            if res.status_code != 200:
-                logging.error("Error sending batch to orderer with IP = {}".format(ip))
-
-    diff_batch_q.clear()
-
-def emptyReceiverQ():
-    """
-    Empties the receiver_q
-    """
-    
-    receiver_q.clear()
-
-def getNumberOfOrderers():
-    counter = 0
-    client = docker.from_env()
-    container_list = client.containers.list()
-
-    for container in container_list:
-        if re.search("^orderer[1-9][0-9]*", container.name):
-            counter += 1
-    
-    client.close()
-    return counter
-
 def getOrdererIPs():
     """
     return -> list of ip addr
@@ -128,8 +73,7 @@ def getOrdererIPs():
 
     client = docker.from_env()
     container_list = client.containers.list()
-
-    # ip_list contains ip addresses of all orderers
+    
     orderer_ip_list = []
     
     for container in container_list:
@@ -148,7 +92,6 @@ def getBCIPs():
     client = docker.from_env()
     container_list = client.containers.list()
 
-    # ip_list contains ip addresses of all orderers
     bc_ip_list = []
     
     for container in container_list:
@@ -167,7 +110,6 @@ def getLBIPs():
     client = docker.from_env()
     container_list = client.containers.list()
 
-    # ip_list contains ip addresses of all orderers
     lb_ip_list = []
     
     for container in container_list:
@@ -177,6 +119,62 @@ def getLBIPs():
     
     client.close()
     return lb_ip_list
+
+def getNumberOfOrderers():
+    counter = 0
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    for container in container_list:
+        if re.search("^orderer[1-9][0-9]*", container.name):
+            counter += 1
+    
+    client.close()
+    return counter
+
+def flushTimeoutQ():
+    """
+    Forwards all the batches to PEER ORDERERS present in the during_timeout_q.
+    The batches enter that queue when we are basically executing intersection logic and have received
+    timeout from the load balancer
+    """
+    
+    orderer_ip_list = getOrdererIPs()
+
+    for batch in during_timeout_q:
+        for ip in orderer_ip_list:
+            data = json.loads(batch)
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=data)
+
+            if res.status_code != 200:
+                logging.error("Error sending batch to orderer with IP = {}".format(ip))
+    
+    during_timeout_q.clear()
+
+def flushDiffQ():
+    """
+    Forwards the batches from this queue to PEER ORDERERS.
+    Batches enter this queue from the output of the difference between receiver_q and the intersection batch
+    """
+
+    orderer_ip_list = getOrdererIPs()
+    
+    for batch in diff_batch_q:
+        for ip in orderer_ip_list:
+            data = json.loads(batch)
+            res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=data)
+
+            if res.status_code != 200:
+                logging.error("Error sending batch to orderer with IP = {}".format(ip))
+
+    diff_batch_q.clear()
+
+def emptyReceiverQ():
+    """
+    Empties the receiver_q
+    """
+    
+    receiver_q.clear()
 
 def send_batch_votes():
     data = {
@@ -279,6 +277,7 @@ def receiveVoteFromOrderer():
     """
     params = request.get_json()
     # logging.debug("Received vote data from peer orderer {}".format(params))
+    print(params["batch_id"])
 
     # Detect duplicate votes
     if str(params["batch_id"]) not in unique_votes:
@@ -286,7 +285,8 @@ def receiveVoteFromOrderer():
         unique_votes[str(params["batch_id"])] = True
 
         return make_response("Added to orderer receiver_q", 200)
-
+    
+    logging.debug("Duplicate batch received from orderer IP {}".format(request.remote_addr))
     return make_response("Duplicate batch received", 200)
 
 @orderer.route("/api/orderer/startBatching", methods=["GET"])
@@ -312,7 +312,14 @@ def receiveBatchesFromPeerOrderer():
     batch_data_received = request.get_json()["batch_data"]
     batched_batchvotes.append(batch_data_received)
 
-    logging.debug("Received batch from an orderer with params {}".format(batch_data_received))
+    # logging.debug("Received batch from an orderer with params {}".format(batch_data_received))
+
+    batchids = []
+
+    for i in batch_data_received:
+        batchids.append(i["batch_id"])
+
+    logging.debug("Received batch from an orderer with batch_ids {}".format(batchids))
 
     number_of_orderers = getNumberOfOrderers()
 
@@ -365,7 +372,7 @@ def receiveBatchesFromPeerOrderer():
     
     return make_response("Done calculating intersection batch", 200)
 
-###### writetocsv & Encrypt CSV
+###### Encrypt CSV
 ###### Work on forwarding data to HBC
 ###### RSA auth
 
@@ -377,8 +384,5 @@ if __name__ == '__main__':
     process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
     orderer_name = process_output.stdout.decode()
     orderer_number = orderer_name[len("orderer"):]
-    
-    # logging.info("Timer started!")
-    # init_timer()
 
     orderer.run(debug=True, port=port, host=host, use_reloader=False)

@@ -143,7 +143,13 @@ def writeToBlockchain():
     if not os.path.exists("bc.csv"):
         initCsvHeader(params[0])
     
-    print("Got intersection batch from orderer IP {} {}".format(request.remote_addr, params))
+    # print("Got intersection batch from orderer IP {} {}".format(request.remote_addr, params))
+    batchids = []
+
+    for i in params:
+        batchids.append(i["batch_id"])
+    
+    print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
     writeToCSV(params)
 
