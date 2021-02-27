@@ -35,35 +35,64 @@ unique_votes = {}               # This is a structure which is used for detectin
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
 # Convert set(str) to list(dict)
-def deTransformBatch(data):
-    temp = []
+# def deTransformBatch(data):
+#     temp = []
 
-    for i in range(len(data)):
-        temp.append(json.loads(data[i]))
+#     for i in range(len(data)):
+#         temp.append(json.loads(data[i]))
     
-    return temp
+#     return temp
 
 # Convert list(list(dict)) to list(list(str))
-def transformBatch(data):
-    temp = []
+# def transformBatch(data):
+#     temp = []
+
+#     for i in range(len(data)):
+#         temp2 = []
+        
+#         for j in range(len(data[i])):
+#             temp2.append(json.dumps(data[i][j]))
+        
+#         temp.append(temp2)
+    
+#     return temp
+
+# [[{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}]]
+# [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
+
+# Convert list(list(dict)) to list(list(int))
+def extractBatchIDs(data, dictmapping):
+    l1 = []
 
     for i in range(len(data)):
-        temp2 = []
-        
-        for j in range(len(data[i])):
-            temp2.append(json.dumps(data[i][j]))
-        
-        temp.append(temp2)
-    
-    return temp
+        l2 = []
 
-# Convert list(dict) to list(str)
+        for j in range(len(data[i])):
+            current_id = data[i][j]["batch_id"]
+            dictmapping[str(current_id)] = data[i][j]
+            
+            l2.append(data[i][j]["batch_id"])
+        
+        l1.append(l2)
+    
+    return l1, dictmapping
+
+# Convert list(dict) to list(int)
 def transformRecQ(data):
     temp = []
 
     for i in range(len(data)):
-        temp.append(json.dumps(data[i]))
+        temp.append(data[i]["batch_id"])
     
+    return temp
+
+# Convert list(int) to list(dict) by using the dict mapping
+def buildBatchFromMapping(data, batchid_batch_mapping):
+    temp = []
+
+    for i in range(len(data)):
+        temp.append(batchid_batch_mapping[str(data[i])])
+
     return temp
 
 def getOnlyBatchIDs(listdata):
@@ -217,35 +246,73 @@ def send_batch_votes():
     # logging.debug("Sent batch to all peer orderers")
 
 def intersect_batches():
+    global diff_batch_q
+
     if len(batched_batchvotes) > 0:
         logging.debug("Starting intersection")
-        transformed_batched_batchvotes = transformBatch(batched_batchvotes)
-        ans = set(transformed_batched_batchvotes[0])
 
-        for batch in transformed_batched_batchvotes:
-            temp_ids = getOnlyBatchIDs(batch)
-            print("Batch taken for intersection {}".format(temp_ids))
-            
-            ans = ans.intersection(batch)
+        batchid_batch_mapping = {}
         
-        transformed_rec_q = set(transformRecQ(receiver_q))
-        diff_batch = transformed_rec_q.difference(ans)
+        # extracted_batched_batchvotes = list(list(int)) where int is the batch_id
+        extracted_batched_batchvotes, batchid_batch_mapping = extractBatchIDs(batched_batchvotes, batchid_batch_mapping)
 
-        ans = deTransformBatch(list(ans))
+        ans = set(extracted_batched_batchvotes[0])
+
+        for i in range(1, len(extracted_batched_batchvotes)):
+            print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
+            # print("Batch taken for intersection {}".format(batch))
+
+            ans = ans.intersection(set(extracted_batched_batchvotes[i]))
         
-        for data in list(diff_batch):
-            diff_batch_q.append(data)
+        transformed_rev_q = set(transformRecQ(receiver_q))
+        diff_batch = transformed_rev_q.difference(ans)
 
-        ans = sorted(ans, key=lambda x: x["batch_id"])
+        result = buildBatchFromMapping(list(ans), batchid_batch_mapping)
 
-        batch_ids = getOnlyBatchIDs(ans)
+        diff_batch_q = buildBatchFromMapping(list(diff_batch), batchid_batch_mapping)
+
+        result = sorted(result, key=lambda x: x["batch_id"])
+
+        batch_ids = getOnlyBatchIDs(result)
 
         print("Intersection batch {}".format(batch_ids))
         logging.debug("----------------------------------------------------------------")
         logging.debug("Intersection batch {}".format(batch_ids))
         logging.debug("----------------------------------------------------------------")
+
+        batchid_batch_mapping.clear()
+
+        return result
+
+        # transformed_batched_batchvotes = transformBatch(batched_batchvotes)
+        # ans = set(transformed_batched_batchvotes[0])
+
+        # for batch in transformed_batched_batchvotes:
+        #     temp_ids = getOnlyBatchIDs(batch)
+        #     print("Batch taken for intersection {}".format(temp_ids))
+            
+        #     ans = ans.intersection(batch)
         
-        return ans
+        # transformed_rec_q = set(transformRecQ(receiver_q))
+        # diff_batch = transformed_rec_q.difference(ans)
+
+        # ans = deTransformBatch(list(ans))
+        
+        # for data in list(diff_batch):
+        #     diff_batch_q.append(data)
+
+        # ans = sorted(ans, key=lambda x: x["batch_id"])
+
+        # batch_ids = getOnlyBatchIDs(ans)
+
+        # print("Intersection batch {}".format(batch_ids))
+        # logging.debug("----------------------------------------------------------------")
+        # logging.debug("Intersection batch {}".format(batch_ids))
+        # logging.debug("----------------------------------------------------------------")
+
+        # batchid_batch_mapping.clear()
+        
+        # return ans
 
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - 4
