@@ -277,10 +277,11 @@ def receiveVoteFromOrderer():
     """
     params = request.get_json()
     # logging.debug("Received vote data from peer orderer {}".format(params))
-    print(params["batch_id"])
+    # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
 
     # Detect duplicate votes
     if str(params["batch_id"]) not in unique_votes:
+        print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
         receiver_q.append(params)
         unique_votes[str(params["batch_id"])] = True
 
