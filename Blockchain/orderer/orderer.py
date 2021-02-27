@@ -214,14 +214,9 @@ def emptyReceiverQ():
     receiver_q.clear()
 
 def send_batch_votes():
-    data = {
-        "batch_data": receiver_q
-    }
-    
     batchids_rec = getOnlyBatchIDs(receiver_q)
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
-    batchids_sent = getOnlyBatchIDs(data["batch_data"])
     
     logging.debug("----------------------------------------------------------------")
     logging.debug("Receiver_Q {}".format(batchids_rec))
@@ -230,14 +225,22 @@ def send_batch_votes():
     logging.debug("----------------------------------------------------------------")
     logging.debug("Diff_Q {}".format(batchids_diff))
     logging.debug("----------------------------------------------------------------")
-    logging.debug("Data sent {}".format(batchids_sent))
-    logging.debug("----------------------------------------------------------------")
 
     orderer_ip_list = getOrdererIPs()
 
     # logging.debug("Starting broadcast to peer orderers with the receiver_q")
 
     for ip in orderer_ip_list:
+        data = {
+            "batch_data": receiver_q
+        }
+        
+        batchids_sent = getOnlyBatchIDs(data["batch_data"])
+
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Data sent {} to orderer{}".format(batchids_sent, getOrdererNumber(ip)))
+        logging.debug("----------------------------------------------------------------")
+        
         res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchesFromPeerOrderer", json=data)
 
         if res.status_code != 200:
@@ -257,6 +260,7 @@ def intersect_batches():
         extracted_batched_batchvotes, batchid_batch_mapping = extractBatchIDs(batched_batchvotes, batchid_batch_mapping)
 
         ans = set(extracted_batched_batchvotes[0])
+        print("Batch taken for intersection {}".format(extracted_batched_batchvotes[0]))
 
         for i in range(1, len(extracted_batched_batchvotes)):
             print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
@@ -317,6 +321,9 @@ def intersect_batches():
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - 4
 
+def getBCNumber(ip):
+    return int(ip.split(".")[-1]) - 1
+
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
 @orderer.route("/api/orderer/receiveFromBCNode", methods=["POST"])
@@ -333,6 +340,9 @@ def receiveFromBCNode():
             ...
         }
     """
+
+    global unique_votes
+    
     if PUT_IN_TIMEOUT_Q:
         params = request.get_json()
 
@@ -341,28 +351,31 @@ def receiveFromBCNode():
     else:
         params = request.get_json()
 
-        logging.debug("----------------------------------------------------------------")
-        logging.debug("Data {} received from BC".format(params))
-        logging.debug("----------------------------------------------------------------")
-
-        # add the vote into the queue
-        receiver_q.append(params)
-
-        # ip_list contains ip addresses of all orderers
-        orderer_ip_list = getOrdererIPs()
+        if str(params["batch_id"]) not in unique_votes:
+            print("batchid = {} from bc{}".format(params["batch_id"], getBCNumber(request.remote_addr)))
         
-        # logging.debug("Now broadcasting to peer orderers")
+            logging.debug("----------------------------------------------------------------")
+            logging.debug("batchid = {} from bc{}".format(params["batch_id"], getBCNumber(request.remote_addr)))
+            logging.debug("----------------------------------------------------------------")
 
-        # broadcast vote to all peer orderers by calling their receiveVoteFromOrderer APIs
-        for ip in orderer_ip_list:
-            res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
+            receiver_q.append(params)
+            unique_votes[str(params["batch_id"])] = True
 
-            if res.status_code != 200:
-                logging.error("could not forward to peer orderer with IP = {}".format(ip))
+            orderer_ip_list = getOrdererIPs()
+
+            for ip in orderer_ip_list:
+                res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
+
+                if res.status_code != 200:
+                    logging.error("could not forward to peer orderer with IP = {}".format(ip))
+
+            return make_response("Added to orderer receiver_q", 200)
+    
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Duplicate batch received from bc{}".format(getBCNumber(request.remote_addr)))
+        logging.debug("----------------------------------------------------------------")
         
-        # logging.debug("Broadcast Finished")
-
-    return make_response("Added to orderer receiver_q", 200)
+        return make_response("Duplicate batch received", 200)
 
 @orderer.route("/api/orderer/receiveBatchFromPeerOrderer", methods=["POST"])
 # Receives batch from peer orderers.
@@ -379,6 +392,9 @@ def receiveVoteFromOrderer():
             ...
         }
     """
+    
+    global unique_votes
+
     params = request.get_json()
     # logging.debug("Received vote data from peer orderer {}".format(params))
     # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
