@@ -88,19 +88,6 @@ def writeToCSV(dataToWrite):
             csvfile.flush()
         
         csvfile.flush()
-
-        # for block in dataToWrite:
-        #     last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
-        #     batch = last_line.split(",")
-        #     prev_hash = generateHash(batch)
-
-        #     new_block = block
-        #     new_block["prevHash"] = prev_hash
-
-        #     writer.writerow(new_block)
-        #     csvfile.flush()
-
-        # csvfile.flush()
     
     ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
     curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
@@ -150,7 +137,7 @@ def writeToBlockchain():
     params = request.get_json()["final_batch"]
 
     if len(params) == 0:
-        return make_response("Empty batch received", 202)
+        return make_response("Empty batch received", 200)
     
     if not os.path.exists("bc.csv"):
         initCsvHeader(params[0])
