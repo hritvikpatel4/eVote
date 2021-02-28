@@ -209,6 +209,8 @@ def send_batch_votes():
     # logging.debug("Starting broadcast to peer orderers with the receiver_q")
 
     batched_batchvotes.append(receiver_q)
+    print("send_batch_votes len of batched_batchvotes = {}".format(len(batched_batchvotes)))
+    logging.debug("send_batch_votes len of batched_batchvotes = {}".format(len(batched_batchvotes)))
 
     for ip in orderer_ip_list:
         data = {
@@ -402,6 +404,7 @@ def receiveBatchesFromPeerOrderer():
 
     number_of_orderers = getNumberOfOrderers()
     print("number of orderer {}".format(number_of_orderers))
+    print("len of batched_batchvotes = {}".format(len(batched_batchvotes)))
 
     # This executes only when all batches from peers have been received
     if len(batched_batchvotes) == number_of_orderers:
@@ -421,7 +424,7 @@ def receiveBatchesFromPeerOrderer():
 
         # Find which random orderer will broadcast
         rand_ord_num = 0
-        
+
         for vote in intersection_batch:
             rand_ord_num += (vote["batch_id"])
         
