@@ -228,6 +228,9 @@ def intersect():
         batchid_batch_mapping.clear()
 
         return result
+    
+    else:
+        return list()
 
 def intersect_and_chooseRandOrd():
     intersection_batch = intersect()
