@@ -25,7 +25,7 @@ logging.basicConfig(filename=ORDERER_LOG_FILE, filemode='w', level=logging.DEBUG
 
 receiver_q = []                 # This Q contains batch from BC to orderer
 during_timeout_q = []           # This Q contains the batches which were sent by the BC during the batching logic
-diff_batch_q = []               # This Q contains the extra batches which are not in the internsection_batch
+diff_batch_q = []               # This Q contains the extra batches which are not in the intersection_batch
 batched_batchvotes = []         # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 number_of_orderers = 3          # total number of orderers in each hierarchy
 orderer_number = 0              # the current orderer number which is running
@@ -189,47 +189,6 @@ def emptyReceiverQ():
     
     receiver_q.clear()
 
-def send_batch_votes():
-    global batched_batchvotes
-
-    batchids_rec = getOnlyBatchIDs(receiver_q)
-    batchids_timeout = getOnlyBatchIDs(during_timeout_q)
-    batchids_diff = getOnlyBatchIDs(diff_batch_q)
-    
-    logging.debug("----------------------------------------------------------------")
-    logging.debug("send_batch_votes Receiver_Q {}".format(batchids_rec))
-    logging.debug("----------------------------------------------------------------")
-    logging.debug("send_batch_votes Timeout_Q {}".format(batchids_timeout))
-    logging.debug("----------------------------------------------------------------")
-    logging.debug("send_batch_votes Diff_Q {}".format(batchids_diff))
-    logging.debug("----------------------------------------------------------------")
-
-    orderer_ip_list = getOrdererIPs()
-
-    # logging.debug("Starting broadcast to peer orderers with the receiver_q")
-
-    batched_batchvotes.append(receiver_q)
-    print("send_batch_votes len of batched_batchvotes = {}".format(len(batched_batchvotes)))
-    logging.debug("send_batch_votes len of batched_batchvotes = {}".format(len(batched_batchvotes)))
-
-    for ip in orderer_ip_list:
-        data = {
-            "batch_data": receiver_q
-        }
-        
-        batchids_sent = getOnlyBatchIDs(data["batch_data"])
-
-        logging.debug("----------------------------------------------------------------")
-        logging.debug("send_batch_votes Data sent {} to orderer{}".format(batchids_sent, getOrdererNumber(ip)))
-        logging.debug("----------------------------------------------------------------")
-        
-        res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchesFromPeerOrderer", json=data)
-
-        if res.status_code != 200:
-            logging.error("Failed to send receiver_q to peer orderer with IP = {}".format(ip))
-    
-    # logging.debug("Sent batch to all peer orderers")
-
 def intersect_batches():
     global diff_batch_q
 
@@ -269,6 +228,114 @@ def intersect_batches():
         batchid_batch_mapping.clear()
 
         return result
+
+def intersect_and_chooseRandOrd():
+    intersection_batch = intersect_batches()
+
+    # Find which random orderer will broadcast
+    rand_ord_num = 0
+
+    for vote in intersection_batch:
+        rand_ord_num += (vote["batch_id"])
+    
+    rand_ord_num = (rand_ord_num % number_of_orderers) + 1
+
+    logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
+
+    if rand_ord_num == int(orderer_number):
+        data = {
+            "final_batch": intersection_batch
+        }
+
+        bc_ip_list = getBCIPs()
+
+        logging.debug("I will broadcast to lower level. My orderer number is {}".format(rand_ord_num))
+
+        for ip in bc_ip_list:
+            res = requests.post("http://" + ip + ":" + str(bc_port) + "/api/bc/writeToBlockchain", json=data)
+
+            if res.status_code != 200:
+                logging.error("Error broadcasting to bc{}".format(getBCNumber(ip)))
+                return make_response("Error broadcasting to bc{}".format(getBCNumber(ip)))
+        
+        logging.debug("Broadcast finished to lower level")
+
+        lb_ip_list = getLBIPs()
+
+        for ip in lb_ip_list:
+            res = requests.get("http://" + ip + ":" + str(lb_port) + "/api/lb/receiveAck")
+
+            if res.status_code != 200:
+                logging.error("Error sending ACK to LB with IP = {}".format(ip))
+                return make_response("error sending ACK to LB with IP = {}".format(ip))
+    
+    return
+
+def send_batch_votes():
+    global batched_batchvotes
+    global number_of_orderers
+    global PUT_IN_TIMEOUT_Q
+
+    batchids_rec = getOnlyBatchIDs(receiver_q)
+    batchids_timeout = getOnlyBatchIDs(during_timeout_q)
+    batchids_diff = getOnlyBatchIDs(diff_batch_q)
+    
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("send_batch_votes Receiver_Q {}".format(batchids_rec))
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("send_batch_votes Timeout_Q {}".format(batchids_timeout))
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("send_batch_votes Diff_Q {}".format(batchids_diff))
+    logging.debug("----------------------------------------------------------------")
+
+    number_of_orderers = getNumberOfOrderers()
+    batched_batchvotes.append(receiver_q)
+    print("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
+    logging.debug("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
+
+    if len(batched_batchvotes) == number_of_orderers:
+        batchids_rec = getOnlyBatchIDs(receiver_q)
+        batchids_timeout = getOnlyBatchIDs(during_timeout_q)
+        batchids_diff = getOnlyBatchIDs(diff_batch_q)
+        
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Receiver_Q {}".format(batchids_rec))
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Timeout_Q {}".format(batchids_timeout))
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Diff_Q {}".format(batchids_diff))
+        logging.debug("----------------------------------------------------------------")
+
+        intersect_and_chooseRandOrd()
+        
+        batched_batchvotes.clear()
+
+        emptyReceiverQ()
+        flushTimeoutQ()
+        flushDiffQ()
+
+        PUT_IN_TIMEOUT_Q = False
+
+    orderer_ip_list = getOrdererIPs()
+    # logging.debug("Starting broadcast to peer orderers with the receiver_q")
+
+    for ip in orderer_ip_list:
+        data = {
+            "batch_data": receiver_q
+        }
+        
+        batchids_sent = getOnlyBatchIDs(data["batch_data"])
+
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("send_batch_votes Data sent {} to orderer{}".format(batchids_sent, getOrdererNumber(ip)))
+        logging.debug("----------------------------------------------------------------")
+        
+        res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchesFromPeerOrderer", json=data)
+
+        if res.status_code != 200:
+            logging.error("Failed to send receiver_q to peer orderer with IP = {}".format(ip))
+    
+    # logging.debug("Sent batch to all peer orderers")
 
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - 4
@@ -403,8 +470,7 @@ def receiveBatchesFromPeerOrderer():
     logging.debug("----------------------------------------------------------------")
 
     number_of_orderers = getNumberOfOrderers()
-    print("number of orderer {}".format(number_of_orderers))
-    print("len of batched_batchvotes = {}".format(len(batched_batchvotes)))
+    print("\nlen(batched_batchvotes) = {}".format(len(batched_batchvotes)))
 
     # This executes only when all batches from peers have been received
     if len(batched_batchvotes) == number_of_orderers:
@@ -419,45 +485,8 @@ def receiveBatchesFromPeerOrderer():
         logging.debug("----------------------------------------------------------------")
         logging.debug("Diff_Q {}".format(batchids_diff))
         logging.debug("----------------------------------------------------------------")
-        
-        intersection_batch = intersect_batches()
 
-        # Find which random orderer will broadcast
-        rand_ord_num = 0
-
-        for vote in intersection_batch:
-            rand_ord_num += (vote["batch_id"])
-        
-        rand_ord_num = (rand_ord_num % number_of_orderers) + 1
-
-        logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
-
-        if rand_ord_num == int(orderer_number):
-            data = {
-                "final_batch": intersection_batch
-            }
-
-            bc_ip_list = getBCIPs()
-
-            logging.debug("I will broadcast to lower level. My orderer number is {}".format(rand_ord_num))
-
-            for ip in bc_ip_list:
-                res = requests.post("http://" + ip + ":" + str(bc_port) + "/api/bc/writeToBlockchain", json=data)
-
-                if res.status_code != 200:
-                    logging.error("Error broadcasting to bc{}".format(getBCNumber(ip)))
-                    return make_response("Error broadcasting to bc{}".format(getBCNumber(ip)))
-            
-            logging.debug("Broadcast finished to lower level")
-
-            lb_ip_list = getLBIPs()
-
-            for ip in lb_ip_list:
-                res = requests.get("http://" + ip + ":" + str(lb_port) + "/api/lb/receiveAck")
-
-                if res.status_code != 200:
-                    logging.error("Error sending ACK to LB with IP = {}".format(ip))
-                    return make_response("error sending ACK to LB with IP = {}".format(ip))
+        intersect_and_chooseRandOrd()
         
         batched_batchvotes.clear()
 
