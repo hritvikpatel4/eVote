@@ -146,7 +146,7 @@ def castVote():
                 return make_response("Invalid data sent!", 400)
         
         requests.post("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
-        print("rand lbc ip = ", rand_bc_ip)
+        print("rand bc ip = ", rand_bc_ip)
         print()
 
     return make_response("Sent vote to BC", 200)

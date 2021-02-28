@@ -33,29 +33,6 @@ unique_votes = {}               # This is a structure which is used for detectin
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
-# Convert set(str) to list(dict)
-# def deTransformBatch(data):
-#     temp = []
-
-#     for i in range(len(data)):
-#         temp.append(json.loads(data[i]))
-    
-#     return temp
-
-# Convert list(list(dict)) to list(list(str))
-# def transformBatch(data):
-#     temp = []
-
-#     for i in range(len(data)):
-#         temp2 = []
-        
-#         for j in range(len(data[i])):
-#             temp2.append(json.dumps(data[i][j]))
-        
-#         temp.append(temp2)
-    
-#     return temp
-
 # [[{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}]]
 # [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
 
@@ -340,7 +317,8 @@ def receiveFromBCNode():
                 res = requests.post("http://" + ip + ":80" + "/api/orderer/receiveBatchFromPeerOrderer", json=params)
 
                 if res.status_code != 200:
-                    logging.error("could not forward to peer orderer with IP = {}".format(ip))
+                    logging.error("could not forward to peer orderer{}".format(getOrdererNumber(ip)))
+                    return make_response("could not forward to peer orderer{}".format(getOrdererNumber(ip)), 400)
 
             return make_response("Added to orderer receiver_q", 200)
     
@@ -349,6 +327,8 @@ def receiveFromBCNode():
         logging.debug("----------------------------------------------------------------")
         
         return make_response("Duplicate batch received", 200)
+    
+    return make_response("Added to during_timeout_q", 200)
 
 @orderer.route("/api/orderer/receiveBatchFromPeerOrderer", methods=["POST"])
 # Receives batch from peer orderers.
@@ -388,6 +368,7 @@ def receiveVoteFromOrderer():
     logging.debug("----------------------------------------------------------------")
     logging.debug("Duplicate batch received from orderer{}".format(getOrdererNumber(request.remote_addr)))
     logging.debug("----------------------------------------------------------------")
+    
     return make_response("Duplicate batch received", 200)
 
 @orderer.route("/api/orderer/startBatching", methods=["GET"])
@@ -458,7 +439,8 @@ def receiveBatchesFromPeerOrderer():
                 res = requests.post("http://" + ip + ":" + str(bc_port) + "/api/bc/writeToBlockchain", json=data)
 
                 if res.status_code != 200:
-                    logging.error("Error broadcasting to lower level with IP = {}".format(ip))
+                    logging.error("Error broadcasting to bc{}".format(getBCNumber(ip)))
+                    return make_response("Error broadcasting to bc{}".format(getBCNumber(ip)))
             
             logging.debug("Broadcast finished to lower level")
 
@@ -469,6 +451,7 @@ def receiveBatchesFromPeerOrderer():
 
                 if res.status_code != 200:
                     logging.error("Error sending ACK to LB with IP = {}".format(ip))
+                    return make_response("error sending ACK to LB with IP = {}".format(ip))
         
         batched_batchvotes.clear()
 
