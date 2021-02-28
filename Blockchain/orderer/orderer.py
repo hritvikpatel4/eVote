@@ -317,12 +317,6 @@ def send_batch_votes():
         
         batched_batchvotes.clear()
 
-        emptyReceiverQ()
-        flushTimeoutQ()
-        flushDiffQ()
-
-        PUT_IN_TIMEOUT_Q = False
-
     orderer_ip_list = getOrdererIPs()
     # logging.debug("Starting broadcast to peer orderers with the receiver_q")
 
@@ -343,6 +337,11 @@ def send_batch_votes():
             logging.error("Failed to send receiver_q to peer orderer with IP = {}".format(ip))
     
     # logging.debug("Sent batch to all peer orderers")
+    emptyReceiverQ()
+    flushTimeoutQ()
+    flushDiffQ()
+
+    PUT_IN_TIMEOUT_Q = False
 
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - 4
