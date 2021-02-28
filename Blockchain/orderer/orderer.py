@@ -217,7 +217,6 @@ def intersect():
         while i < len(extracted_batched_batchvotes):
             if len(extracted_batched_batchvotes[i]) == 0:
                 print("skipped batch i={} because it was empty".format(i))
-                continue
 
             else:
                 print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
