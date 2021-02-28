@@ -197,11 +197,11 @@ def send_batch_votes():
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
     
     logging.debug("----------------------------------------------------------------")
-    logging.debug("Receiver_Q {}".format(batchids_rec))
+    logging.debug("send_batch_votes Receiver_Q {}".format(batchids_rec))
     logging.debug("----------------------------------------------------------------")
-    logging.debug("Timeout_Q {}".format(batchids_timeout))
+    logging.debug("send_batch_votes Timeout_Q {}".format(batchids_timeout))
     logging.debug("----------------------------------------------------------------")
-    logging.debug("Diff_Q {}".format(batchids_diff))
+    logging.debug("send_batch_votes Diff_Q {}".format(batchids_diff))
     logging.debug("----------------------------------------------------------------")
 
     orderer_ip_list = getOrdererIPs()
@@ -218,7 +218,7 @@ def send_batch_votes():
         batchids_sent = getOnlyBatchIDs(data["batch_data"])
 
         logging.debug("----------------------------------------------------------------")
-        logging.debug("Data sent {} to orderer{}".format(batchids_sent, getOrdererNumber(ip)))
+        logging.debug("send_batch_votes Data sent {} to orderer{}".format(batchids_sent, getOrdererNumber(ip)))
         logging.debug("----------------------------------------------------------------")
         
         res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchesFromPeerOrderer", json=data)
@@ -386,6 +386,7 @@ def startBatching():
 # Before calculating intersection, this API collects batches from every peer orderer
 def receiveBatchesFromPeerOrderer():
     global batched_batchvotes
+    global number_of_orderers
     global PUT_IN_TIMEOUT_Q
     
     batch_data_received = request.get_json()["batch_data"]
@@ -400,6 +401,7 @@ def receiveBatchesFromPeerOrderer():
     logging.debug("----------------------------------------------------------------")
 
     number_of_orderers = getNumberOfOrderers()
+    print("number of orderer {}".format(number_of_orderers))
 
     # This executes only when all batches from peers have been received
     if len(batched_batchvotes) == number_of_orderers:
@@ -419,6 +421,7 @@ def receiveBatchesFromPeerOrderer():
 
         # Find which random orderer will broadcast
         rand_ord_num = 0
+        
         for vote in intersection_batch:
             rand_ord_num += (vote["batch_id"])
         
@@ -460,6 +463,12 @@ def receiveBatchesFromPeerOrderer():
         flushDiffQ()
 
         PUT_IN_TIMEOUT_Q = False
+    
+    else:
+        print("else part for the len(batched_batchvotes) == number_of_orderers")
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("else part for the len(batched_batchvotes) == number_of_orderers")
+        logging.debug("----------------------------------------------------------------")
     
     return make_response("Done calculating intersection batch", 200)
 
