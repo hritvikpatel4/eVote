@@ -291,36 +291,6 @@ def intersect_batches():
 
         return result
 
-        # transformed_batched_batchvotes = transformBatch(batched_batchvotes)
-        # ans = set(transformed_batched_batchvotes[0])
-
-        # for batch in transformed_batched_batchvotes:
-        #     temp_ids = getOnlyBatchIDs(batch)
-        #     print("Batch taken for intersection {}".format(temp_ids))
-            
-        #     ans = ans.intersection(batch)
-        
-        # transformed_rec_q = set(transformRecQ(receiver_q))
-        # diff_batch = transformed_rec_q.difference(ans)
-
-        # ans = deTransformBatch(list(ans))
-        
-        # for data in list(diff_batch):
-        #     diff_batch_q.append(data)
-
-        # ans = sorted(ans, key=lambda x: x["batch_id"])
-
-        # batch_ids = getOnlyBatchIDs(ans)
-
-        # print("Intersection batch {}".format(batch_ids))
-        # logging.debug("----------------------------------------------------------------")
-        # logging.debug("Intersection batch {}".format(batch_ids))
-        # logging.debug("----------------------------------------------------------------")
-
-        # batchid_batch_mapping.clear()
-        
-        # return ans
-
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - 4
 
@@ -510,6 +480,8 @@ def receiveBatchesFromPeerOrderer():
     
     return make_response("Done calculating intersection batch", 200)
 
+###### figure whats wrong with orderer1 not sending the intersection batch for 5 votes
+###### Write to csv with correct hashes
 ###### Encrypt CSV
 ###### Work on forwarding data to HBC
 ###### RSA auth

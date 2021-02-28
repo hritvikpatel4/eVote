@@ -18,7 +18,7 @@ higher_level_port = 80
 BC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
 curr_tail_ptr = 1
-prev_tail_ptr = 0
+prev_tail_ptr = 1
 csv_header_fields = []
 INIT_CSV_HEADER = False
 
@@ -76,19 +76,31 @@ def writeToCSV(dataToWrite):
 
     with open("bc.csv", "a") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
-        #do magic
-
-        for block in dataToWrite:
+        
+        for i in range(len(dataToWrite)):
             last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
-            batch = last_line.split(",")
-            prev_hash = generateHash(batch)
-
-            new_block = block
-            new_block["prevHash"] = prev_hash
-
-            writer.writerow(new_block)
-
+            prev_batch = last_line.split(",")
+            prev_hash = generateHash(prev_batch)
+            
+            dataToWrite[i]["prevHash"] = prev_hash
+            
+            writer.writerow(dataToWrite[i])
+            csvfile.flush()
+        
         csvfile.flush()
+
+        # for block in dataToWrite:
+        #     last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
+        #     batch = last_line.split(",")
+        #     prev_hash = generateHash(batch)
+
+        #     new_block = block
+        #     new_block["prevHash"] = prev_hash
+
+        #     writer.writerow(new_block)
+        #     csvfile.flush()
+
+        # csvfile.flush()
     
     ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
     curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
