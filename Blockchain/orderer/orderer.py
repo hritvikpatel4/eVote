@@ -189,7 +189,7 @@ def emptyReceiverQ():
     
     receiver_q.clear()
 
-def intersect_batches():
+def intersect():
     global diff_batch_q
 
     if len(batched_batchvotes) > 0:
@@ -230,7 +230,16 @@ def intersect_batches():
         return result
 
 def intersect_and_chooseRandOrd():
-    intersection_batch = intersect_batches()
+    intersection_batch = intersect()
+
+    if len(intersection_batch) == 0:
+        lb_ip_list = getLBIPs()
+
+        for ip in lb_ip_list:
+            res = requests.get("http://" + ip + ":" + str(lb_port) + "/api/lb/receiveAck")
+
+            if res.status_code != 200:
+                logging.error("Error sending ACK to LB with IP = {}".format(ip))
 
     # Find which random orderer will broadcast
     rand_ord_num = 0
@@ -256,7 +265,6 @@ def intersect_and_chooseRandOrd():
 
             if res.status_code != 200:
                 logging.error("Error broadcasting to bc{}".format(getBCNumber(ip)))
-                return make_response("Error broadcasting to bc{}".format(getBCNumber(ip)))
         
         logging.debug("Broadcast finished to lower level")
 
@@ -267,7 +275,6 @@ def intersect_and_chooseRandOrd():
 
             if res.status_code != 200:
                 logging.error("Error sending ACK to LB with IP = {}".format(ip))
-                return make_response("error sending ACK to LB with IP = {}".format(ip))
     
     return
 
@@ -504,7 +511,6 @@ def receiveBatchesFromPeerOrderer():
     
     return make_response("Done calculating intersection batch", 200)
 
-###### figure whats wrong with orderer1 not sending the intersection batch for 5 votes
 ###### Write to csv with correct hashes
 ###### Encrypt CSV
 ###### Work on forwarding data to HBC
