@@ -367,8 +367,12 @@ def send_batch_votes():
     
     # logging.debug("Sent batch to all peer orderers")
     emptyReceiverQ()
-    flushTimeoutQ()
-    flushDiffQ()
+    timeout_q_thread = threading.Thread(target=flushTimeoutQ)
+    timeout_q_thread.start()
+    diff_q_thread = threading.Thread(target=flushDiffQ)
+    diff_q_thread.start()
+    # flushTimeoutQ()
+    # flushDiffQ()
 
     PUT_IN_TIMEOUT_Q = False
 
@@ -526,8 +530,12 @@ def receiveBatchesFromPeerOrderer():
         batched_batchvotes.clear()
 
         emptyReceiverQ()
-        flushTimeoutQ()
-        flushDiffQ()
+        timeout_q_thread = threading.Thread(target=flushTimeoutQ)
+        timeout_q_thread.start()
+        diff_q_thread = threading.Thread(target=flushDiffQ)
+        diff_q_thread.start()
+        # flushTimeoutQ()
+        # flushDiffQ()
 
         PUT_IN_TIMEOUT_Q = False
     
