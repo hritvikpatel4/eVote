@@ -145,6 +145,18 @@ def getNumberOfOrderers():
     client.close()
     return counter
 
+def getNumberOfBC():
+    counter = 0
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    for container in container_list:
+        if re.search("^bc[1-9][0-9]*", container.name):
+            counter += 1
+    
+    client.close()
+    return counter
+
 def flushTimeoutQ():
     """
     Forwards all the batches to PEER ORDERERS present in the during_timeout_q.
@@ -276,6 +288,7 @@ def intersect_and_chooseRandOrd():
     for vote in intersection_batch:
         rand_ord_num += (vote["batch_id"])
     
+    number_of_orderers = getNumberOfOrderers()
     rand_ord_num = (rand_ord_num % number_of_orderers) + 1
 
     logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
@@ -377,7 +390,7 @@ def send_batch_votes():
     PUT_IN_TIMEOUT_Q = False
 
 def getOrdererNumber(ip):
-    return int(ip.split(".")[-1]) - (getNumberOfOrderers() + 1)
+    return int(ip.split(".")[-1]) - (getNumberOfOrderers() + getNumberOfBC() + 1)
 
 def getBCNumber(ip):
     return int(ip.split(".")[-1]) - 1
