@@ -98,7 +98,9 @@ def receiveAck():
     HOLD_VOTES_TEMPORARY = False
 
     logging.debug("emptying temp queue")
-    emptyTempQueue()
+    empty_temp_queue_thread = threading.Thread(target=emptyTempQueue)
+    empty_temp_queue_thread.start()
+    # emptyTempQueue()
     logging.debug("emptied temp queue")
     
     timer.start()
