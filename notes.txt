@@ -1,0 +1,26 @@
+1. After review 2, we tested wtih 200 votes, we got a result of 197 votes being written to the blockchain
+    batch id which were not written were -> 116, 117, 154
+
+2. To solve the above issue, here is a solution
+    Use Redis as a shared in-memory store/dictionary.
+    On the bc side, every batch which comes in, take its batch id and add it to redis.
+    When the intersection is calculated by the orderer, and a random orderer sends it back to the bc node,
+        the bc node iterates over the intersection batch and deletes all the batch ids in the intersection batch from the redis dictionary.
+    In regular intervals, say 10 minutes, a process interacts with redis to send those unregistered votes back to the database instance.
+    The database instance stores a mapping of the batch id and the voter id.
+    An update is called on the database instance where the record with the voterid and batchid is deleted and the isAlreadyVoted flag is set to False.
+        Also the voter will receive a notification that his vote was not registered and he/she will be asked to vote again.
+
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] - initially written to redis by bc node
+
+            [1, 2, 3, 7, 8, 9, 10] - intersection batch from orderer to bc and to the peers
+
+            the intersection batch is broadcasted to the peer orderers where they remove the batches
+                from the unique_votes dictionary which are not present in the intersection batch
+
+            1, 2, 3, 7, 8, 9, 10 - written to csv on the bc nodes
+
+            at timeout which runs on the bc nodes, redis is scanned by a random bc node for the batches and they are put back in the loop of being considered again as a normal batch would
+
+            4, 5, 6 - to be sent by the bc to the orderer
+
