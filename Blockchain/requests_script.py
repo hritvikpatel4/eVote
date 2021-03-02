@@ -1,6 +1,6 @@
 import requests, time
 
-for i in range(1, 6):
+for i in range(61, 71):
     data = {
         "batch_id": i,
         "c1": 1,

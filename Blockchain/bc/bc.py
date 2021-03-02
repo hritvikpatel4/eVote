@@ -7,7 +7,7 @@ import csv, docker, hashlib, logging, os, random, re, requests, subprocess
 
 process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
-node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode()
+node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
 BC = Flask(__name__)
 host = "0.0.0.0"
