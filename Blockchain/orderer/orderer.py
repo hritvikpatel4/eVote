@@ -68,7 +68,7 @@ def transformRecQ(data):
         current_batchid = data[i]["batch_id"]
 
         temp_tuple = (current_level, current_clusterid, current_batchid)
-        tmep.append(temp_tuple)
+        temp.append(temp_tuple)
         # temp.append(data[i]["batch_id"])
     
     return temp
