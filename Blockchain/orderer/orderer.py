@@ -36,38 +36,49 @@ unique_votes = {}               # This is a structure which is used for detectin
 # [[{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}], [{1:1}, {2:1}, {3:1}]]
 # [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
 
-# Convert list(list(dict)) to list(list(int))
-def extractBatchIDs(data, dictmapping):
+# Convert list(list(dict)) to list(list(tuple(int)))
+def extractAllIDs(data, dictmapping):
     l1 = []
 
     for i in range(len(data)):
         l2 = []
 
         for j in range(len(data[i])):
-            current_id = data[i][j]["batch_id"]
-            dictmapping[str(current_id)] = data[i][j]
+            current_level = data[i][j]["level_number"]
+            current_clusterid = data[i][j]["cluster_id"]
+            current_batchid = data[i][j]["batch_id"]
             
-            l2.append(data[i][j]["batch_id"])
+            temp_tuple = (current_level, current_clusterid, current_batchid)
+            dictmapping[temp_tuple] = data[i][j]
+            # dictmapping[str(current_batchid)] = data[i][j]
+            
+            l2.append(temp_tuple)
         
         l1.append(l2)
     
     return l1, dictmapping
 
-# Convert list(dict) to list(int)
+# Convert list(dict) to list(tuple(int))
 def transformRecQ(data):
     temp = []
 
     for i in range(len(data)):
-        temp.append(data[i]["batch_id"])
+        current_level = data[i][j]["level_number"]
+        current_clusterid = data[i][j]["cluster_id"]
+        current_batchid = data[i][j]["batch_id"]
+
+        temp_tuple = (current_level, current_clusterid, current_batchid)
+        tmep.append(temp_tuple)
+        # temp.append(data[i]["batch_id"])
     
     return temp
 
-# Convert list(int) to list(dict) by using the dict mapping
-def buildBatchFromMapping(data, batchid_batch_mapping):
+# Convert list(tuple(int)) to list(dict) by using the dict mapping
+def buildBatchFromMapping(data, id_batch_mapping):
     temp = []
 
     for i in range(len(data)):
-        temp.append(batchid_batch_mapping[str(data[i])])
+        temp.append(id_batch_mapping[data[i]])
 
     return temp
 
@@ -212,10 +223,10 @@ def intersect():
         
         logging.debug("Starting intersection")
 
-        batchid_batch_mapping = {}
+        id_batch_mapping = {}
         
-        # extracted_batched_batchvotes = list(list(int)) where int is the batch_id
-        extracted_batched_batchvotes, batchid_batch_mapping = extractBatchIDs(batched_batchvotes, batchid_batch_mapping)
+        # extracted_batched_batchvotes = list(list(tuple(int))) where int is the type of any of these values level_number, cluster_id, batch_id
+        extracted_batched_batchvotes, id_batch_mapping = extractAllIDs(batched_batchvotes, id_batch_mapping)
         
         i = 0
         count = 0
@@ -243,10 +254,10 @@ def intersect():
             transformed_rev_q = set(transformRecQ(receiver_q))
             
             diff_batch = transformed_rev_q.difference(ans)
-            diff_batch_q = buildBatchFromMapping(list(diff_batch), batchid_batch_mapping)
+            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
 
-            result = buildBatchFromMapping(list(ans), batchid_batch_mapping)
-            result = sorted(result, key=lambda x: x["batch_id"])
+            result = buildBatchFromMapping(list(ans), id_batch_mapping)
+            result = sorted(result, key=lambda x: (x["level_number"], x["cluster_id"], x["batch_id"]))
 
             batch_ids = getOnlyBatchIDs(result)
 
@@ -255,7 +266,7 @@ def intersect():
             logging.debug("Intersection batch {}".format(batch_ids))
             logging.debug("----------------------------------------------------------------")
 
-            batchid_batch_mapping.clear()
+            id_batch_mapping.clear()
 
             return result
         
@@ -263,7 +274,7 @@ def intersect():
             transformed_rev_q = set(transformRecQ(receiver_q))
             
             diff_batch = transformed_rev_q.difference(ans)
-            diff_batch_q = buildBatchFromMapping(list(diff_batch), batchid_batch_mapping)
+            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
 
             return list()
     
@@ -407,7 +418,9 @@ def receiveFromBCNode():
             "candidate_id_1": num_votes,
             "candidate_id_2": num_votes,
             "candidate_id_3": num_votes,
-            "batch_id": unique_int
+            "batch_id": unique_int,
+            "cluster_id": cluster_id_int,
+            "level_number": level_number_int,
             ...
         }
     """
@@ -422,7 +435,9 @@ def receiveFromBCNode():
     else:
         params = request.get_json()
 
-        if str(params["batch_id"]) not in unique_votes:
+        uniq_data_tuple = (int(params["level_number"]), int(params["cluster_id"]), int(params["batch_id"]))
+
+        if uniq_data_tuple not in unique_votes:
             print("batchid = {} from bc{}".format(params["batch_id"], getBCNumber(request.remote_addr)))
         
             logging.debug("----------------------------------------------------------------")
@@ -430,7 +445,8 @@ def receiveFromBCNode():
             logging.debug("----------------------------------------------------------------")
 
             receiver_q.append(params)
-            unique_votes[str(params["batch_id"])] = True
+            # unique_votes[str(params["batch_id"])] = True
+            unique_votes[uniq_data_tuple] = True
 
             orderer_ip_list = getOrdererIPs()
 
@@ -462,7 +478,9 @@ def receiveVoteFromOrderer():
             "candidate_id_1": num_votes,
             "candidate_id_2": num_votes,
             "candidate_id_3": num_votes,
-            "batch_id": unique_int
+            "batch_id": unique_int,
+            "cluster_id": cluster_id_int,
+            "level_number": level_number_int,
             ...
         }
     """
@@ -473,8 +491,10 @@ def receiveVoteFromOrderer():
     # logging.debug("Received vote data from peer orderer {}".format(params))
     # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
 
+    uniq_data_tuple = (int(params["level_number"]), int(params["cluster_id"]), int(params["batch_id"]))
+
     # Detect duplicate votes
-    if str(params["batch_id"]) not in unique_votes:
+    if uniq_data_tuple not in unique_votes:
         print("batchid = {} from orderer{}".format(params["batch_id"], getOrdererNumber(request.remote_addr)))
         
         logging.debug("----------------------------------------------------------------")
@@ -482,7 +502,7 @@ def receiveVoteFromOrderer():
         logging.debug("----------------------------------------------------------------")
         
         receiver_q.append(params)
-        unique_votes[str(params["batch_id"])] = True
+        unique_votes[uniq_data_tuple] = True
 
         return make_response("Added to orderer receiver_q", 200)
     
@@ -560,7 +580,6 @@ def receiveBatchesFromPeerOrderer():
     
     return make_response("Done calculating intersection batch", 200)
 
-###### Write to csv with correct hashes
 ###### Encrypt CSV
 ###### Work on forwarding data to HBC
 ###### RSA auth

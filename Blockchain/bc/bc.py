@@ -108,7 +108,9 @@ def receiveVoteFromLowLevel():
             "candidate_id_1": num_votes,
             "candidate_id_2": num_votes,
             "candidate_id_3": num_votes,
-            "batch_id": unique_int
+            "batch_id": unique_int,
+            "cluster_id": cluster_id_int,
+            "level_number": level_number_int,
             ...
         }
     """

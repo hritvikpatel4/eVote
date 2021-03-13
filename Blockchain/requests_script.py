@@ -3,6 +3,7 @@ import requests, time
 for i in range(1, 101):
     data = {
         "batch_id": i,
+        "cluster_id": 0,
         "c1": 1,
         "c2": 0,
         "c3": 0,
