@@ -63,9 +63,9 @@ def transformRecQ(data):
     temp = []
 
     for i in range(len(data)):
-        current_level = data[i][j]["level_number"]
-        current_clusterid = data[i][j]["cluster_id"]
-        current_batchid = data[i][j]["batch_id"]
+        current_level = data[i]["level_number"]
+        current_clusterid = data[i]["cluster_id"]
+        current_batchid = data[i]["batch_id"]
 
         temp_tuple = (current_level, current_clusterid, current_batchid)
         tmep.append(temp_tuple)
