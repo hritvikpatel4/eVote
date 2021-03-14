@@ -41,7 +41,7 @@ do
         --network blockchain \
         -e CURRENT_LEVEL=1 \
         -e HIGHEST_LEVEL=2 \
-        -e CUSTOME_PORT=80 \
+        -e CUSTOM_PORT=80 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
         ntwine/evote_bc:latest
@@ -57,7 +57,7 @@ do
         --network blockchain \
         -e CURRENT_LEVEL=1 \
         -e HIGHEST_LEVEL=2 \
-        -e CUSTOME_PORT=80 \
+        -e CUSTOM_PORT=80 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
         ntwine/evote_orderer:latest
@@ -71,7 +71,7 @@ sudo docker run -d \
     --network blockchain \
     -e CURRENT_LEVEL=1 \
     -e HIGHEST_LEVEL=2 \
-    -e CUSTOME_PORT=80 \
+    -e CUSTOM_PORT=80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -p 80:80 \
@@ -84,7 +84,7 @@ sudo docker run -d \
     --hostname db1 \
     -e CURRENT_LEVEL=1 \
     -e HIGHEST_LEVEL=2 \
-    -e CUSTOME_PORT=80 \
+    -e CUSTOM_PORT=80 \
     -e DB_IP=""
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \

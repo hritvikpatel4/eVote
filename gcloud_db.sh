@@ -34,7 +34,7 @@ sudo docker run -d \
     --hostname db1 \
     -e CURRENT_LEVEL=0 \
     -e HIGHEST_LEVEL=2 \
-    -e CUSTOME_PORT=80 \
+    -e CUSTOM_PORT=80 \
     -e DB_IP=""
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
