@@ -18,12 +18,16 @@ pip3 install docker requests
 rm -rf /home/blockchain
 mkdir -p /home/blockchain/logs
 
+echo "Cleaning old docker stuff"
+
 docker stop $(sudo docker ps -a -q)
 docker rm $(sudo docker ps -a -q)
 docker rmi $(sudo docker images -a -q)
 echo y | docker volume prune
 echo y | docker system prune -a
 echo y | docker system prune
+
+echo "Spawning webserver"
 
 docker run -d \
     --name web1 \
