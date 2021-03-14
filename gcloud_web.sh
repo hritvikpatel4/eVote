@@ -3,7 +3,7 @@
 #! /bin/bash
 
 # Installs all the required software on the instance
-echo "Installing software on instance\n"
+echo "Installing software on instance"
 
 apt update && apt upgrade -y
 apt install -y python3 python3-pip
