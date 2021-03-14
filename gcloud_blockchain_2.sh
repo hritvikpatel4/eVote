@@ -33,7 +33,7 @@ sudo docker network create --driver bridge blockchain || true
 
 echo "Spawning bc nodes"
 
-for bc_num in 1, 2, 3, 4
+for bc_num in 1 2 3 4
 do
     sudo docker run -d \
         --name "bc$bc_num" \
@@ -49,7 +49,7 @@ done
 
 echo "Spawning orderer nodes"
 
-for ord_num in 1, 2, 3
+for ord_num in 1 2 3
 do
     sudo docker run -d \
         --name "orderer$ord_num" \
