@@ -15,6 +15,6 @@ WORKDIR /usr/src/app
 RUN git clone https://github.com/hritvikpatel4/eVote.git
 RUN cd eVote && git checkout dev && cd Blockchain/load_balancer && pip install -r requirements.txt
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["sh", "-c", "python load_balancer.py"]

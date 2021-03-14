@@ -25,7 +25,7 @@ echo y | docker volume prune
 echo y | docker system prune -a
 echo y | docker system prune
 
-docker run \
+docker run -d \
     --name db1 \
     --hostname db1 \
     -e CURRENT_LEVEL=0 \

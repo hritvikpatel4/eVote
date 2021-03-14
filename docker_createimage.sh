@@ -11,7 +11,7 @@ sudo docker build -t ntwine/evote_bc:latest ./Blockchain/bc
 echo "creating orderer image"
 sudo docker build -t ntwine/evote_orderer:latest ./Blockchain/orderer
 echo "creating load_balancer image"
-sudo docker build -t ntwine/evote_lb:latest ./load_balancer/load_balancer
+sudo docker build -t ntwine/evote_lb:latest ./Blockchain/load_balancer
 
 echo "pushing webserver image to docker registry"
 sudo docker push ntwine/evote_web:latest

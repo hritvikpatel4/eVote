@@ -29,7 +29,7 @@ docker network create --driver bridge blockchain || true
 
 for bc_num in 1, 2, 3, 4
 do
-    docker run \
+    docker run -d \
         --name bc$bc_num \
         --hostname bc$bc_num \
         --network blockchain \
@@ -42,7 +42,7 @@ do
 
 for ord_num in 1, 2, 3
 do
-    docker run \
+    docker run -d \
         --name orderer$ord_num \
         --hostname orderer$ord_num \
         --network blockchain \
@@ -53,7 +53,7 @@ do
         -v /home/blockchain/logs:/usr/src/app/logs \
         ntwine/evote_orderer:latest
 
-docker run \
+docker run -d \
     --name load_balancer1 \
     --hostname load_balancer1 \
     --network blockchain \
@@ -65,7 +65,7 @@ docker run \
     -p 80:80 \
     ntwine/evote_lb:latest
 
-docker run \
+docker run -d \
     --name db1 \
     --hostname db1 \
     -e CURRENT_LEVEL=2 \
