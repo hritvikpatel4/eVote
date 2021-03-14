@@ -20,16 +20,16 @@ mkdir -p /home/blockchain/logs
 
 echo "Cleaning old docker stuff"
 
-docker stop $(sudo docker ps -a -q)
-docker rm $(sudo docker ps -a -q)
-docker rmi $(sudo docker images -a -q)
-echo y | docker volume prune
-echo y | docker system prune -a
-echo y | docker system prune
+sudo docker stop $(sudo docker ps -a -q)
+sudo docker rm $(sudo docker ps -a -q)
+sudo docker rmi $(sudo docker images -a -q)
+echo y | sudo docker volume prune
+echo y | sudo docker system prune -a
+echo y | sudo docker system prune
 
 echo "Spawning databaseserver"
 
-docker run -d \
+sudo docker run -d \
     --name db1 \
     --hostname db1 \
     -e CURRENT_LEVEL=0 \

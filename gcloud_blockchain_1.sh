@@ -20,22 +20,22 @@ mkdir -p /home/blockchain/logs
 
 echo "Cleaning old docker stuff"
 
-docker stop $(sudo docker ps -a -q)
-docker rm $(sudo docker ps -a -q)
-docker rmi $(sudo docker images -a -q)
-echo y | docker volume prune
-echo y | docker system prune -a
-echo y | docker system prune
+sudo docker stop $(sudo docker ps -a -q)
+sudo docker rm $(sudo docker ps -a -q)
+sudo docker rmi $(sudo docker images -a -q)
+echo y | sudo docker volume prune
+echo y | sudo docker system prune -a
+echo y | sudo docker system prune
 
 echo "Creating docker network"
 
-docker network create --driver bridge blockchain || true
+sudo docker network create --driver bridge blockchain || true
 
 echo "Spawning bc nodes"
 
 for bc_num in 1, 2, 3, 4
 do
-    docker run -d \
+    sudo docker run -d \
         --name bc$bc_num \
         --hostname bc$bc_num \
         --network blockchain \
@@ -50,7 +50,7 @@ echo "Spawning orderer nodes"
 
 for ord_num in 1, 2, 3
 do
-    docker run -d \
+    sudo docker run -d \
         --name orderer$ord_num \
         --hostname orderer$ord_num \
         --network blockchain \
@@ -63,7 +63,7 @@ do
 
 echo "Spawning load_balancer"
 
-docker run -d \
+sudo docker run -d \
     --name load_balancer1 \
     --hostname load_balancer1 \
     --network blockchain \
@@ -77,7 +77,7 @@ docker run -d \
 
 echo "Spawning databaseserver"
 
-docker run -d \
+sudo docker run -d \
     --name db1 \
     --hostname db1 \
     -e CURRENT_LEVEL=1 \
