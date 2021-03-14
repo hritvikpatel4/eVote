@@ -36,8 +36,8 @@ echo "Spawning bc nodes"
 for bc_num in 1, 2, 3, 4
 do
     sudo docker run -d \
-        --name bc$bc_num \
-        --hostname bc$bc_num \
+        --name "bc$bc_num" \
+        --hostname "bc$bc_num" \
         --network blockchain \
         -e CURRENT_LEVEL=2 \
         -e HIGHEST_LEVEL=2 \
@@ -52,8 +52,8 @@ echo "Spawning orderer nodes"
 for ord_num in 1, 2, 3
 do
     sudo docker run -d \
-        --name orderer$ord_num \
-        --hostname orderer$ord_num \
+        --name "orderer$ord_num" \
+        --hostname "orderer$ord_num" \
         --network blockchain \
         -e CURRENT_LEVEL=2 \
         -e HIGHEST_LEVEL=2 \
