@@ -45,6 +45,7 @@ do
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
         ntwine/evote_bc:latest
+done
 
 echo "Spawning orderer nodes"
 
@@ -60,6 +61,7 @@ do
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
         ntwine/evote_orderer:latest
+done
 
 echo "Spawning load_balancer"
 
