@@ -1,3 +1,63 @@
+Frontend enchancements - Tuesday (16th March)
+Low-level Report formatting - Saturday (20th March)
+
+Create a new table in the counter database which is basically a counter which returns a value when requested at its flask endpoint - Sunday (21st March)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+——————————————————————————————————————
+
+Fernet package csv encryption
+RSA auth
+
+——————————————————————————————————————
+
+
+
 1. After review 2, we tested wtih 200 votes, we got a result of 197 votes being written to the blockchain
     batch id which were not written were -> 116, 117, 154
 
@@ -34,6 +94,8 @@
        0                0            db         1           0          0
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                DONE
 
 New sorting logic to be implemented in the intersect_votes() when we are just about to broadcast the batch
 

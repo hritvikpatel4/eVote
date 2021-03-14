@@ -17,7 +17,7 @@ port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
 orderer_port = 80
 bc_port = 80
-lb_port = 8080
+lb_port = 80
 ORDERER_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 PUT_IN_TIMEOUT_Q = False
 
@@ -235,18 +235,20 @@ def intersect():
             i += 1
         
         print("i {}".format(i))
-        ans = set(extracted_batched_batchvotes[i])
+        
+        if i < len(extracted_batched_batchvotes):
+            ans = set(extracted_batched_batchvotes[i])
 
-        while i < len(extracted_batched_batchvotes):
-            if len(extracted_batched_batchvotes[i]) == 0:
-                print("skipped batch i={} because it was empty".format(i))
+            while i < len(extracted_batched_batchvotes):
+                if len(extracted_batched_batchvotes[i]) == 0:
+                    print("skipped batch i={} because it was empty".format(i))
 
-            else:
-                print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
-                ans = ans.intersection(set(extracted_batched_batchvotes[i]))
-                count += 1
-            
-            i += 1
+                else:
+                    print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
+                    ans = ans.intersection(set(extracted_batched_batchvotes[i]))
+                    count += 1
+                
+                i += 1
         
         print("count for quorum {}".format(count))
         

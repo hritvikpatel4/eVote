@@ -2,15 +2,17 @@
 
 from flask import render_template, Flask, jsonify, make_response, request
 from sqlite3 import connect
-import requests
+import os, requests
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 dbserver = Flask(__name__)
-port = 5000
+port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
-db_ip = "http://127.0.0.1:5000"
+counter_db = "counter.db"
+db_ip = os.environ["DB_IP"]
+db_ip = "http://127.0.0.1:80"
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 

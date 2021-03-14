@@ -10,7 +10,7 @@ def spawnContainer(type_of_container, level_number, highest_level_of_deployment,
     container_name = type_of_container + str(container_number)
     
     if type_of_container == "load_balancer":
-        container = client.containers.run(image=image_to_run, detach=True, network="blockchain", name=container_name, hostname=container_name, ports={'8080/tcp': 80}, environment=["CUSTOM_PORT=8080", "HIGHEST_LEVEL={}".format(highest_level_of_deployment)], volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'}, '/home/blockchain/logs/': {'bind': '/usr/src/app/logs', 'mode': 'rw'}})
+        container = client.containers.run(image=image_to_run, detach=True, network="blockchain", name=container_name, hostname=container_name, ports={'80/tcp': 80}, environment=["CUSTOM_PORT=80", "HIGHEST_LEVEL={}".format(highest_level_of_deployment)], volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'}, '/home/blockchain/logs/': {'bind': '/usr/src/app/logs', 'mode': 'rw'}})
 
     else:
         container = client.containers.run(image=image_to_run, detach=True, network="blockchain", name=container_name, hostname=container_name, environment=["CUSTOM_PORT=80", "CURRENT_LEVEL={}".format(level_number), "HIGHEST_LEVEL={}".format(highest_level_of_deployment)], volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'}, '/home/blockchain/logs/': {'bind': '/usr/src/app/logs', 'mode': 'rw'}})

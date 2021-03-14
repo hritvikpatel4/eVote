@@ -1,9 +1,11 @@
 import requests, time
+import random
 
 for i in range(1, 101):
     data = {
+        "level_number": 0,
+        "cluster_id": random.randint(1, 2),
         "batch_id": i,
-        "cluster_id": 0,
         "c1": 1,
         "c2": 0,
         "c3": 0,

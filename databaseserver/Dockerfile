@@ -11,9 +11,9 @@ RUN apt update \
 WORKDIR /usr/src/app
 
 RUN git clone https://github.com/hritvikpatel4/eVote.git
-RUN cd eVote && git checkout dev && cd Blockchain
-RUN mkdir -p /usr/src/app/logs && pip install -r bc/requirements.txt
+RUN cd eVote && git checkout dev
+RUN mkdir -p /usr/src/app/logs && pip install -r databaseserver/requirements.txt
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python bc/bc.py"]
+CMD ["sh", "-c", "python databaseserver/db_handler.py"]

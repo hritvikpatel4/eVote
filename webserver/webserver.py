@@ -7,9 +7,10 @@ import os, random, requests, string, time
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 webserver = Flask(__name__)
-port = 8000
+port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
-db_ip = "http://127.0.0.1:5000"
+db_ip = os.environ["DB_IP"]
+# db_ip = "http://127.0.0.1:80"
 UPLOAD_FOLDER = "./upload"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
