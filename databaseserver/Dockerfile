@@ -17,4 +17,4 @@ RUN cd eVote && git checkout dev && cd databaseserver && pip install -r requirem
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python db_handler.py"]
+CMD ["sh", "-c", "python eVote/databaseserver/db_handler.py"]

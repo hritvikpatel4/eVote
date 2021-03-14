@@ -17,4 +17,4 @@ RUN cd eVote && git checkout dev && cd Blockchain/load_balancer && pip install -
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python load_balancer.py"]
+CMD ["sh", "-c", "python eVote/Blockchain/load_balancer/load_balancer.py"]

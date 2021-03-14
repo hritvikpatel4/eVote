@@ -17,4 +17,4 @@ RUN cd eVote && git checkout dev && cd Blockchain/orderer && pip install -r requ
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python orderer.py"]
+CMD ["sh", "-c", "python eVote/Blockchain/orderer/orderer.py"]

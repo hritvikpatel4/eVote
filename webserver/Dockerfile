@@ -17,4 +17,4 @@ RUN cd eVote && git checkout dev && cd webserver && pip install -r requirements.
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python webserver.py"]
+CMD ["sh", "-c", "python eVote/webserver/webserver.py"]

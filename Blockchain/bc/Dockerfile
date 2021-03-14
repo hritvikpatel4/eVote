@@ -17,4 +17,4 @@ RUN cd eVote && git checkout dev && cd Blockchain/bc && pip install -r requireme
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python bc.py"]
+CMD ["sh", "-c", "python eVote/Blockchain/bc/bc.py"]
