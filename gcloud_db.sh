@@ -1,4 +1,4 @@
-# This script is used to setup the db instance as a startup script
+# This script is used to setup the shared db instance as a startup script
 
 #! /bin/bash
 
@@ -35,8 +35,9 @@ sudo docker run -d \
     -e CURRENT_LEVEL=0 \
     -e HIGHEST_LEVEL=2 \
     -e CUSTOM_PORT=80 \
-    -e DB_IP="" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -p 80:80 \
     ntwine/evote_db:latest
+
+echo "Done!"

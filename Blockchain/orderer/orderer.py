@@ -403,7 +403,7 @@ def send_batch_votes():
     PUT_IN_TIMEOUT_Q = False
 
 def getOrdererNumber(ip):
-    return int(ip.split(".")[-1]) - (getNumberOfOrderers() + getNumberOfBC() + 1)
+    return int(ip.split(".")[-1]) - getNumberOfBC() - 1
 
 def getBCNumber(ip):
     return int(ip.split(".")[-1]) - 1
@@ -581,10 +581,6 @@ def receiveBatchesFromPeerOrderer():
         logging.debug("----------------------------------------------------------------")
     
     return make_response("Done calculating intersection batch", 200)
-
-###### Encrypt CSV
-###### Work on forwarding data to HBC
-###### RSA auth
 
 # ---------------------------------------- MAIN ----------------------------------------
 

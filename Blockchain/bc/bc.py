@@ -16,10 +16,14 @@ orderer_port = 80
 bc_port = 80
 higher_level_port = 80
 BC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
-LEVEL_NUMBER = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
+CURRENT_LEVEL = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
+CLUSTER_ID = os.environ["CLUSTER_ID"]
+HIGHEST_LEVEL = os.environ["HIGHEST_LEVEL"]
+HIGHER_LEVEL_IP = os.environ["HIGHER_LEVEL_IP"] if CURRENT_LEVEL < HIGHEST_LEVEL else ""
 curr_tail_ptr = 1
 prev_tail_ptr = 1
 csv_header_fields = []
+bc_number = 0
 INIT_CSV_HEADER = False
 
 # when sending to higher BC node, send values in the range [prev_tail_ptr + 1, curr_tail_ptr + 1)
@@ -27,6 +31,25 @@ INIT_CSV_HEADER = False
 logging.basicConfig(filename=BC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
+
+def getDBIPs():
+    """
+    return -> list of ip addr
+    """
+
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    ip_list = []
+    
+    for container in container_list:
+        if re.search("^db[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            ip_list.append(out.output.decode().split("\n")[0])
+    
+    client.close()
+    
+    return ip_list
 
 def getOrdererIPs():
     """
@@ -46,6 +69,18 @@ def getOrdererIPs():
     client.close()
     
     return ip_list
+
+def getNumberOfBC():
+    counter = 0
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    for container in container_list:
+        if re.search("^bc[1-9][0-9]*", container.name):
+            counter += 1
+    
+    client.close()
+    return counter
 
 def initCsvHeader(csv_header):
     global csv_header_fields
@@ -92,6 +127,37 @@ def writeToCSV(dataToWrite):
     ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
     curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
     ps.wait()
+
+# batch -> list of dict
+def passToHigherLevel(batch):
+    rand_bc_num = 0
+    
+    for i in range(len(batch)):
+        rand_bc_num += batch[i]["batch_id"]
+    
+    rand_bc_num = (rand_bc_num % getNumberOfBC()) + 1
+    
+    if rand_bc_num == int(bc_number) and (CURRENT_LEVEL < HIGHEST_LEVEL):
+        ans = batch[0]
+
+        for i in range(1, len(batch)):
+            for key in batch[i].keys():
+                if key not in ["batch_id", "cluster_id", "level_number"]:
+                    ans[key] += batch[i][key]
+    
+        ans["level_number"] = CURRENT_LEVEL
+        ans["cluster_id"] = CLUSTER_ID
+        db_ip = getDBIPs()[0]
+        batch_id_res = requests.get("http://" + db_ip + ":" + str(port) + "/api/db/generateBatchID")
+        batch_id = batch_id_res.text.strip()
+        ans["batch_id"] = int(batch_id)
+
+        res = requests.post("http://" + HIGHER_LEVEL_IP + "/castVote", json=ans)
+
+        if res.status_code != 200:
+            logging.error("Passing to higher level FAILED!")
+    
+    return
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -152,6 +218,8 @@ def writeToBlockchain():
     
     print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
+    passToHigherLevel(params)
+
     writeToCSV(params)
 
     return make_response("Successfully written to blockchain", 200)
@@ -160,5 +228,9 @@ def writeToBlockchain():
 
 if __name__ == '__main__':
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
+    
+    process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
+    bc_name = process_output.stdout.decode()
+    bc_number = bc_name[len("bc"):]
 
     BC.run(debug=True, port=port, host=host, use_reloader=False)

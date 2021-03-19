@@ -11,8 +11,7 @@ port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
 counter_db = "counter.db"
-db_ip = os.environ["DB_IP"]
-db_ip = "http://127.0.0.1:80"
+db_ip = "0.0.0.0"
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -75,6 +74,23 @@ def connectDB(db):
 
 # ---------------------------------------- DATABASE ENDPOINTS ----------------------------------------
 
+@dbserver.route("/api/db/generateBatchID", methods=["GET"])
+# API which returns the batch id to the requester
+def generateBatchID():
+    conn = connectDB(counter_db)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM counter;")
+    batch_id = cursor.fetchone()[0]
+    conn.commit()
+
+    cursor.execute("UPDATE counter SET batch_id = batch_id + 1;")
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+    return make_response(batch_id, 200)
+
 @dbserver.route("/api/db/read", methods=["POST"])
 # API to read from the database
 def readDB():
@@ -130,8 +146,8 @@ def clearDB():
     }
 
     try:
-        requests.post(db_ip + "/api/db/modify", json = data1)
-        requests.post(db_ip + "/api/db/modify", json = data2)
+        requests.post("http://" + db_ip + ":" + str(port) + "/api/db/modify", json = data1)
+        requests.post("http://" + db_ip + ":" + str(port) + "/api/db/modify", json = data2)
         
         return make_response("", 200)
     

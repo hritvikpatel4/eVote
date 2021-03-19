@@ -1,4 +1,4 @@
-# This script is used to setup the blockchain stack and is run as a startup script on the blockchain clusters
+# This script is used to setup the blockchain stack and is run as a startup script on the blockchain clusters {level 2}
 
 #! /bin/bash
 
@@ -41,6 +41,7 @@ do
         --network blockchain \
         -e CURRENT_LEVEL=2 \
         -e HIGHEST_LEVEL=2 \
+        -e CLUSTER_ID=1 \
         -e CUSTOM_PORT=80 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
@@ -57,6 +58,7 @@ do
         --network blockchain \
         -e CURRENT_LEVEL=2 \
         -e HIGHEST_LEVEL=2 \
+        -e CLUSTER_ID=1 \
         -e CUSTOM_PORT=80 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /home/blockchain/logs:/usr/src/app/logs \
@@ -71,22 +73,24 @@ sudo docker run -d \
     --network blockchain \
     -e CURRENT_LEVEL=2 \
     -e HIGHEST_LEVEL=2 \
+    -e CLUSTER_ID=1 \
     -e CUSTOM_PORT=80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -p 80:80 \
     ntwine/evote_lb:latest
 
-echo "Spawning databaseserver"
+# echo "Spawning databaseserver"
 
-sudo docker run -d \
-    --name db1 \
-    --hostname db1 \
-    -e CURRENT_LEVEL=2 \
-    -e HIGHEST_LEVEL=2 \
-    -e CUSTOM_PORT=80 \
-    -e DB_IP="" \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /home/blockchain/logs:/usr/src/app/logs \
-    -p 80:80 \
-    ntwine/evote_db:latest
+# sudo docker run -d \
+#     --name db1 \
+#     --hostname db1 \
+#     -e CURRENT_LEVEL=2 \
+#     -e HIGHEST_LEVEL=2 \
+#     -e CLUSTER_ID=1 \
+#     -e CUSTOM_PORT=80 \
+#     -v /var/run/docker.sock:/var/run/docker.sock \
+#     -v /home/blockchain/logs:/usr/src/app/logs \
+#     ntwine/evote_db:latest
+
+echo "Done!"

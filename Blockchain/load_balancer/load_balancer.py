@@ -91,6 +91,11 @@ def callOrdererBatching():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
+@webserver.route("/health")
+# API to handle health requests from google
+def health():
+    return make_response("Alive and running!", 200)
+
 @app.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
@@ -106,17 +111,6 @@ def receiveAck():
     timer.start()
 
     return make_response("", 200)
-
-@app.route("/toy", methods=["POST"])
-def toy():
-    params = request.get_json()
-    
-    bc_ip_list = getBCIPs()
-    rand_lbc_ip = random.choice(bc_ip_list)
-
-    requests.post("http://" + rand_lbc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
-
-    return make_response("Success!", 200)
 
 @app.route('/castVote', methods=['POST'])
 # forwards vote from webserver to lbc

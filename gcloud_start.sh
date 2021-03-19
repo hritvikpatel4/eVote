@@ -9,7 +9,7 @@ echo "Starting all instances"
 # gcloud compute instances start webserver-2 \
 #     --zone=us-central1-a
 
-# gcloud compute instances start dbserver-1 \
+# gcloud compute instances start dbserver \
 #     --zone=us-central1-a
 
 gcloud compute instances start lbc-cluster-1 \

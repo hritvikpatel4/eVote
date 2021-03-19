@@ -1,7 +1,6 @@
-Frontend enchancements - Tuesday (16th March)
+Frontend enchancements - Tuesday (16th March) (asked time till 18th March) (resulted in a no show with no response given to our messages)
 Low-level Report formatting - Saturday (20th March)
 
-Create a new table in the counter database which is basically a counter which returns a value when requested at its flask endpoint - Sunday (21st March)
 
 
 
@@ -127,3 +126,6 @@ And subset 2:
 Also writing to blockchain code has to be modified to take the cluster_id into account
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+CSV encryption
+RSA

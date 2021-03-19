@@ -1,0 +1,17 @@
+- 1. pass to higher level -> needs to be tested when we do large scale testing
+
+2. integrate frontend with backend -> 20th march (till AP reaches home)
+
+- 3. google load balancer setup -> 17th march (till AP reaches home)
+
+- 4. setup more instances for the big testing which is to be done on 21st march -> 17th march (till AP reaches home)
+
+- 5. batchid generation using sqlite3 -> finish by 20th march evening -> Saipriya to do only if she meets on 18th march, else we complete it on 18th (saipriya didnt show up so we completed it)
+
+6. final result calculation (only if we have time) -> 21st march
+
+7. large scale testing -> 19th & 20th march
+
+8. replication of the uploaded assets by the admin across all the other webservers -> 21st march
+
+- 9. check all environ vars and the deploy scripts before testing it out -> 19th march

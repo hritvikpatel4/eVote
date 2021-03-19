@@ -10,7 +10,9 @@ webserver = Flask(__name__)
 port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 db_ip = os.environ["DB_IP"]
-# db_ip = "http://127.0.0.1:80"
+CLUSTER_ID = os.environ["CLUSTER_ID"]
+CURRENT_LEVEL = os.environ["CURRENT_LEVEL"]
+HIGHEST_LEVEL = os.environ["HIGHEST_LEVEL"]
 UPLOAD_FOLDER = "./upload"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -28,6 +30,11 @@ details = {
 }
 
 # ---------------------------------------- WEB SERVER ENDPOINTS ----------------------------------------
+
+@webserver.route("/health")
+# API to handle health requests from google
+def health():
+    return make_response("Alive and running!", 200)
 
 @webserver.route("/upload/<path:filename>")
 # API to handle requests for the static files for the voting page
