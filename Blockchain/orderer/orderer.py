@@ -224,6 +224,7 @@ def intersect():
         logging.debug("Starting intersection")
 
         id_batch_mapping = {}
+        ans = set()
         
         # extracted_batched_batchvotes = list(list(tuple(int))) where int is the type of any of these values level_number, cluster_id, batch_id
         extracted_batched_batchvotes, id_batch_mapping = extractAllIDs(batched_batchvotes, id_batch_mapping)
