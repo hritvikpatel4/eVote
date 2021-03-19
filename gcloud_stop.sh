@@ -15,8 +15,8 @@ echo "Stopping all instances"
 gcloud compute instances stop lbc-cluster-1 \
     --zone=us-central1-a
 
-# gcloud compute instances stop lbc-cluster-2 \
-#     --zone=us-central1-a
+gcloud compute instances stop lbc-cluster-2 \
+    --zone=us-central1-a
 
-# gcloud compute instances stop hbc-cluster-1 \
-#     --zone=us-central1-a
+gcloud compute instances stop hbc-cluster-1 \
+    --zone=us-central1-a
