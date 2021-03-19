@@ -86,6 +86,7 @@ echo "Spawning databaseserver"
 sudo docker run -d \
     --name db1 \
     --hostname db1 \
+    --network blockchain \
     -e CURRENT_LEVEL=1 \
     -e HIGHEST_LEVEL=2 \
     -e CLUSTER_ID=1 \
