@@ -65,7 +65,7 @@ def emptyTempQueue():
     while not temp_q.empty():
         vote = temp_q.get()
 
-        res = requests.post("http://" + node_ip + ":8080" + "/castVote", json=vote)
+        res = requests.post("http://" + node_ip + ":80" + "/castVote", json=vote)
         
         if res.status_code == 200:
             continue
