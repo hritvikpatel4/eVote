@@ -10,7 +10,7 @@
 
 6. final result calculation (only if we have time) -> 21st march
 
-7. large scale testing -> 19th & 20th march
+- 7. large scale testing -> 19th & 20th march
 
 8. replication of the uploaded assets by the admin across all the other webservers -> 21st march
 
