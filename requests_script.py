@@ -1,7 +1,7 @@
 import requests, time
 import random
 
-for i in range(1, 101):
+for i in range(1, 21):
     x = random.randint(1, 5)
     
     data = {

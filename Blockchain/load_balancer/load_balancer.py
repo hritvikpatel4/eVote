@@ -91,7 +91,7 @@ def callOrdererBatching():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
-@webserver.route("/health")
+@app.route("/health")
 # API to handle health requests from google
 def health():
     return make_response("Alive and running!", 200)
