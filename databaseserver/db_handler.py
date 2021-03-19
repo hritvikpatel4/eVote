@@ -88,8 +88,12 @@ def generateBatchID():
     conn.commit()
     cursor.close()
     conn.close()
+
+    resp = {
+        "batchid": batch_id
+    }
     
-    return batch_id, 200
+    return make_response(resp, 200)
 
 @dbserver.route("/api/db/read", methods=["POST"])
 # API to read from the database

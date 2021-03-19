@@ -149,7 +149,7 @@ def passToHigherLevel(batch):
         ans["cluster_id"] = CLUSTER_ID
         db_ip = getDBIPs()[0]
         batch_id_res = requests.get("http://" + db_ip + ":" + str(port) + "/api/db/generateBatchID")
-        batch_id = batch_id_res.text.strip()
+        batch_id = batch_id_res.json()["batchid"].strip()
         ans["batch_id"] = int(batch_id)
 
         res = requests.post("http://" + HIGHER_LEVEL_IP + "/castVote", json=ans)
