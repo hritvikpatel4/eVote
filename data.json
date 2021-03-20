@@ -1,0 +1,687 @@
+[
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Unknown CPU Platform",
+    "creationTimestamp": "2021-03-17T08:29:37.283-07:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "dbserver",
+        "diskSizeGb": "20",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/dbserver",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "QQs0DCmfGb4=",
+    "id": "8412051987700358798",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-17T08:35:53.723-07:00",
+    "lastStopTimestamp": "2021-03-17T08:46:11.176-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-1",
+    "metadata": {
+      "fingerprint": "5OOOzgKkFfo=",
+      "kind": "compute#metadata"
+    },
+    "name": "dbserver",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "34.66.242.58",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "uNz1OI44sMk=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.15",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/dbserver",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "TERMINATED",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  },
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Intel Haswell",
+    "creationTimestamp": "2021-03-17T08:32:22.318-07:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "hbc-cluster-1",
+        "diskSizeGb": "40",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/hbc-cluster-1",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "j2TFFMDXjgk=",
+    "id": "6476348199199023081",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-20T04:51:15.943-07:00",
+    "lastStopTimestamp": "2021-03-20T04:43:46.008-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
+    "metadata": {
+      "fingerprint": "NOCkJG68wEA=",
+      "items": [
+        {
+          "key": "startup-script",
+          "value": "# This script is used to setup the blockchain stack and is run as a startup script on the blockchain clusters {level 2}\n\n#! /bin/bash\n\n# Installs all the required software on the instance\necho \"Installing software on instance\"\n\napt update && apt upgrade -y\napt install -y python3 python3-pip\napt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -\nadd-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"\napt update && apt install -y docker-ce docker-ce-cli containerd.io\ncurl -L \"https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\npip3 install docker requests\n\nrm -rf /home/blockchain\nmkdir -p /home/blockchain/logs\n\necho \"Cleaning old docker stuff\"\n\nsudo docker stop $(sudo docker ps -a -q)\nsudo docker rm $(sudo docker ps -a -q)\nsudo docker rmi $(sudo docker images -a -q)\necho y | sudo docker volume prune\necho y | sudo docker system prune -a\necho y | sudo docker system prune\n\necho \"Creating docker network\"\n\nsudo docker network create --driver bridge blockchain || true\n\necho \"Spawning bc nodes\"\n\nfor bc_num in 1 2 3 4\ndo\n    sudo docker run -d \\\n        --name \"bc$bc_num\" \\\n        --hostname \"bc$bc_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=2 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e CLUSTER_ID=1 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_bc:latest\ndone\n\necho \"Spawning orderer nodes\"\n\nfor ord_num in 1 2 3\ndo\n    sudo docker run -d \\\n        --name \"orderer$ord_num\" \\\n        --hostname \"orderer$ord_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=2 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e CLUSTER_ID=1 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_orderer:latest\ndone\n\necho \"Spawning load_balancer\"\n\nsudo docker run -d \\\n    --name load_balancer1 \\\n    --hostname load_balancer1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=2 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=1 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    -p 80:80 \\\n    ntwine/evote_lb:latest\n\necho \"Spawning databaseserver\"\n\nsudo docker run -d \\\n    --name db1 \\\n    --hostname db1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=2 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=1 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    ntwine/evote_db:latest\n\necho \"Done!\"\n"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "hbc-cluster-1",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "34.69.54.25",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "nBFg6HCuZaM=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.17",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/hbc-cluster-1",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  },
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Intel Haswell",
+    "creationTimestamp": "2021-03-14T06:25:40.920-07:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "lbc-cluster-1",
+        "diskSizeGb": "40",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/lbc-cluster-1",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "CSZhBlMWoas=",
+    "id": "1439303901267603515",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-20T04:51:27.382-07:00",
+    "lastStopTimestamp": "2021-03-20T04:44:49.159-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
+    "metadata": {
+      "fingerprint": "kUtVBQCSU1Q=",
+      "items": [
+        {
+          "key": "startup-script",
+          "value": "# This script is used to setup the blockchain stack and is run as a startup script on the blockchain clusters {level 1}\n\n#! /bin/bash\n\n# Installs all the required software on the instance\necho \"Installing software on instance\"\n\napt update && apt upgrade -y\napt install -y python3 python3-pip\napt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -\nadd-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"\napt update && apt install -y docker-ce docker-ce-cli containerd.io\ncurl -L \"https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\npip3 install docker requests\n\nrm -rf /home/blockchain\nmkdir -p /home/blockchain/logs\n\necho \"Cleaning old docker stuff\"\n\nsudo docker stop $(sudo docker ps -a -q)\nsudo docker rm $(sudo docker ps -a -q)\nsudo docker rmi $(sudo docker images -a -q)\necho y | sudo docker volume prune\necho y | sudo docker system prune -a\necho y | sudo docker system prune\n\necho \"Creating docker network\"\n\nsudo docker network create --driver bridge blockchain || true\n\necho \"Spawning bc nodes\"\n\nfor bc_num in 1 2 3 4\ndo\n    sudo docker run -d \\\n        --name \"bc$bc_num\" \\\n        --hostname \"bc$bc_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=1 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e HIGHER_LEVEL_IP=\"http://34.117.6.106:80\" \\\n        -e CLUSTER_ID=1 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_bc:latest\ndone\n\necho \"Spawning orderer nodes\"\n\nfor ord_num in 1 2 3\ndo\n    sudo docker run -d \\\n        --name \"orderer$ord_num\" \\\n        --hostname \"orderer$ord_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=1 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e CLUSTER_ID=1 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_orderer:latest\ndone\n\necho \"Spawning load_balancer\"\n\nsudo docker run -d \\\n    --name load_balancer1 \\\n    --hostname load_balancer1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=1 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=1 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    -p 80:80 \\\n    ntwine/evote_lb:latest\n\necho \"Spawning databaseserver\"\n\nsudo docker run -d \\\n    --name db1 \\\n    --hostname db1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=1 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=1 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    ntwine/evote_db:latest\n\necho \"Done!\"\n"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "lbc-cluster-1",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "146.148.43.144",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "R3l0vqAKCzI=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.13",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/lbc-cluster-1",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  },
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Intel Haswell",
+    "creationTimestamp": "2021-03-17T08:31:11.173-07:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "lbc-cluster-2",
+        "diskSizeGb": "40",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/lbc-cluster-2",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "gqHDYoNreeE=",
+    "id": "3976563845790408273",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-20T04:51:46.287-07:00",
+    "lastStopTimestamp": "2021-03-20T04:45:21.098-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
+    "metadata": {
+      "fingerprint": "EElpURYHtJk=",
+      "items": [
+        {
+          "key": "startup-script",
+          "value": "# This script is used to setup the blockchain stack and is run as a startup script on the blockchain clusters {level 1}\n\n#! /bin/bash\n\n# Installs all the required software on the instance\necho \"Installing software on instance\"\n\napt update && apt upgrade -y\napt install -y python3 python3-pip\napt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -\nadd-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"\napt update && apt install -y docker-ce docker-ce-cli containerd.io\ncurl -L \"https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\npip3 install docker requests\n\nrm -rf /home/blockchain\nmkdir -p /home/blockchain/logs\n\necho \"Cleaning old docker stuff\"\n\nsudo docker stop $(sudo docker ps -a -q)\nsudo docker rm $(sudo docker ps -a -q)\nsudo docker rmi $(sudo docker images -a -q)\necho y | sudo docker volume prune\necho y | sudo docker system prune -a\necho y | sudo docker system prune\n\necho \"Creating docker network\"\n\nsudo docker network create --driver bridge blockchain || true\n\necho \"Spawning bc nodes\"\n\nfor bc_num in 1 2 3 4\ndo\n    sudo docker run -d \\\n        --name \"bc$bc_num\" \\\n        --hostname \"bc$bc_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=1 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e HIGHER_LEVEL_IP=\"http://34.117.6.106:80\" \\\n        -e CLUSTER_ID=2 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_bc:latest\ndone\n\necho \"Spawning orderer nodes\"\n\nfor ord_num in 1 2 3\ndo\n    sudo docker run -d \\\n        --name \"orderer$ord_num\" \\\n        --hostname \"orderer$ord_num\" \\\n        --network blockchain \\\n        -e CURRENT_LEVEL=1 \\\n        -e HIGHEST_LEVEL=2 \\\n        -e CLUSTER_ID=2 \\\n        -e CUSTOM_PORT=80 \\\n        -v /var/run/docker.sock:/var/run/docker.sock \\\n        -v /home/blockchain/logs:/usr/src/app/logs \\\n        ntwine/evote_orderer:latest\ndone\n\necho \"Spawning load_balancer\"\n\nsudo docker run -d \\\n    --name load_balancer1 \\\n    --hostname load_balancer1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=1 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=2 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    -p 80:80 \\\n    ntwine/evote_lb:latest\n\necho \"Spawning databaseserver\"\n\nsudo docker run -d \\\n    --name db1 \\\n    --hostname db1 \\\n    --network blockchain \\\n    -e CURRENT_LEVEL=1 \\\n    -e HIGHEST_LEVEL=2 \\\n    -e CLUSTER_ID=2 \\\n    -e CUSTOM_PORT=80 \\\n    -v /var/run/docker.sock:/var/run/docker.sock \\\n    -v /home/blockchain/logs:/usr/src/app/logs \\\n    ntwine/evote_db:latest\n\necho \"Done!\"\n"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "lbc-cluster-2",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "34.121.201.3",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "LVnqcjDfbYg=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.16",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/lbc-cluster-2",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  },
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Unknown CPU Platform",
+    "creationTimestamp": "2021-02-13T23:17:53.325-08:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "webserver-1",
+        "diskSizeGb": "20",
+        "guestOsFeatures": [
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/webserver-1",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "7-_T_yzZQK4=",
+    "id": "7118244539185590351",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-17T08:35:40.754-07:00",
+    "lastStopTimestamp": "2021-03-17T08:46:18.585-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-1",
+    "metadata": {
+      "fingerprint": "5OOOzgKkFfo=",
+      "kind": "compute#metadata"
+    },
+    "name": "webserver-1",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "34.69.75.67",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "nqu3XS0lFWg=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.7",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/webserver-1",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/cloud-platform"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "TERMINATED",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  },
+  {
+    "canIpForward": false,
+    "confidentialInstanceConfig": {
+      "enableConfidentialCompute": false
+    },
+    "cpuPlatform": "Unknown CPU Platform",
+    "creationTimestamp": "2021-03-17T08:28:09.011-07:00",
+    "deletionProtection": false,
+    "description": "",
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "webserver-2",
+        "diskSizeGb": "20",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "SEV_CAPABLE"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/disks/webserver-2",
+        "type": "PERSISTENT"
+      }
+    ],
+    "displayDevice": {
+      "enableDisplay": false
+    },
+    "fingerprint": "unVJvhgcXYU=",
+    "id": "5715878373486468839",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2021-03-17T08:35:41.000-07:00",
+    "lastStopTimestamp": "2021-03-17T08:46:15.908-07:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-1",
+    "metadata": {
+      "fingerprint": "5OOOzgKkFfo=",
+      "kind": "compute#metadata"
+    },
+    "name": "webserver-2",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "External NAT",
+            "natIP": "34.70.86.131",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "_Q7XjfNLIPc=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/capstone-304713/global/networks/default",
+        "networkIP": "10.128.0.14",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/capstone-304713/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/instances/webserver-2",
+    "serviceAccounts": [
+      {
+        "email": "12756285741-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "TERMINATED",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a"
+  }
+]

@@ -225,6 +225,16 @@ def writeToBlockchain():
 
     return make_response("Successfully written to blockchain", 200)
 
+@BC.route("/api/bc/calculateElectionResult", methods=["GET"])
+# Sends the tallied election result from this cluster to the load_balancer
+def calculateElectionResult():
+    result = {
+        "c1": 100,
+        "c2": 20
+    }
+
+    return make_response(result, 200)
+
 # ---------------------------------------- MAIN ----------------------------------------
 
 if __name__ == '__main__':

@@ -146,6 +146,18 @@ def castVote():
 
     return make_response("Sent vote to BC", 200)
 
+@app.route('/getElectionResult', methods=["GET"])
+# returns the election result back to the client
+def getElectionResult():
+    bc_ip_list = getBCIPs()
+    rand_bc_ip = random.choice(bc_ip_list)
+
+    res = requests.get("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/calculateElectionResult")
+
+    result = res.json()
+    
+    return make_response(result, 200)
+
 # ---------------------------------------- MAIN ----------------------------------------
 
 if __name__ == '__main__':
