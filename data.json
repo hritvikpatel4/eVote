@@ -155,8 +155,8 @@
     "id": "6476348199199023081",
     "kind": "compute#instance",
     "labelFingerprint": "42WmSpB8rSM=",
-    "lastStartTimestamp": "2021-03-20T05:54:03.912-07:00",
-    "lastStopTimestamp": "2021-03-20T05:46:42.601-07:00",
+    "lastStartTimestamp": "2021-03-20T06:34:06.481-07:00",
+    "lastStopTimestamp": "2021-03-20T05:58:47.493-07:00",
     "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
     "metadata": {
       "fingerprint": "NOCkJG68wEA=",
@@ -234,7 +234,7 @@
     "confidentialInstanceConfig": {
       "enableConfidentialCompute": false
     },
-    "cpuPlatform": "Unknown CPU Platform",
+    "cpuPlatform": "Intel Haswell",
     "creationTimestamp": "2021-03-14T06:25:40.920-07:00",
     "deletionProtection": false,
     "description": "",
@@ -269,11 +269,11 @@
     "displayDevice": {
       "enableDisplay": false
     },
-    "fingerprint": "dd4R4Pcnrm4=",
+    "fingerprint": "CSZhBlMWoas=",
     "id": "1439303901267603515",
     "kind": "compute#instance",
     "labelFingerprint": "42WmSpB8rSM=",
-    "lastStartTimestamp": "2021-03-20T04:51:27.382-07:00",
+    "lastStartTimestamp": "2021-03-20T06:34:17.189-07:00",
     "lastStopTimestamp": "2021-03-20T05:48:05.618-07:00",
     "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
     "metadata": {
@@ -337,7 +337,7 @@
       "updateAutoLearnPolicy": true
     },
     "startRestricted": false,
-    "status": "TERMINATED",
+    "status": "RUNNING",
     "tags": {
       "fingerprint": "6smc4R4d39I=",
       "items": [
@@ -352,7 +352,7 @@
     "confidentialInstanceConfig": {
       "enableConfidentialCompute": false
     },
-    "cpuPlatform": "Unknown CPU Platform",
+    "cpuPlatform": "Intel Haswell",
     "creationTimestamp": "2021-03-17T08:31:11.173-07:00",
     "deletionProtection": false,
     "description": "",
@@ -387,11 +387,11 @@
     "displayDevice": {
       "enableDisplay": false
     },
-    "fingerprint": "BLdBCwma6PE=",
+    "fingerprint": "gqHDYoNreeE=",
     "id": "3976563845790408273",
     "kind": "compute#instance",
     "labelFingerprint": "42WmSpB8rSM=",
-    "lastStartTimestamp": "2021-03-20T04:51:46.287-07:00",
+    "lastStartTimestamp": "2021-03-20T06:34:29.948-07:00",
     "lastStopTimestamp": "2021-03-20T05:48:36.477-07:00",
     "machineType": "https://www.googleapis.com/compute/v1/projects/capstone-304713/zones/us-central1-a/machineTypes/n1-standard-2",
     "metadata": {
@@ -455,7 +455,7 @@
       "updateAutoLearnPolicy": true
     },
     "startRestricted": false,
-    "status": "TERMINATED",
+    "status": "RUNNING",
     "tags": {
       "fingerprint": "6smc4R4d39I=",
       "items": [
