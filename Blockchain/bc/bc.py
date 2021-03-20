@@ -153,7 +153,7 @@ def passToHigherLevel(batch):
         batch_id = batch_id_res.json()["batchid"]
         ans["batch_id"] = int(batch_id)
 
-        res = requests.post("http://" + HIGHER_LEVEL_IP + "/castVote", json=ans)
+        res = requests.post(HIGHER_LEVEL_IP + "/castVote", json=ans)
 
         if res.status_code != 200:
             logging.error("Passing to higher level FAILED!")
