@@ -13,9 +13,19 @@ for i in range(len(json_data)):
         print(json_data[i]["networkInterfaces"][0]["accessConfigs"][0]["natIP"])
         ip_list.append(json_data[i]["networkInterfaces"][0]["accessConfigs"][0]["natIP"])
 
-print(ip_list)
+result = []
 
 for ip in ip_list:
     res = requests.get("http://" + ip + ":80" + "/getElectionResult")
 
-    print(res.json())
+    result.append(res.json())
+
+temp_result = result[0]
+
+for i in range(1, len(result)):
+    for key in result[i].keys():
+        temp_result[key] += result[i][key]
+
+final_result = dict(sorted(temp_result.items(), key=lambda item: item[1]))
+
+print(json.dumps(final_result, indent=4)

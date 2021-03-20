@@ -228,10 +228,22 @@ def writeToBlockchain():
 @BC.route("/api/bc/calculateElectionResult", methods=["GET"])
 # Sends the tallied election result from this cluster to the load_balancer
 def calculateElectionResult():
-    result = {
-        "c1": 100,
-        "c2": 20
-    }
+    with open("bc.csv", "r") as fileptr:
+        csv_data = fileptr.readlines()
+        csv_header = csv_data[0].split(",")[3:-1]
+
+        data = [0] * len(csv_header)
+
+        for i in range(1, len(csv_data)):
+            temp = csv_data[i].split(",")[3:-1]
+            
+            for j in range(len(temp)):
+                data[j] += int(temp[j])
+    
+    result = {}
+
+    for i in range(len(data)):
+        result[csv_header[i]] = data[i]
 
     return make_response(result, 200)
 
