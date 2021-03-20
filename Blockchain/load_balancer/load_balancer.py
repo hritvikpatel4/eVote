@@ -129,9 +129,6 @@ def castVote():
     else:
         bc_ip_list = getBCIPs()
 
-        if(len(bc_ip_list) == 0):
-            return jsonify({"status": "No LBC containers running"}, 400)
-
         rand_bc_ip = random.choice(bc_ip_list)
         print("bc ip list = ", bc_ip_list)
 
@@ -140,6 +137,8 @@ def castVote():
         for data in params:
             if isinstance(params[data], int) == False:
                 return make_response("Invalid data sent!", 400)
+        
+        print(params)
         
         requests.post("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
         print("rand bc ip = ", rand_bc_ip)

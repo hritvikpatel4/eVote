@@ -146,8 +146,8 @@ def passToHigherLevel(batch):
                 if key not in ["batch_id", "cluster_id", "level_number"]:
                     ans[key] += batch[i][key]
     
-        ans["level_number"] = CURRENT_LEVEL
-        ans["cluster_id"] = CLUSTER_ID
+        ans["level_number"] = int(CURRENT_LEVEL)
+        ans["cluster_id"] = int(CLUSTER_ID)
         db_ip = getDBIPs()[0]
         batch_id_res = requests.get("http://" + db_ip + ":" + str(port) + "/api/db/generateBatchID")
         batch_id = batch_id_res.json()["batchid"]
