@@ -1,8 +1,10 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import render_template, Flask, jsonify, make_response, request, send_from_directory
+from google.cloud import storage
+from google.auth import compute_engine
 from werkzeug.utils import secure_filename
-import os, random, requests, string, time
+import datetime, os, random, requests, string, time
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -18,6 +20,9 @@ UPLOAD_FOLDER = "./upload"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 webserver.config['CUSTOM_STATIC_CDN'] = "/upload/"
+gcs_cred = compute_engine.Credentials()
+storage_client = storage.Client(credentials = gcs_cred)
+gcs_bucket = storage_client.bucket("evote-cdn")
 
 # ---------------------------------------- ADMIN SETTINGS ----------------------------------------
 
@@ -40,7 +45,8 @@ def health():
 @webserver.route("/upload/<path:filename>")
 # API to handle requests for the static files for the voting page
 def upload(filename):
-    return send_from_directory(webserver.root_path + webserver.config["CUSTOM_STATIC_CDN"], filename, conditional=True)
+    file_blob = gcs_bucket.get_blob(filename)
+    return file_blob.generate_signed_url(version='v4', expiration=datetime.timedelta(hours=1))
 
 @webserver.route("/", methods=["GET"])
 # API to handle the requests for the index page
@@ -326,14 +332,16 @@ def createElection():
     for ele in request.files.getlist("pp[]"):
         if allowed_file(ele.filename):
             filename = secure_filename(ele.filename)
+            file_blob = gcs_bucket.blob(filename)
+            file_blob.upload_from_string(ele.read(), content_type=ele.content_type)
             pps.append(filename)
-            ele.save(os.path.join(webserver.config['UPLOAD_FOLDER'], filename))
     
     for ele in request.files.getlist("rp[]"):
         if allowed_file(ele.filename):
             filename = secure_filename(ele.filename)
+            file_blob = gcs_bucket.blob(filename)
+            file_blob.upload_from_string(ele.read(), content_type=ele.content_type)
             rps.append(filename)
-            ele.save(os.path.join(webserver.config['UPLOAD_FOLDER'], filename))
 
     election_data = set(zip(pns, pps, rns, rps))
 
