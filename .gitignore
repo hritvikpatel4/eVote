@@ -4,3 +4,4 @@ venv*
 .vscode/
 .DS_Store
 *.log
+*.json

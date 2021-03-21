@@ -2,7 +2,7 @@
 
 from flask import render_template, Flask, jsonify, make_response, request, send_from_directory
 from google.cloud import storage
-from google.auth import compute_engine
+from google.oauth2 import service_account
 from werkzeug.utils import secure_filename
 import datetime, os, random, requests, string, time
 
@@ -20,7 +20,7 @@ UPLOAD_FOLDER = "./upload"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 webserver.config['CUSTOM_STATIC_CDN'] = "/upload/"
-gcs_cred = compute_engine.Credentials()
+gcs_cred = service_account.Credentials.from_service_account_file("./capstone-304713.json")
 storage_client = storage.Client(credentials = gcs_cred)
 gcs_bucket = storage_client.bucket("evote-cdn")
 
