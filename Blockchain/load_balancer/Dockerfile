@@ -14,6 +14,8 @@ WORKDIR /usr/src/app
 
 RUN git clone https://github.com/hritvikpatel4/eVote.git
 RUN cd eVote && git checkout dev && cd Blockchain/load_balancer && pip install -r requirements.txt
+RUN cd eVote && rm -rf webserver && rm -rf databaseserver && rm -f *.sh *.json *.py *.md *.txt
+RUN cd eVote && rm -rf Blockchain/bc && rm -rf Blockchain/orderer && rm -f Blockchain/*.py
 
 EXPOSE 80
 
