@@ -1,6 +1,6 @@
 - 1. pass to higher level -> needs to be tested when we do large scale testing
 
-2. integrate frontend with backend -> 20th march (till AP reaches home)
+- 2. integrate frontend with backend -> 20th march (till AP reaches home)
 
 - 3. google load balancer setup -> 17th march (till AP reaches home)
 
@@ -16,4 +16,4 @@
 
 - 9. check all environ vars and the deploy scripts before testing it out -> 19th march
 
-10. RSA and CSV encryption (if time tomorrow)
+10. RSA and CSV encryption

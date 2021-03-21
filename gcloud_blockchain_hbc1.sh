@@ -65,6 +65,20 @@ do
         ntwine/evote_orderer:latest
 done
 
+echo "Spawning databaseserver"
+
+sudo docker run -d \
+    --name db1 \
+    --hostname db1 \
+    --network blockchain \
+    -e CURRENT_LEVEL=2 \
+    -e HIGHEST_LEVEL=2 \
+    -e CLUSTER_ID=1 \
+    -e CUSTOM_PORT=80 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /home/blockchain/logs:/usr/src/app/logs \
+    ntwine/evote_db:latest
+
 echo "Spawning load_balancer"
 
 sudo docker run -d \
@@ -79,19 +93,5 @@ sudo docker run -d \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -p 80:80 \
     ntwine/evote_lb:latest
-
-echo "Spawning databaseserver"
-
-sudo docker run -d \
-    --name db1 \
-    --hostname db1 \
-    --network blockchain \
-    -e CURRENT_LEVEL=2 \
-    -e HIGHEST_LEVEL=2 \
-    -e CLUSTER_ID=1 \
-    -e CUSTOM_PORT=80 \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /home/blockchain/logs:/usr/src/app/logs \
-    ntwine/evote_db:latest
 
 echo "Done!"

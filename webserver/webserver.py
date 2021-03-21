@@ -13,6 +13,7 @@ db_ip = os.environ["DB_IP"]
 CLUSTER_ID = os.environ["CLUSTER_ID"]
 CURRENT_LEVEL = os.environ["CURRENT_LEVEL"]
 HIGHEST_LEVEL = os.environ["HIGHEST_LEVEL"]
+VOTE_ENDPOINT = os.environ["VOTE_ENDPOINT"]
 UPLOAD_FOLDER = "./upload"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -160,6 +161,52 @@ def submitVote(voter_id = None, voter_secretkey = None):
 
         # Voter did not cast vote yet
         if code2[0][0] == 0:
+            vote_data = {
+                "level_number": int(CURRENT_LEVEL),
+                "cluster_id": int(CLUSTER_ID)
+            }
+
+            batch_id_res = requests.get(db_ip + "/api/db/generateBatchID")
+            batch_id = batch_id_res.json()["batchid"]
+            vote_data["batch_id"] = int(batch_id)
+
+            election_data_fetch = {
+                "operation": "SELECT",
+                "columns": "*",
+                "tablename": "votingperiod",
+                "where": ["1=1"]
+            }
+
+            election_data = requests.post(db_ip + "/api/db/read", json=election_data_fetch)
+            election_data_string = election_data.text.replace(" ", "").replace("\n", "")
+            indices = [i for i, x in enumerate(election_data_string) if x == "]"]
+            indices.pop()
+            indices.insert(0, 0)
+            election_data_list = [election_data_string[indices[i]: indices[i + 1]] for i in range(len(indices) - 1)]
+            for i in range(len(election_data_list)):
+                election_data_list[i] = election_data_list[i].replace("[", "").replace("]", "").strip(",")            
+            final_election_data_list = []
+            for i in election_data_list:
+                temp = i.split(",")
+                for j in range(len(temp)):
+                    temp[j] = temp[j].replace('"', "")
+                final_election_data_list.append(temp)
+
+            print(voted_for)
+            print(final_election_data_list)
+
+            for i in range(len(final_election_data_list)):
+                temp = "{}::{}".format(final_election_data_list[i][0], final_election_data_list[i][2])
+                
+                vote_data[temp] = 0
+            
+            vote_data["{}::{}".format(party_name, representative_name)] = 1
+
+            cast_vote_res = requests.post(VOTE_ENDPOINT + "/castVote", json=vote_data)
+
+            if cast_vote_res.status_code != 200:
+                return make_response("Error!", 400)
+
             data3 = {
                 "operation": "UPDATE",
                 "tablename": "voters",

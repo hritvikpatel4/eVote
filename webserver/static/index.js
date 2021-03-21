@@ -1,8 +1,8 @@
 var register_button = document.getElementById("register_button");
 var admin_button = document.getElementById("admin_login_button");
 var auth_voter = document.getElementById("authVoter");
-let url_redirect = "http://localhost:8000/";
-let api_url = "http://localhost:8000/api/login";
+let url_redirect = "http://34.117.18.201:80/";
+let api_url = "http://34.117.18.201:80/api/login";
 
 auth_voter.addEventListener("click", function(e) {
     e.preventDefault();
@@ -10,7 +10,7 @@ auth_voter.addEventListener("click", function(e) {
     let voter_id = document.querySelector("#voter_id");
     let voter_secretkey = document.querySelector("#voter_secretkey");
     let voter_dob = document.querySelector("#voter_dob");
-    let voting_url = "http://localhost:8000/api/login/ui"
+    let voting_url = "http://34.117.18.201:80/api/login/ui"
 
     let xhr = new XMLHttpRequest();
     
@@ -37,7 +37,7 @@ auth_voter.addEventListener("click", function(e) {
 register_button.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let register_url_redirect = "http://localhost:8000/register";
+    let register_url_redirect = "http://34.117.18.201:80/register";
 
     window.location.assign(register_url_redirect);
 });
@@ -45,7 +45,7 @@ register_button.addEventListener("click", function(e) {
 admin_button.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let admin_url_redirect = "http://localhost:8000/adminlogin";
+    let admin_url_redirect = "http://34.117.18.201:80/adminlogin";
 
     window.location.replace(admin_url_redirect);
 });

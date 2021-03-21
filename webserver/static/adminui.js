@@ -1,4 +1,4 @@
-let logout_url = "http://localhost:8000/adminlogin";
+let logout_url = "http://34.117.18.201:80/adminlogin";
 
 $(document).ready(function() {
     $('#add_field_button').click(function(e) {

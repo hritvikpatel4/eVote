@@ -83,7 +83,7 @@ RSA auth
 
             4, 5, 6 - to be sent by the bc to the orderer
 
-3. Probably make a flowchart for the algorithms
+3. Make a flowchart for the algorithms
 
 4. automation of deploy.py from another central instance which will also serve the purpose of generating clusterid
 
