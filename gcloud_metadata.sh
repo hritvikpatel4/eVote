@@ -5,11 +5,11 @@
 echo "Adding startup script metadata to all instances"
 gcloud compute instances add-metadata webserver-1 \
     --metadata-from-file startup-script=./gcloud_web.sh \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 gcloud compute instances add-metadata webserver-2 \
     --metadata-from-file startup-script=./gcloud_web.sh \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 gcloud compute instances add-metadata dbserver \
     --metadata-from-file startup-script=./gcloud_db.sh \

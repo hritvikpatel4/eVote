@@ -16,9 +16,9 @@ gcloud compute instances start lbc-cluster-2 \
     --zone=us-central1-a
 
 gcloud compute instances start webserver-1 \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 gcloud compute instances start webserver-2 \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 echo "Done!"

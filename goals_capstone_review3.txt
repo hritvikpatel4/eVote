@@ -12,7 +12,7 @@
 
 - 7. large scale testing -> 19th & 20th march
 
-8. replication of the uploaded assets by the admin across all the other webservers -> 21st march
+- 8. replication of the uploaded assets by the admin across all the other webservers -> 21st march
 
 - 9. check all environ vars and the deploy scripts before testing it out -> 19th march
 

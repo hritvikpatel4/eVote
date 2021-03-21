@@ -5,10 +5,10 @@
 echo "Stopping all instances"
 
 gcloud compute instances stop webserver-1 \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 gcloud compute instances stop webserver-2 \
-    --zone=us-central1-a
+    --zone=us-east1-b
 
 gcloud compute instances stop dbserver \
     --zone=us-central1-a

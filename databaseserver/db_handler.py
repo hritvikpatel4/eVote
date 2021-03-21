@@ -7,10 +7,7 @@ import os, requests
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 dbserver = Flask(__name__)
-# port = os.environ["CUSTOM_PORT"]
-
-port = 6000
-
+port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
 counter_db = "counter.db"

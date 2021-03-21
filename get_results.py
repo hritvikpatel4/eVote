@@ -1,4 +1,4 @@
-import json, requests, subprocess
+import json, os, requests, subprocess
 
 p1 = subprocess.Popen(("gcloud", "compute", "instances", "list", "--format=json"), stdout=subprocess.PIPE)
 subprocess.check_output(("tee", "data.json"), stdin=p1.stdout)
@@ -42,3 +42,4 @@ else:
     except IndexError:
         pass
 print()
+os.remove("data.json")
