@@ -7,8 +7,72 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
         <link href="{{url_for('static', filename='voting.css')}}" rel="stylesheet">
         <script>
+            let url_redirect = "http://34.117.18.201:80";
             var voter_id = '{{ voter_id }}';
             var voter_secretkey = '{{ voter_secretkey }}';
+            var party_names = {{ party_names|tojson }};
+            var party_images = {{ party_images|tojson }};
+            var rep_names = {{ rep_names|tojson }};
+            var rep_images = {{ rep_images|tojson }};
+            var data_size = {{ data_size }};
+
+            var party_img_links = new Array();
+            var rep_img_links = new Array();
+
+            for(int i = 0; i < data_size; i++) {
+                $.ajax({
+                    url: url_redirect + "/upload/" + party_images[i],
+                    type: "GET",
+                    processData: false,
+                    contentType: false,
+                    success: function(data, status) {
+                        party_img_links.push(data)
+                    },
+                    error: function(data, status) {
+                        party_img_links.push("")
+                    }
+                });
+            }
+
+            for(int i = 0; i < data_size; i++) {
+                $.ajax({
+                    url: url_redirect + "/upload/" + rep_images[i],
+                    type: "GET",
+                    processData: false,
+                    contentType: false,
+                    success: function(data, status) {
+                        rep_img_links.push(data)
+                    },
+                    error: function(data, status) {
+                        rep_img_links.push("")
+                    }
+                });
+            }
+
+            for(int i = 0; i < data_size; i++) {
+                var childnode = `
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <input type="radio" id="${party_names[i]}" name="vote" value="${party_names[i]}:::${rep_names[i]}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>${party_names[i]}</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <img src="${party_img_links[i]}" width="75" height="75" />
+                    </div>
+                    <div class="col-md-3">
+                        <h4>${rep_names[i]}</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <img src="${rep_img_links[i]}" width="75" height="75" />
+                    </div>
+                </div>
+                <br/>
+                `;
+                document.getElementById("buildform").appendChild(childnode);
+            }
+            
         </script>
     </head>
     <body>
@@ -33,26 +97,7 @@
                     </div>
                 </div>
                 <br/>
-                {% for i in range(0, election_data_size) %}
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <input type="radio" id="{{ election_data[i][0] }}" name="vote" value="{{ election_data[i][0] }}:::{{ election_data[i][2] }}" required>
-                    </div>
-                    <div class="col-md-3">
-                        <h4>{{ election_data[i][0] }}</h4>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="{{url_for('upload', filename=election_data[i][1])}}" width="75" height="75" />
-                    </div>
-                    <div class="col-md-3">
-                        <h4>{{ election_data[i][2] }}</h4>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="{{url_for('upload', filename=election_data[i][3])}}" width="75" height="75" />
-                    </div>
-                </div>
-                <br/>
-                {% endfor %}
+                <div id="buildform"></div>
                 <br/><button class="btn btn-primary btn-lg position-absolute start-50 translate-middle" type="submit">Vote!</button><br/><br/>
             </form>
         </div>

@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from flask import render_template, Flask, jsonify, make_response, request, send_from_directory
+from flask import render_template, Flask, json, jsonify, make_response, request, send_from_directory
 from google.cloud import storage
 from google.oauth2 import service_account
 from werkzeug.utils import secure_filename
@@ -126,8 +126,20 @@ def requestVoterUI(voter_id = None, voter_secretkey = None):
                 temp[j] = temp[j].replace('"', "")
             
             final_election_data_list.append(temp)
+        
+        party_names = []
+        party_images = []
+        rep_names = []
+        rep_images = []
 
-        return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, election_data = final_election_data_list, election_data_size = len(final_election_data_list))
+        for i in len(final_election_data_list):
+            party_names.append(final_election_data_list[i][0])
+            party_images.append(final_election_data_list[i][1])
+            rep_names.append(final_election_data_list[i][2])
+            rep_images.append(final_election_data_list[i][3])
+
+        # return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, election_data = json.dumps(final_election_data_list), election_data_size = len(final_election_data_list))
+        return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, party_names = json.dumps(party_names), party_images = json.dumps(party_images), rep_names = json.dumps(rep_names), rep_images = json.dumps(rep_images), data_size = len(final_election_data_list))
     
     # Wrong context sent
     return make_response("Bad Request", 400)

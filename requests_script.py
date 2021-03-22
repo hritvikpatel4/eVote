@@ -37,7 +37,7 @@ for i in range(21, 101):
         
         data[temp] = 0
 
-    x = random.randint(0, len(final_election_data_list))
+    x = random.randint(0, len(final_election_data_list) - 1)
     lucky_candidate = final_election_data_list[x][2]
     lucky_party = final_election_data_list[x][0]
     
