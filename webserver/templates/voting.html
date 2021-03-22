@@ -19,7 +19,7 @@
             var party_img_links = new Array();
             var rep_img_links = new Array();
 
-            for(int i = 0; i < data_size; i++) {
+            for(var i = 0; i < data_size; i++) {
                 $.ajax({
                     url: url_redirect + "/upload/" + party_images[i],
                     type: "GET",
@@ -34,7 +34,7 @@
                 });
             }
 
-            for(int i = 0; i < data_size; i++) {
+            for(var i = 0; i < data_size; i++) {
                 $.ajax({
                     url: url_redirect + "/upload/" + rep_images[i],
                     type: "GET",
@@ -49,7 +49,7 @@
                 });
             }
 
-            for(int i = 0; i < data_size; i++) {
+            for(var i = 0; i < data_size; i++) {
                 var childnode = `
                 <div class="row align-items-center">
                     <div class="col-md-2">
