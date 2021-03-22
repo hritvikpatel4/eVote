@@ -19,4 +19,4 @@ COPY capstone-304713.json /usr/src/app/eVote/webserver
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python eVote/webserver/webserver.py"]
+CMD ["sh", "-c", "cd eVote/webserver && python webserver.py"]
