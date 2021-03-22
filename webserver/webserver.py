@@ -132,7 +132,7 @@ def requestVoterUI(voter_id = None, voter_secretkey = None):
         rep_names = []
         rep_images = []
 
-        for i in len(final_election_data_list):
+        for i in range(len(final_election_data_list)):
             party_names.append(final_election_data_list[i][0])
             party_images.append(final_election_data_list[i][1])
             rep_names.append(final_election_data_list[i][2])
