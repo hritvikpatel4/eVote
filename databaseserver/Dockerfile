@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.8
 
 LABEL maintainer="Hritvik Patel <hritvik.patel4@gmail.com>"
 
@@ -12,10 +12,10 @@ RUN apt update \
 
 WORKDIR /usr/src/app
 
-RUN git clone https://github.com/hritvikpatel4/eVote.git
-RUN cd eVote && git checkout dev && cd databaseserver && pip install -r requirements.txt
-RUN cd eVote && rm -rf webserver && rm -rf Blockchain && rm -f *.sh *.json *.py *.md *.txt
+RUN git clone https://github.com/hritvikpatel4/eVote.git \
+    && cd eVote && git checkout dev && rm -rf webserver && rm -rf Blockchain && rm -f *.sh *.json *.py *.md *.txt \
+    && cd databaseserver && pip install -r requirements.txt
 
 EXPOSE 80
 
-CMD gunicorn -w 4 --bind 0.0.0.0:$CUSTOM_PORT wsgi
+CMD ["sh", "-c", "cd eVote/databaseserver && gunicorn wsgi"]

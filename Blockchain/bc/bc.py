@@ -11,7 +11,7 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 
 BC = Flask(__name__)
 host = "0.0.0.0"
-port = os.environ["CUSTOM_PORT"]
+# port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
 bc_port = 80
 higher_level_port = 80
@@ -256,4 +256,4 @@ if __name__ == '__main__':
     bc_name = process_output.stdout.decode()
     bc_number = bc_name[len("bc"):]
 
-    BC.run(debug=True, port=port, host=host, use_reloader=False)
+    BC.run(debug=False, host=host, use_reloader=False)

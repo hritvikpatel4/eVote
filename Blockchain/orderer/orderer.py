@@ -13,7 +13,7 @@ current_orderer_name = node_name
 
 orderer = Flask(__name__)
 host = "0.0.0.0"
-port = os.environ["CUSTOM_PORT"]
+# port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
 orderer_port = 80
 bc_port = 80
@@ -592,4 +592,4 @@ if __name__ == '__main__':
     orderer_name = process_output.stdout.decode()
     orderer_number = orderer_name[len("orderer"):]
 
-    orderer.run(debug=True, port=port, host=host, use_reloader=False)
+    orderer.run(debug=False, host=host, use_reloader=False)

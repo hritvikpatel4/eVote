@@ -14,7 +14,7 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 timer = None
 app = Flask(__name__)
 host = "0.0.0.0"
-port = os.environ["CUSTOM_PORT"]
+# port = os.environ["CUSTOM_PORT"]
 bc_port = 80
 orderer_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
@@ -166,4 +166,4 @@ if __name__ == '__main__':
     timer = RepeatedTimer(60, callOrdererBatching)
     timer.start()
     
-    app.run(debug=True, host=host, port=port, use_reloader=False)
+    app.run(debug=False, host=host use_reloader=False)

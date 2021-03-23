@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.8
 
 LABEL maintainer="Hritvik Patel <hritvik.patel4@gmail.com>"
 
@@ -12,11 +12,11 @@ RUN apt update \
 
 WORKDIR /usr/src/app
 
-RUN git clone https://github.com/hritvikpatel4/eVote.git
-RUN cd eVote && git checkout dev && cd Blockchain/bc && pip install -r requirements.txt
-RUN cd eVote && rm -rf webserver && rm -rf databaseserver && rm -f *.sh *.json *.py *.md *.txt
-RUN cd eVote && rm -rf Blockchain/load_balancer && rm -rf Blockchain/orderer && rm -f Blockchain/*.py
+RUN git clone https://github.com/hritvikpatel4/eVote.git \
+    && cd eVote && git checkout dev && rm -rf webserver && rm -rf databaseserver && rm -f *.sh *.json *.py *.md *.txt \
+    && rm -rf Blockchain/load_balancer && rm -rf Blockchain/orderer && rm -f Blockchain/*.py \
+    && cd Blockchain/bc && pip install -r requirements.txt
 
 EXPOSE 80
 
-CMD ["sh", "-c", "python eVote/Blockchain/bc/bc.py"]
+CMD ["sh", "-c", "cd eVote/Blockchain/bc && gunicorn wsgi"]
