@@ -10,18 +10,18 @@
             let url_redirect = "http://34.117.18.201:80";
             var voter_id = '{{ voter_id }}';
             var voter_secretkey = '{{ voter_secretkey }}';
-            var party_names = {{ party_names|tojson }};
-            var party_images = {{ party_images|tojson }};
-            var rep_names = {{ rep_names|tojson }};
-            var rep_images = {{ rep_images|tojson }};
-            var data_size = {{ data_size }};
+            var party_names_arr = JSON.parse({{ party_names | tojson }});
+            var party_images_arr = JSON.parse({{ party_images | tojson }});
+            var rep_names_arr = JSON.parse({{ rep_names | tojson }});
+            var rep_images_arr = JSON.parse({{ rep_images | tojson }});
+            var data_size = parseInt('{{ data_size }}');
 
             var party_img_links = new Array();
             var rep_img_links = new Array();
 
             for(var i = 0; i < data_size; i++) {
                 $.ajax({
-                    url: url_redirect + "/upload/" + party_images[i],
+                    url: url_redirect + "/upload/" + party_images_arr[i],
                     type: "GET",
                     processData: false,
                     contentType: false,
@@ -36,7 +36,7 @@
 
             for(var i = 0; i < data_size; i++) {
                 $.ajax({
-                    url: url_redirect + "/upload/" + rep_images[i],
+                    url: url_redirect + "/upload/" + rep_images_arr[i],
                     type: "GET",
                     processData: false,
                     contentType: false,
@@ -53,16 +53,16 @@
                 var childnode = `
                 <div class="row align-items-center">
                     <div class="col-md-2">
-                        <input type="radio" id="${party_names[i]}" name="vote" value="${party_names[i]}:::${rep_names[i]}" required>
+                        <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
                     </div>
                     <div class="col-md-3">
-                        <h4>${party_names[i]}</h4>
+                        <h4>${party_names_arr[i]}</h4>
                     </div>
                     <div class="col-md-2">
                         <img src="${party_img_links[i]}" width="75" height="75" />
                     </div>
                     <div class="col-md-3">
-                        <h4>${rep_names[i]}</h4>
+                        <h4>${rep_names_arr[i]}</h4>
                     </div>
                     <div class="col-md-2">
                         <img src="${rep_img_links[i]}" width="75" height="75" />

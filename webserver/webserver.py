@@ -138,7 +138,6 @@ def requestVoterUI(voter_id = None, voter_secretkey = None):
             rep_names.append(final_election_data_list[i][2])
             rep_images.append(final_election_data_list[i][3])
 
-        # return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, election_data = json.dumps(final_election_data_list), election_data_size = len(final_election_data_list))
         return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, party_names = json.dumps(party_names), party_images = json.dumps(party_images), rep_names = json.dumps(rep_names), rep_images = json.dumps(rep_images), data_size = len(final_election_data_list))
     
     # Wrong context sent
