@@ -19,4 +19,4 @@ RUN git clone https://github.com/hritvikpatel4/eVote.git \
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/Blockchain/load_balancer && gunicorn wsgi"]
+CMD ["sh", "-c", "cd eVote/Blockchain && gunicorn load_balancer.wsgi:application"]

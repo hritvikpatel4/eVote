@@ -12,7 +12,7 @@ node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
 timer = None
-app = Flask(__name__)
+load_balancer = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
 bc_port = 80
@@ -91,12 +91,12 @@ def callOrdererBatching():
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
-@app.route("/health")
+@load_balancer.route("/health")
 # API to handle health requests from google
 def health():
     return make_response("Alive and running!", 200)
 
-@app.route("/api/lb/receiveAck", methods=["GET"])
+@load_balancer.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
     global HOLD_VOTES_TEMPORARY
@@ -112,7 +112,7 @@ def receiveAck():
 
     return make_response("", 200)
 
-@app.route('/castVote', methods=['POST'])
+@load_balancer.route('/castVote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
     # Check if we should put data into temp_q
@@ -146,7 +146,7 @@ def castVote():
 
     return make_response("Sent vote to BC", 200)
 
-@app.route('/getElectionResult', methods=["GET"])
+@load_balancer.route('/getElectionResult', methods=["GET"])
 # returns the election result back to the client
 def getElectionResult():
     bc_ip_list = getBCIPs()
@@ -166,4 +166,4 @@ if __name__ == '__main__':
     timer = RepeatedTimer(60, callOrdererBatching)
     timer.start()
     
-    app.run(debug=False, host=host use_reloader=False)
+    load_balancer.run(debug=False, host=host use_reloader=False)

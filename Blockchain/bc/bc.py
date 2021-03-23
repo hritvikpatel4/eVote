@@ -9,7 +9,7 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
-BC = Flask(__name__)
+bc = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
@@ -162,7 +162,7 @@ def passToHigherLevel(batch):
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
-@BC.route("/api/bc/receiveVoteFromLowLevel", methods=["POST"])
+@bc.route("/api/bc/receiveVoteFromLowLevel", methods=["POST"])
 # Receive batch from lower level in the hierarchy and passes to orderer
 def receiveVoteFromLowLevel():
     """
@@ -200,7 +200,7 @@ def receiveVoteFromLowLevel():
         # logging.info("Vote data forwarded to random orderer with IP = {}".format(rand_ord_ip))
         return make_response("vote successfully forwarded to orderer", 200)
 
-@BC.route("/api/bc/writeToBlockchain", methods=["POST"])
+@bc.route("/api/bc/writeToBlockchain", methods=["POST"])
 # Receive intersection batch from orderer and write to blockchain
 def writeToBlockchain():
     params = request.get_json()["final_batch"]
@@ -225,7 +225,7 @@ def writeToBlockchain():
 
     return make_response("Successfully written to blockchain", 200)
 
-@BC.route("/api/bc/calculateElectionResult", methods=["GET"])
+@bc.route("/api/bc/calculateElectionResult", methods=["GET"])
 # Sends the tallied election result from this cluster to the load_balancer
 def calculateElectionResult():
     with open("bc.csv", "r") as fileptr:
@@ -256,4 +256,4 @@ if __name__ == '__main__':
     bc_name = process_output.stdout.decode()
     bc_number = bc_name[len("bc"):]
 
-    BC.run(debug=False, host=host, use_reloader=False)
+    bc.run(debug=False, host=host, use_reloader=False)

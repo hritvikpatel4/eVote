@@ -1,4 +1,4 @@
-from databaseserver import db_handler as application
+from databaseserver import dbserver as application
 
 if __name__ == '__main__':
     application.run()
