@@ -36,7 +36,7 @@
     <br/>
     {% if voter_secretkey %}
     <div class="alert alert-info clipbutton" role="alert">
-        <input id="secret_key" value="{{ voter_secretkey }}">
+        <input id="secret_key" type="text" value="{{ voter_secretkey }}">
         <button class="copytoclipbutton" data-clipboard-target="#secret_key" data-clipboard-action="copy">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" />
         </button>
