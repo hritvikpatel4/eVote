@@ -18,4 +18,4 @@ RUN cd eVote && rm -rf webserver && rm -rf Blockchain && rm -f *.sh *.json *.py 
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/databaseserver && python db_handler.py"]
+CMD gunicorn -w 4 --bind 0.0.0.0:$CUSTOM_PORT wsgi

@@ -9,7 +9,7 @@ import datetime, os, random, requests, string, time
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 webserver = Flask(__name__)
-port = os.environ["CUSTOM_PORT"]
+# port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 db_ip = os.environ["DB_IP"]
 CLUSTER_ID = os.environ["CLUSTER_ID"]
@@ -384,4 +384,4 @@ def completeElection():
 # ---------------------------------------- MAIN ----------------------------------------
 
 if __name__ == '__main__':
-    webserver.run(debug=True, port=port, host=host, use_reloader=False)
+    webserver.run(debug=False, host=host, use_reloader=False)

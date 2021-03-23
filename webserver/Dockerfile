@@ -19,4 +19,4 @@ COPY capstone-304713.json /usr/src/app/eVote/webserver
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/webserver && python webserver.py"]
+CMD gunicorn -w 4 --bind 0.0.0.0:$CUSTOM_PORT wsgi

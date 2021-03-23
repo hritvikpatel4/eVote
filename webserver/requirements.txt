@@ -3,3 +3,4 @@ flask
 cryptography
 docker
 google-cloud-storage
+gunicorn
