@@ -35,7 +35,7 @@
     <div class="alert alert-info clipbutton" role="alert">
         <input id="secret_key" type="text" value="{{ voter_secretkey }}">
         <button class="copytoclipbutton" data-clipboard-target="#secret_key" data-clipboard-action="copy">
-            <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" />
+            <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
         </button>
     </div>
     {% else %}
@@ -43,6 +43,7 @@
     {% endif %}
 </div>
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
 <script type="text/javascript">
     var clipboard = new ClipboardJS('.copytoclipbutton');
 
