@@ -66,7 +66,7 @@ do
         ntwine/evote_orderer:latest
 done
 
-echo "Spawning databaseserver"
+echo "Spawning dbserver"
 
 sudo docker run -d \
     --name db1 \

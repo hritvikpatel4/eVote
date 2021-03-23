@@ -13,7 +13,7 @@ RUN apt update \
 WORKDIR /usr/src/app
 
 RUN git clone https://github.com/hritvikpatel4/eVote.git \
-    && cd eVote && git checkout dev && rm -rf databaseserver && rm -rf Blockchain && rm -f *.sh *.json *.py *.md *.txt \
+    && cd eVote && git checkout dev && rm -rf dbserver && rm -rf Blockchain && rm -f *.sh *.json *.py *.md *.txt \
     && cd webserver && pip install -r requirements.txt
 
 COPY capstone-304713.json /usr/src/app/eVote/webserver

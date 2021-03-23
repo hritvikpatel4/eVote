@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 
 RUN git clone https://github.com/hritvikpatel4/eVote.git \
     && cd eVote && git checkout dev && rm -rf webserver && rm -rf Blockchain && rm -f *.sh *.json *.py *.md *.txt \
-    && cd databaseserver && pip install -r requirements.txt
+    && cd dbserver && pip install -r requirements.txt
 
 EXPOSE 80
 

@@ -27,7 +27,7 @@ echo y | sudo docker volume prune
 echo y | sudo docker system prune -a
 echo y | sudo docker system prune
 
-echo "Spawning databaseserver"
+echo "Spawning dbserver"
 
 sudo docker run -d \
     --name db1 \
