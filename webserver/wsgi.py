@@ -1,4 +1,4 @@
-from webserver import webserver
+from webserver import webserver as application
 
 if __name__ == '__main__':
-    webserver.run()
+    application.run()

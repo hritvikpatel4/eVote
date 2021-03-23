@@ -1,4 +1,4 @@
-from Blockchain.bc import bc
+from Blockchain.bc import bc as application
 
 if __name__ == '__main__':
-    bc.run()
+    application.run()
