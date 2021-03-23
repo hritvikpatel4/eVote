@@ -4,8 +4,8 @@
 
 echo "creating webserver image"
 sudo docker build -t ntwine/evote_web:latest ./webserver
-echo "creating databaseserver image"
-sudo docker build -t ntwine/evote_db:latest ./databaseserver
+echo "creating dbserver image"
+sudo docker build -t ntwine/evote_db:latest ./dbserver
 echo "creating bc image"
 sudo docker build -t ntwine/evote_bc:latest ./Blockchain/bc
 echo "creating orderer image"
@@ -15,7 +15,7 @@ sudo docker build -t ntwine/evote_lb:latest ./Blockchain/load_balancer
 
 echo "pushing webserver image to docker registry"
 sudo docker push ntwine/evote_web:latest
-echo "pushing databaseserver image to docker registry"
+echo "pushing dbserver image to docker registry"
 sudo docker push ntwine/evote_db:latest
 echo "pushing bc image to docker registry"
 sudo docker push ntwine/evote_bc:latest
