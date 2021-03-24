@@ -80,7 +80,7 @@
         <script src="{{url_for('static', filename='voting.js')}}"></script>
         <script defer>
             $(document).ready(function() {
-                var voteform = document.querySelector("#buildform");
+                var voteform = document.getElementById("buildform");
                 
                 for(var i = 0; i < data_size; i++) {
                     var childnode = `

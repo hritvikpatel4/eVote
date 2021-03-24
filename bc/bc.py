@@ -20,7 +20,6 @@ CURRENT_LEVEL = os.environ["CURRENT_LEVEL"] # This indicates the level of the cl
 CLUSTER_ID = os.environ["CLUSTER_ID"]
 HIGHEST_LEVEL = os.environ["HIGHEST_LEVEL"]
 HIGHER_LEVEL_IP = os.environ["HIGHER_LEVEL_IP"] if CURRENT_LEVEL < HIGHEST_LEVEL else ""
-print(HIGHER_LEVEL_IP)
 curr_tail_ptr = 1
 prev_tail_ptr = 1
 csv_header_fields = []
