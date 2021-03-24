@@ -383,5 +383,8 @@ def completeElection():
 
 # ---------------------------------------- MAIN ----------------------------------------
 
-if __name__ == '__main__':
+def main():
     webserver.run(debug=False, host=host, use_reloader=False)
+
+if __name__ == '__main__':
+    main()

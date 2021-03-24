@@ -248,7 +248,7 @@ def calculateElectionResult():
 
 # ---------------------------------------- MAIN ----------------------------------------
 
-if __name__ == '__main__':
+def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
     
     process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
@@ -256,3 +256,6 @@ if __name__ == '__main__':
     bc_number = bc_name[len("bc"):]
 
     bc.run(debug=False, host=host, use_reloader=False)
+
+if __name__ == '__main__':
+    main()

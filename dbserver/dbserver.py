@@ -160,5 +160,8 @@ def clearDB():
 
 # ---------------------------------------- MAIN ----------------------------------------
 
-if __name__ == '__main__':
+def main():
     dbserver.run(debug=False, host=host, use_reloader=False)
+
+if __name__ == '__main__':
+    main()

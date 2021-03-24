@@ -160,10 +160,13 @@ def getElectionResult():
 
 # ---------------------------------------- MAIN ----------------------------------------
 
-if __name__ == '__main__':
+def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
     print("timer started")
     timer = RepeatedTimer(60, callOrdererBatching)
     timer.start()
     
     load_balancer.run(debug=False, host=host, use_reloader=False)
+
+if __name__ == '__main__':
+    main()
