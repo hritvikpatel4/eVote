@@ -34,7 +34,7 @@
     {% if voter_secretkey %}
     <div class="alert alert-info clipbutton" role="alert">
         <input id="secret_key" type="text" value="{{ voter_secretkey }}">
-        <button class="copytoclipbutton" data-clipboard-target="#secret_key" data-clipboard-action="copy">
+        <button id="copytoclipbutton">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
         </button>
     </div>
@@ -43,16 +43,89 @@
     {% endif %}
 </div>
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script> -->
 <script type="text/javascript">
-    var clipboard = new ClipboardJS('.copytoclipbutton');
+    document.getElementById("clipbutton").addEventListener('click', function() {
+        copyToClipboardStatus(document.getElementById("secret_key"));
+    });
 
-    clipboard.on('success', function(e) {
-        $(e.trigger).text("Copied!");
-        e.clearSelection();
+    function copyToClipboardStatus(ele) {
+        var succeed = copyToClipboard(ele);
+        var message;
+
+        if(!succeed) {
+            message = "Copy not supported. Press Ctrl + C or Cmd + C to copy";
+        }
+        else {
+            message = "Copied!";
+        }
+
+        var tempele = document.getElementById("copytoclipbutton");
+        tempele.innerHTML = message;
+
         setTimeout(function() {
-            $(e.trigger).html(`<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" />`);
+            tempele.innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
         }, 2500);
-    })
+    }
+
+    function copyToClipboard(ele) {
+        var targetId = "_hidden_";
+        var isInput = ele.tagName === "INPUT" || ele.tagName === "TEXTAREA";
+        var origSelectStart, origSelectEnd;
+
+        if(isInput) {
+            target = ele;
+            origSelectStart = ele.selectionStart;
+            origSelectEnd = ele.selectionEnd;
+        }
+        else {
+            target = document.getElementById(targetId);
+
+            if(!target) {
+                var target = document.createElement("textarea");
+                target.style.position = "absolute";
+                target.style.left = "-9999px";
+                target.style.top = "0";
+                target.id = targetId;
+                document.body.appendChild(target);
+            }
+
+            target.textContent = ele.textContent;
+        }
+
+        var currentFocus = document.activeElement;
+        target.focus();
+        target.setSelectionRange(0, target.value.length);
+
+        var succeed;
+        try {
+            succeed = document.execCommand("copy");
+        } catch(e) {
+            succeed = false;
+        }
+
+        if(currentFocus && typeof currentFocus.focus === "function") {
+            currentFocus.focus();
+        }
+
+        if(isInput) {
+            ele.setSelectionRange(origSelectStart, origSelectEnd);
+        }
+        else {
+            target.textContent = "";
+        }
+
+        return succeed;
+    }
+
+    // var clipboard = new ClipboardJS('.copytoclipbutton');
+
+    // clipboard.on('success', function(e) {
+    //     $(e.trigger).text("Copied!");
+    //     e.clearSelection();
+    //     setTimeout(function() {
+    //         $(e.trigger).html(`<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" />`);
+    //     }, 2500);
+    // })
 </script>
 {% endblock scripts %}

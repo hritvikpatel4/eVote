@@ -78,8 +78,10 @@
         <div id="snackbar"></div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
         <script src="{{url_for('static', filename='voting.js')}}"></script>
-        <script>
+        <script defer>
             $(document).ready(function() {
+                var voteform = document.querySelector("#buildform");
+                
                 for(var i = 0; i < data_size; i++) {
                     var childnode = `
                     <div class="row align-items-center">
@@ -101,7 +103,8 @@
                     </div>
                     <br/>
                     `;
-                    document.getElementById("#buildform").appendChild(childnode);
+                    
+                    voteform.appendChild(childnode);
                 }
             });
         </script>
