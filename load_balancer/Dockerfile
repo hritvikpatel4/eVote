@@ -19,4 +19,4 @@ RUN git clone https://github.com/hritvikpatel4/eVote.git \
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn wsgi:application"]
+CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn --enable-stdio-inheritance wsgi:application"]

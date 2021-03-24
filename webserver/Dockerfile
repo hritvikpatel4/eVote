@@ -21,4 +21,4 @@ COPY capstone-304713.json /usr/src/app/eVote/webserver
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/webserver && gunicorn wsgi:application"]
+CMD ["sh", "-c", "cd eVote/webserver && gunicorn --enable-stdio-inheritance wsgi:application"]

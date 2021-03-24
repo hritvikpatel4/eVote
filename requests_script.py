@@ -32,8 +32,8 @@ for i in range(21, 101):
         "batch_id": i
     }
 
-    for i in range(len(final_election_data_list)):
-        temp = "{}::{}".format(final_election_data_list[i][0], final_election_data_list[i][2])
+    for j in range(len(final_election_data_list)):
+        temp = "{}::{}".format(final_election_data_list[j][0], final_election_data_list[j][2])
         
         data[temp] = 0
 
