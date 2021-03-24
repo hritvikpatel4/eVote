@@ -25,7 +25,6 @@
                     processData: false,
                     contentType: false,
                     success: function(data, status) {
-                        console.log(data);
                         party_img_links.push(data)
                     },
                     error: function(data, status) {
@@ -41,7 +40,6 @@
                     processData: false,
                     contentType: false,
                     success: function(data, status) {
-                        console.log(data);
                         rep_img_links.push(data)
                     },
                     error: function(data, status) {
@@ -81,29 +79,31 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
         <script src="{{url_for('static', filename='voting.js')}}"></script>
         <script>
-            for(var i = 0; i < data_size; i++) {
-                var childnode = `
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
+            $(document).ready(function() {
+                for(var i = 0; i < data_size; i++) {
+                    var childnode = `
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <h4>${party_names_arr[i]}</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <img src="${party_img_links[i]}" width="75" height="75" />
+                        </div>
+                        <div class="col-md-3">
+                            <h4>${rep_names_arr[i]}</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <img src="${rep_img_links[i]}" width="75" height="75" />
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <h4>${party_names_arr[i]}</h4>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="${party_img_links[i]}" width="75" height="75" />
-                    </div>
-                    <div class="col-md-3">
-                        <h4>${rep_names_arr[i]}</h4>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="${rep_img_links[i]}" width="75" height="75" />
-                    </div>
-                </div>
-                <br/>
-                `;
-                document.getElementById("#buildform").appendChild(childnode);
-            }
+                    <br/>
+                    `;
+                    document.getElementById("#buildform").appendChild(childnode);
+                }
+            });
         </script>
     </body>
 </html>
