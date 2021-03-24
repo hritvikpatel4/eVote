@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from flask import render_template, Flask, jsonify, make_response, request
+from flask import Flask, jsonify, make_response, request
 from sqlite3 import connect
 import os, requests
 
