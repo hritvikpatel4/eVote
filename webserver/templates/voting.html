@@ -80,11 +80,13 @@
         <script src="{{url_for('static', filename='voting.js')}}"></script>
         <script>
             window.onload = () => {
-                var voteform = document.getElementById("buildform");
+                var voteform = document.querySelector("#buildform");
                 
                 for(var i = 0; i < data_size; i++) {
-                    var childnode = `
-                    <div class="row align-items-center">
+                    var childnode = document.createElement("div");
+                    childnode.classList.add("row");
+                    childnode.classList.add("align-items-center");
+                    childnode.innerHTML = `
                         <div class="col-md-2">
                             <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
                         </div>
@@ -100,11 +102,13 @@
                         <div class="col-md-2">
                             <img src="${rep_img_links[i]}" width="75" height="75" />
                         </div>
-                    </div>
-                    <br/>
                     `;
                     
                     voteform.appendChild(childnode);
+                    
+                    var brnode = document.createElement("br");
+
+                    voteform.appendChild(brnode);
                 }
             }
         </script>

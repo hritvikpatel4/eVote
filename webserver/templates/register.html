@@ -37,5 +37,33 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
         <script src="{{url_for('static', filename='register.js')}}"></script>
+        <script>
+            document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
+                var copyarea = document.getElementById("secret_key");
+                copyarea.focus();
+                copyarea.select();
+                var success, msg;
+        
+                try {
+                    success = document.execCommand('copy');
+                } catch(err) {
+                    console.log(err);
+                }
+        
+                if(success) {
+                    document.getElementById("copytoclipbutton").innerText = "Copied!";
+                    setTimeout(function() {
+                        document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+                    }, 2500);
+                }
+        
+                else {
+                    document.getElementById("copytoclipbutton").innerText = "Unable to copy! Please use Ctrl+C or Cmd+C to copy";
+                    setTimeout(function() {
+                        document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+                    }, 5000);
+                }
+            });
+        </script>
     </body>
 </html>

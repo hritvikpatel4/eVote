@@ -24,8 +24,6 @@ gcs_cred = service_account.Credentials.from_service_account_file("./capstone-304
 storage_client = storage.Client(credentials = gcs_cred)
 gcs_bucket = storage_client.bucket("evote-cdn")
 
-application = webserver
-
 # ---------------------------------------- ADMIN SETTINGS ----------------------------------------
 
 # Admin database
@@ -393,3 +391,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+application = webserver

@@ -14,8 +14,6 @@ counter_db = "counter.db"
 db_ip = "0.0.0.0"
 print("XYZ")
 
-application = dbserver
-
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
 # Handler function to construct queries from the data sent from the webserver
@@ -171,3 +169,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+application = dbserver
