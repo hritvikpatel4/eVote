@@ -6,6 +6,7 @@ import os, requests
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
+dbserver = Flask(__name__)
 # port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
@@ -161,12 +162,10 @@ def clearDB():
 # ---------------------------------------- MAIN ----------------------------------------
 
 def main():
-    dbserver = Flask(__name__)
     print("inside main")
     print("timer started")
     
-    return dbserver
-    # dbserver.run(debug=False, host=host, use_reloader=False)
+    dbserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()
