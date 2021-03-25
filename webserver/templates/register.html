@@ -17,21 +17,21 @@
                         showsnack.className = showsnack.className.replace("show", "");
                     }, timeDuration);
                 }
+            }
 
-                function mainCopyToClipboard(ele) {
-                    ele.focus();
-                    ele.select();
+            function mainCopyToClipboard(ele) {
+                ele.focus();
+                ele.select();
 
-                    var success = document.execCommand('copy');
+                var success = document.execCommand('copy');
 
-                    if(success) {
-                        alert("Copied!");
-                        showSnackMessage("Copied!", 3000);
-                    }
-                    else {
-                        alert("Unable to copy!");
-                        showSnackMessage("Unable to copy to clipboard", 5000);
-                    }
+                if(success) {
+                    alert("Copied!");
+                    showSnackMessage("Copied!", 3000);
+                }
+                else {
+                    alert("Unable to copy!");
+                    showSnackMessage("Unable to copy to clipboard", 5000);
                 }
             }
         </script>
