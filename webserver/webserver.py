@@ -8,7 +8,6 @@ import datetime, os, random, requests, string, time
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
-webserver = Flask(__name__)
 # port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 db_ip = os.environ["DB_IP"]
@@ -384,7 +383,10 @@ def completeElection():
 # ---------------------------------------- MAIN ----------------------------------------
 
 def main():
-    webserver.run(debug=False, host=host, use_reloader=False)
+    webserver = Flask(__name__)
+    
+    return webserver
+    # webserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()

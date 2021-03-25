@@ -21,4 +21,5 @@ COPY capstone-304713.json /usr/src/app/eVote/webserver
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/webserver && gunicorn --log-level debug wsgi:application"]
+CMD ["sh", "-c", "cd eVote/webserver && gunicorn --log-level debug 'webserver:main()'"]
+# CMD ["sh", "-c", "cd eVote/webserver && gunicorn --log-level debug wsgi:application"]

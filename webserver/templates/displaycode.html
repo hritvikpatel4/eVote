@@ -32,7 +32,7 @@
     <label>Secret Code</label>
     <br/>
     {% if voter_secretkey %}
-    <div class="alert alert-info clipbutton" role="alert">
+    <div class="alert alert-info" role="alert">
         <input id="secret_key" type="text" value="{{ voter_secretkey }}">
         <button id="copytoclipbutton">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
@@ -45,79 +45,33 @@
 {% block scripts %}
 <!-- <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script> -->
 <script type="text/javascript">
-    document.getElementById("clipbutton").addEventListener('click', function() {
-        copyToClipboardStatus(document.getElementById("secret_key"));
-    });
+    document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
+        var copyarea = document.getElementById("secret_key");
+        copyarea.focus();
+        copyarea.select();
+        var success, msg;
 
-    function copyToClipboardStatus(ele) {
-        var succeed = copyToClipboard(ele);
-        var message;
-
-        if(!succeed) {
-            message = "Copy not supported. Press Ctrl + C or Cmd + C to copy";
-        }
-        else {
-            message = "Copied!";
-        }
-
-        var tempele = document.getElementById("copytoclipbutton");
-        tempele.innerHTML = message;
-
-        setTimeout(function() {
-            tempele.innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
-        }, 2500);
-    }
-
-    function copyToClipboard(ele) {
-        var targetId = "_hidden_";
-        var isInput = ele.tagName === "INPUT" || ele.tagName === "TEXTAREA";
-        var origSelectStart, origSelectEnd;
-
-        if(isInput) {
-            target = ele;
-            origSelectStart = ele.selectionStart;
-            origSelectEnd = ele.selectionEnd;
-        }
-        else {
-            target = document.getElementById(targetId);
-
-            if(!target) {
-                var target = document.createElement("textarea");
-                target.style.position = "absolute";
-                target.style.left = "-9999px";
-                target.style.top = "0";
-                target.id = targetId;
-                document.body.appendChild(target);
-            }
-
-            target.textContent = ele.textContent;
-        }
-
-        var currentFocus = document.activeElement;
-        target.focus();
-        target.setSelectionRange(0, target.value.length);
-
-        var succeed;
         try {
-            succeed = document.execCommand("copy");
-        } catch(e) {
-            succeed = false;
+            success = document.execCommand('copy');
+        } catch(err) {
+            console.log(err);
         }
 
-        if(currentFocus && typeof currentFocus.focus === "function") {
-            currentFocus.focus();
+        if(success) {
+            document.getElementById("copytoclipbutton").innerText = "Copied!";
+            setTimeout(function() {
+                document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+            }, 2500);
         }
 
-        if(isInput) {
-            ele.setSelectionRange(origSelectStart, origSelectEnd);
-        }
         else {
-            target.textContent = "";
+            document.getElementById("copytoclipbutton").innerText = "Unable to copy! Please use Ctrl+C or Cmd+C to copy";
+            setTimeout(function() {
+                document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+            }, 5000);
         }
-
-        return succeed;
-    }
-
+    });
+    
     // var clipboard = new ClipboardJS('.copytoclipbutton');
 
     // clipboard.on('success', function(e) {

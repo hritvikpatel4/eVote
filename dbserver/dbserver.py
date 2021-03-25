@@ -6,12 +6,12 @@ import os, requests
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
-dbserver = Flask(__name__)
 # port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
 counter_db = "counter.db"
 db_ip = "0.0.0.0"
+print("XYZ")
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -161,7 +161,12 @@ def clearDB():
 # ---------------------------------------- MAIN ----------------------------------------
 
 def main():
-    dbserver.run(debug=False, host=host, use_reloader=False)
+    dbserver = Flask(__name__)
+    print("inside main")
+    print("timer started")
+    
+    return dbserver
+    # dbserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()
