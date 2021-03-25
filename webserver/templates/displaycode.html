@@ -1,4 +1,5 @@
 {% extends 'register.html' %}
+{% block code_card %}
 <h3>Success!</h3>
 <h4>Please store the secret code safely. It is required when you login</h4>
 <br/>
@@ -43,7 +44,7 @@
     <div class="alert alert-danger" role="alert">Error! Please contact support</div>
     {% endif %}
 </div>
-<body>
+{% endblock %}
 {% block scripts %}
 <script type="text/javascript">
     function copyToClipboard() {
@@ -63,4 +64,3 @@
     }
 </script>
 {% endblock scripts %}
-</body>
