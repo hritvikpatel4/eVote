@@ -58,8 +58,7 @@
                     $.ajax({
                         url: url_redirect + "/upload/" + party_images_arr[i],
                         type: "GET",
-                        processData: false,
-                        contentType: false,
+                        async: false,
                         success: function(data, status) {
                             console.log(data);
                             console.log(typeof data);
@@ -77,8 +76,7 @@
                     $.ajax({
                         url: url_redirect + "/upload/" + rep_images_arr[i],
                         type: "GET",
-                        processData: false,
-                        contentType: false,
+                        async: false,
                         success: function(data, status) {
                             console.log(data);
                             console.log(typeof data);
