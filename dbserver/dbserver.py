@@ -165,9 +165,10 @@ def main():
     print("inside main")
     print("timer started")
     
-    dbserver.run(debug=False, host=host, use_reloader=False)
+    return dbserver
+    # dbserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()
 
-application = dbserver
+application = main()

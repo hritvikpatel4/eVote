@@ -386,10 +386,10 @@ def completeElection():
 def main():
     # webserver = Flask(__name__)
     
-    # return webserver
-    webserver.run(debug=False, host=host, use_reloader=False)
+    return webserver
+    # webserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()
 
-application = webserver
+application = main()

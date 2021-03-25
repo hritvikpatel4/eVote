@@ -34,7 +34,7 @@
     {% if voter_secretkey %}
     <div class="alert alert-info" role="alert">
         <input id="secret_key" type="text" value="{{ voter_secretkey }}">
-        <button id="copytoclipbutton">
+        <button id="copytoclipbutton" onclick="copyToClipboard()">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
         </button>
     </div>
@@ -43,43 +43,20 @@
     {% endif %}
 </div>
 {% block scripts %}
-<!-- <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script> -->
-<!-- <script type="text/javascript">
-    document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
-        var copyarea = document.getElementById("secret_key");
+<script type="text/javascript">
+    function copyToClipboard() {
+        var copyarea = document.querySelector("#secret_key");
         copyarea.focus();
         copyarea.select();
-        var success, msg;
 
-        try {
-            success = document.execCommand('copy');
-        } catch(err) {
-            console.log(err);
-        }
+        var success = document.execCommand('copy');
 
         if(success) {
-            document.getElementById("copytoclipbutton").innerText = "Copied!";
-            setTimeout(function() {
-                document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
-            }, 2500);
+            alert("Copied!");
         }
-
         else {
-            document.getElementById("copytoclipbutton").innerText = "Unable to copy! Please use Ctrl+C or Cmd+C to copy";
-            setTimeout(function() {
-                document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
-            }, 5000);
+            alert("Unable to copy!");
         }
-    });
-    
-    // var clipboard = new ClipboardJS('.copytoclipbutton');
-
-    // clipboard.on('success', function(e) {
-    //     $(e.trigger).text("Copied!");
-    //     e.clearSelection();
-    //     setTimeout(function() {
-    //         $(e.trigger).html(`<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" />`);
-    //     }, 2500);
-    // })
-</script> -->
+    }
+</script>
 {% endblock scripts %}

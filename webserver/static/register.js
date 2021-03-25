@@ -47,3 +47,30 @@ register_button.addEventListener("click", function(e) {
 
     xhr.send(payload);
 });
+
+// document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
+//     var copyarea = document.getElementById("secret_key");
+//     copyarea.focus();
+//     copyarea.select();
+//     var success, msg;
+
+//     try {
+//         success = document.execCommand('copy');
+//     } catch(err) {
+//         console.log(err);
+//     }
+
+//     if(success) {
+//         document.getElementById("copytoclipbutton").innerText = "Copied!";
+//         setTimeout(function() {
+//             document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+//         }, 2500);
+//     }
+
+//     else {
+//         document.getElementById("copytoclipbutton").innerText = "Unable to copy! Please use Ctrl+C or Cmd+C to copy";
+//         setTimeout(function() {
+//             document.getElementById("copytoclipbutton").innerHTML = `<img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />`;
+//         }, 5000);
+//     }
+// });
