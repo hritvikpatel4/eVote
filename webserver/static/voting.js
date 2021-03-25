@@ -1,6 +1,4 @@
-$(document).on("submit", "form", function(e) {
-    e.preventDefault();
-
+function submitVote() {
     $.ajax({
         url: "/api/submitvote" + "?id=" + voter_id + "&ctx=" + voter_secretkey,
         type: "POST",
@@ -26,4 +24,17 @@ $(document).on("submit", "form", function(e) {
             }, 3000);
         }
     });
+}
+
+$("input").keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
+        submitVote();
+    }
+});
+
+$(document).on("submit", "form", function(e) {
+    e.preventDefault();
+
+    submitVote();
 });

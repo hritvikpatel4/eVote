@@ -4,9 +4,7 @@ var auth_voter = document.getElementById("authVoter");
 let url_redirect = "http://34.117.18.201:80/";
 let api_url = "http://34.117.18.201:80/api/login";
 
-auth_voter.addEventListener("click", function(e) {
-    e.preventDefault();
-
+function authorize() {
     let voter_id = document.querySelector("#voter_id");
     let voter_secretkey = document.querySelector("#voter_secretkey");
     let voter_dob = document.querySelector("#voter_dob");
@@ -32,6 +30,19 @@ auth_voter.addEventListener("click", function(e) {
     var payload = JSON.stringify({"voter_id": voter_id.value, "voter_secretkey": voter_secretkey.value, "voter_dob": voter_dob.value});
 
     xhr.send(payload);
+}
+
+$("input").keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
+        authorize();
+    }
+});
+
+auth_voter.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    authorize();
 });
 
 register_button.addEventListener("click", function(e) {

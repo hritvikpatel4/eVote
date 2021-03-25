@@ -84,20 +84,23 @@
                 
                 for(var i = 0; i < data_size; i++) {
                     var childnode = document.createElement("div");
+                    var brnode = document.createElement("br");
+                    
                     childnode.classList.add("row");
                     childnode.classList.add("align-items-center");
+                    
                     childnode.innerHTML = `
                         <div class="col-md-2">
                             <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
                         </div>
                         <div class="col-md-3">
-                            <h4>${party_names_arr[i]}</h4>
+                            <h3>${party_names_arr[i]}</h3>
                         </div>
                         <div class="col-md-2">
                             <img src=${party_img_links[i]} width="90" />
                         </div>
                         <div class="col-md-3">
-                            <h4>${rep_names_arr[i]}</h4>
+                            <h3>${rep_names_arr[i]}</h3>
                         </div>
                         <div class="col-md-2">
                             <img src=${rep_img_links[i]} width="90" />
@@ -105,9 +108,6 @@
                     `;
                     
                     voteform.appendChild(childnode);
-                    
-                    var brnode = document.createElement("br");
-
                     voteform.appendChild(brnode);
                 }
             }
