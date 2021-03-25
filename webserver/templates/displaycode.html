@@ -1,21 +1,4 @@
-{% block scripts %}
-<script type="text/javascript">
-    function copyToClipboard() {
-        var copyarea = document.querySelector("#secret_key");
-        copyarea.focus();
-        copyarea.select();
-
-        var success = document.execCommand('copy');
-
-        if(success) {
-            alert("Copied!");
-        }
-        else {
-            alert("Unable to copy!");
-        }
-    }
-</script>
-{% endblock scripts %}
+{% extends 'register.html' %}
 <h3>Success!</h3>
 <h4>Please store the secret code safely. It is required when you login</h4>
 <br/>
@@ -60,3 +43,24 @@
     <div class="alert alert-danger" role="alert">Error! Please contact support</div>
     {% endif %}
 </div>
+<body>
+{% block scripts %}
+<script type="text/javascript">
+    function copyToClipboard() {
+        mainCopyToClipboard(document.querySelector("#secret_key"));
+        // var copyarea = document.querySelector("#secret_key");
+        // copyarea.focus();
+        // copyarea.select();
+
+        // var success = document.execCommand('copy');
+
+        // if(success) {
+        //     alert("Copied!");
+        // }
+        // else {
+        //     alert("Unable to copy!");
+        // }
+    }
+</script>
+{% endblock scripts %}
+</body>

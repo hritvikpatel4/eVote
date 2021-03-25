@@ -48,6 +48,20 @@ register_button.addEventListener("click", function(e) {
     xhr.send(payload);
 });
 
+function mainCopyToClipboard(ele) {
+    ele.focus();
+    ele.select();
+
+    var success = document.execCommand('copy');
+
+    if(success) {
+        alert("Copied!");
+    }
+    else {
+        alert("Unable to copy!");
+    }
+}
+
 // document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
 //     var copyarea = document.getElementById("secret_key");
 //     copyarea.focus();
