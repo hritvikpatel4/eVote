@@ -51,6 +51,8 @@
                 var party_img_links = new Array();
                 var rep_img_links = new Array();
 
+                console.log("party images");
+
                 for(var i = 0; i < data_size; i++) {
                     $.ajax({
                         url: url_redirect + "/upload/" + party_images_arr[i],
@@ -67,6 +69,8 @@
                         }
                     });
                 }
+
+                console.log("rep images");
 
                 for(var i = 0; i < data_size; i++) {
                     $.ajax({
@@ -85,11 +89,6 @@
                     });
                 }
 
-                for(var i = 0; i < data_size; i++) {
-                    console.log(party_img_links[i]);
-                    console.log(rep_img_links[i]);
-                }
-
                 var voteform = document.querySelector("#buildform");
                 
                 for(var i = 0; i < data_size; i++) {
@@ -104,13 +103,13 @@
                             <h4>${party_names_arr[i]}</h4>
                         </div>
                         <div class="col-md-2">
-                            <img src="${party_img_links[i]}" width="75" height="75" />
+                            <img src=${party_img_links[i]} width="75" height="75" />
                         </div>
                         <div class="col-md-3">
                             <h4>${rep_names_arr[i]}</h4>
                         </div>
                         <div class="col-md-2">
-                            <img src="${rep_img_links[i]}" width="75" height="75" />
+                            <img src=${rep_img_links[i]} width="75" height="75" />
                         </div>
                     `;
                     

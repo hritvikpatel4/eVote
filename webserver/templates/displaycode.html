@@ -1,24 +1,4 @@
 {% extends 'register.html' %}
-{% block scripts %}
-<script type="text/javascript">
-    function copyToClipboard() {
-        mainCopyToClipboard(document.querySelector("#secret_key"));
-        // var copyarea = document.querySelector("#secret_key");
-        // copyarea.focus();
-        // copyarea.select();
-
-        // var success = document.execCommand('copy');
-
-        // if(success) {
-        //     alert("Copied!");
-        // }
-        // else {
-        //     alert("Unable to copy!");
-        // }
-    }
-</script>
-{% endblock scripts %}
-{% block code_card %}
 <h3>Success!</h3>
 <h4>Please store the secret code safely. It is required when you login</h4>
 <br/>
@@ -54,8 +34,8 @@
     <br/>
     {% if voter_secretkey %}
     <div class="alert alert-info" role="alert">
-        <input id="secret_key" type="text" value="{{ voter_secretkey }}">
-        <button id="copytoclipbutton" onclick="copyToClipboard()">
+        <input id="secret_key" type="text" value="{{ voter_secretkey }}" disabled>
+        <button id="copytoclipbutton" onclick="mainCopyToClipboard(document.querySelector("#secret_key"));">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
         </button>
     </div>
@@ -63,4 +43,3 @@
     <div class="alert alert-danger" role="alert">Error! Please contact support</div>
     {% endif %}
 </div>
-{% endblock %}

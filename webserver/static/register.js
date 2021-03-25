@@ -31,7 +31,7 @@ register_button.addEventListener("click", function(e) {
     }
 
     xhr.onload = function() {
-        document.querySelector("#registerForm").style.display = "none";
+        // document.querySelector("#registerForm").style.display = "none";
         document.querySelector("#displaycode_container").style.display = "block";
         document.querySelector("#displaycode_card").style.display = "block";
         document.querySelector("#displaycode_card").innerHTML = this.responseText;
@@ -49,19 +49,19 @@ register_button.addEventListener("click", function(e) {
     xhr.send(payload);
 });
 
-function mainCopyToClipboard(ele) {
-    ele.focus();
-    ele.select();
+// function mainCopyToClipboard(ele) {
+//     ele.focus();
+//     ele.select();
 
-    var success = document.execCommand('copy');
+//     var success = document.execCommand('copy');
 
-    if(success) {
-        alert("Copied!");
-    }
-    else {
-        alert("Unable to copy!");
-    }
-}
+//     if(success) {
+//         alert("Copied!");
+//     }
+//     else {
+//         alert("Unable to copy!");
+//     }
+// }
 
 // document.getElementById("copytoclipbutton").addEventListener('click', function(e) {
 //     var copyarea = document.getElementById("secret_key");
