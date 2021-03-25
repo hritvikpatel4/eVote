@@ -15,6 +15,41 @@
             var rep_names_arr = JSON.parse({{ rep_names | tojson }});
             var rep_images_arr = JSON.parse({{ rep_images | tojson }});
             var data_size = parseInt('{{ data_size }}');
+
+            var party_img_links = new Array();
+            var rep_img_links = new Array();
+
+            for(var i = 0; i < data_size; i++) {
+                $.ajax({
+                    url: url_redirect + "/upload/" + party_images_arr[i],
+                    type: "GET",
+                    async: false,
+                    success: function(data, status) {
+                        console.log(data);
+                        console.log(typeof data);
+                        party_img_links.push(data)
+                    },
+                    error: function(data, status) {
+                        party_img_links.push("")
+                    }
+                });
+            }
+
+            for(var i = 0; i < data_size; i++) {
+                $.ajax({
+                    url: url_redirect + "/upload/" + rep_images_arr[i],
+                    type: "GET",
+                    async: false,
+                    success: function(data, status) {
+                        console.log(data);
+                        console.log(typeof data);
+                        rep_img_links.push(data)
+                    },
+                    error: function(data, status) {
+                        rep_img_links.push("")
+                    }
+                });
+            }
         </script>
     </head>
     <body>
@@ -49,45 +84,6 @@
         <script src="{{url_for('static', filename='voting.js')}}"></script>
         <script>
             window.onload = () => {
-                var party_img_links = new Array();
-                var rep_img_links = new Array();
-
-                console.log("party images");
-
-                for(var i = 0; i < data_size; i++) {
-                    $.ajax({
-                        url: url_redirect + "/upload/" + party_images_arr[i],
-                        type: "GET",
-                        async: false,
-                        success: function(data, status) {
-                            console.log(data);
-                            console.log(typeof data);
-                            party_img_links.push(data)
-                        },
-                        error: function(data, status) {
-                            party_img_links.push("")
-                        }
-                    });
-                }
-
-                console.log("rep images");
-
-                for(var i = 0; i < data_size; i++) {
-                    $.ajax({
-                        url: url_redirect + "/upload/" + rep_images_arr[i],
-                        type: "GET",
-                        async: false,
-                        success: function(data, status) {
-                            console.log(data);
-                            console.log(typeof data);
-                            rep_img_links.push(data)
-                        },
-                        error: function(data, status) {
-                            rep_img_links.push("")
-                        }
-                    });
-                }
-
                 var voteform = document.querySelector("#buildform");
                 
                 for(var i = 0; i < data_size; i++) {

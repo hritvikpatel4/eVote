@@ -33,7 +33,7 @@
     <br/>
     {% if voter_secretkey %}
     <div class="alert alert-info" role="alert">
-        <input id="secret_key" type="text" value="{{ voter_secretkey }}" disabled>
+        <input id="secret_key" type="text" value="{{ voter_secretkey }}" readonly>
         <button id="copytoclipbutton" onclick="mainCopyToClipboard(document.querySelector('#secret_key'))">
             <img src="{{url_for('static', filename='clippy.svg')}}" alt="Copy to clipboard" width="13" />
         </button>
