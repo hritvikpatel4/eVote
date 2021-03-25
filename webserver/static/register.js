@@ -31,6 +31,7 @@ register_button.addEventListener("click", function(e) {
     }
 
     xhr.onload = function() {
+        document.querySelector("#registerForm").style.display = "none";
         document.querySelector("#displaycode_container").style.display = "block";
         document.querySelector("#displaycode_card").style.display = "block";
         document.querySelector("#displaycode_card").innerHTML = this.responseText;

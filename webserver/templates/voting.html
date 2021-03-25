@@ -58,6 +58,8 @@
                         processData: false,
                         contentType: false,
                         success: function(data, status) {
+                            console.log(data);
+                            console.log(typeof data);
                             party_img_links.push(data)
                         },
                         error: function(data, status) {
@@ -73,6 +75,8 @@
                         processData: false,
                         contentType: false,
                         success: function(data, status) {
+                            console.log(data);
+                            console.log(typeof data);
                             rep_img_links.push(data)
                         },
                         error: function(data, status) {

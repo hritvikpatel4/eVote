@@ -8,27 +8,29 @@
     </head>
     <body>
         <div class="container-fluid">
-            <h2 class="position-absolute top-0 start-50 translate-middle-x shadow p-3 mb-5 bg-white rounded">eVote Registration</h2>
-            <form class="position-absolute top-50 start-50 translate-middle shadow p-3 mb-5 bg-white rounded">
-                <h3>Register</h3>
-                <br/>
-                <div class="mb-3">
-                    <label for="voter_id" class="form-label">Voter ID</label>
-                    <input type="text" class="form-control" id="voter_id" placeholder="Enter Voter ID">
-                </div>
-                <div class="mb-3">
-                    <label for="voter_name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="voter_name" placeholder="Enter Name as on Voter Card">
-                </div>
-                <div class="mb-3">
-                    <label for="voter_dob" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="voter_dob">
-                </div>
-                <div class="text-center" id="register_footer">
-                    <button id="register_button" type="button" class="btn btn-primary">Register</button>
-                </div>
-                <br/>
-            </form>
+            <div id="registerForm">
+                <h2 class="position-absolute top-0 start-50 translate-middle-x shadow p-3 mb-5 bg-white rounded">eVote Registration</h2>
+                <form class="position-absolute top-50 start-50 translate-middle shadow p-3 mb-5 bg-white rounded">
+                    <h3>Register</h3>
+                    <br/>
+                    <div class="mb-3">
+                        <label for="voter_id" class="form-label">Voter ID</label>
+                        <input type="text" class="form-control" id="voter_id" placeholder="Enter Voter ID">
+                    </div>
+                    <div class="mb-3">
+                        <label for="voter_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="voter_name" placeholder="Enter Name as on Voter Card">
+                    </div>
+                    <div class="mb-3">
+                        <label for="voter_dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="voter_dob">
+                    </div>
+                    <div class="text-center" id="register_footer">
+                        <button id="register_button" type="button" class="btn btn-primary">Register</button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
             <div id="displaycode_container" class="container-fluid position-absolute top-50 start-50 translate-middle shadow-lg p-3 bg-white rounded w-50">
                 <button type="button" id="displaycode_close_button" class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
                 <div id="displaycode_card" class="card">
