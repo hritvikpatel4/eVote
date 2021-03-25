@@ -166,7 +166,9 @@ def main():
     timer = RepeatedTimer(60, callOrdererBatching)
     timer.start()
     
-    load_balancer.run(debug=False, host=host, use_reloader=False)
+    return load_balancer
 
 if __name__ == '__main__':
     main()
+
+application = main()

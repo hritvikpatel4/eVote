@@ -255,7 +255,9 @@ def main():
     bc_name = process_output.stdout.decode()
     bc_number = bc_name[len("bc"):]
 
-    bc.run(debug=False, host=host, use_reloader=False)
+    return bc
 
 if __name__ == '__main__':
     main()
+
+application = main()

@@ -592,7 +592,9 @@ def main():
     orderer_name = process_output.stdout.decode()
     orderer_number = orderer_name[len("orderer"):]
 
-    orderer.run(debug=False, host=host, use_reloader=False)
+    return orderer
 
 if __name__ == '__main__':
     main()
+
+application = main()
