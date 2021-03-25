@@ -14,6 +14,8 @@ counter_db = "counter.db"
 db_ip = "0.0.0.0"
 print("XYZ")
 
+application = dbserver
+
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
 # Handler function to construct queries from the data sent from the webserver
