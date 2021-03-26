@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from timer.custom_timer import RepeatedTimer
+from custom_timer import RepeatedTimer
 from flask import Flask, request, jsonify, make_response
 import os, requests
 
