@@ -2,7 +2,7 @@
 
 from custom_timer import RepeatedTimer
 from flask import Flask, request, make_response
-import docker, os, requests
+import docker, os, re, requests
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
