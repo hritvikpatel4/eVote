@@ -2,7 +2,7 @@ function submitVote() {
     $.ajax({
         url: "/api/submitvote" + "?id=" + voter_id + "&ctx=" + voter_secretkey,
         type: "POST",
-        data: new FormData(this),
+        data: new FormData(document.getElementById("voteform")),
         processData: false,
         contentType: false,
         success: function(data, status) {
@@ -33,8 +33,14 @@ $("input").keypress(function(e) {
     }
 });
 
-$(document).on("submit", "form", function(e) {
+$("#voteform").on('submit', function(e) {
     e.preventDefault();
 
     submitVote();
-});
+})
+
+// $(document).on("submit", "form", function(e) {
+//     e.preventDefault();
+
+//     submitVote();
+// });

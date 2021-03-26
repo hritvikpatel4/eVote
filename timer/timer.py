@@ -7,12 +7,12 @@ import os, requests
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 timerapp = Flask(__name__)
-timer = None
+countdowntimer = None
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
 def triggerBatching():
-    timer.pause()
+    countdowntimer.pause()
     
     res = requests.get("http://127.0.0.1" + ":80" + "/api/lb/triggerBatching")
 
@@ -26,7 +26,7 @@ def triggerBatching():
 @timerapp.route("/resumeTimer", methods=["GET"])
 # Resumes the timer
 def resumeTimer():
-    timer.start()
+    countdowntimer.start()
 
     return make_response("", 200)
 
@@ -34,8 +34,8 @@ def resumeTimer():
 
 def main():
     print("timer started")
-    timer = RepeatedTimer(int(os.environ["INTERVAL"]), triggerBatching)
-    timer.start()
+    countdowntimer = RepeatedTimer(int(os.environ["INTERVAL"]), triggerBatching)
+    countdowntimer.start()
 
     timerapp.run(host="0.0.0.0", port=80, use_reloader=False, debug=False)
     # return timerapp
