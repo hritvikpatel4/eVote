@@ -12,7 +12,6 @@ host = "0.0.0.0"
 dbfile = "evote.db"
 counter_db = "counter.db"
 db_ip = "0.0.0.0"
-print("XYZ")
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -162,9 +161,6 @@ def clearDB():
 # ---------------------------------------- MAIN ----------------------------------------
 
 def main():
-    print("inside main")
-    print("timer started")
-    
     return dbserver
     # dbserver.run(debug=False, host=host, use_reloader=False)
 

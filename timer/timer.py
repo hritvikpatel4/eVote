@@ -13,7 +13,7 @@ timerapp = Flask(__name__)
 def triggerBatching():
     countdowntimer.pause()
     
-    res = requests.get("http://127.0.0.1" + ":80" + "/api/lb/triggerBatching")
+    res = requests.get("http://0.0.0.0:80" + "/api/lb/triggerBatching")
 
     if res.status_code != 200:
         print("Error triggering batching API on the load_balancer")

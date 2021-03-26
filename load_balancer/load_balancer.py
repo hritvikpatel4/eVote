@@ -114,7 +114,7 @@ def receiveAck():
     empty_temp_queue_thread.start()
     logging.debug("emptied temp queue")
     
-    res = requests.get("http://127.0.0.1" + ":8080" + "/resumeTimer")
+    res = requests.get("http://0.0.0.0:8080" + "/resumeTimer")
     if res.status_code != 200:
         logging.error("Could not resume timer")
         print("could not resume timer")
