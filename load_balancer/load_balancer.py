@@ -25,6 +25,24 @@ logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
+def getTimerIPs():
+    """
+    returns list of ip addr
+    """
+
+    client = docker.from_env()
+    container_list = client.containers.list()
+
+    timer_ip_list = []
+
+    for container in container_list:
+        if re.search("^timer[1-9][0-9]*", container.name):
+            out = container.exec_run("awk 'END{print $1}' /etc/hosts", stdout=True)
+            timer_ip_list.append(out.output.decode().split("\n")[0])
+    
+    client.close()
+    return timer_ip_list
+
 def getBCIPs():
     """
     returns list of ip addr
@@ -113,8 +131,10 @@ def receiveAck():
     empty_temp_queue_thread = threading.Thread(target=emptyTempQueue)
     empty_temp_queue_thread.start()
     logging.debug("emptied temp queue")
+
+    timer_ip = getTimerIPs()[0]
     
-    res = requests.get("http://0.0.0.0:8080" + "/resumeTimer")
+    res = requests.get("http://" + timer_ip + ":80" + "/resumeTimer")
     if res.status_code != 200:
         logging.error("Could not resume timer")
         print("could not resume timer")

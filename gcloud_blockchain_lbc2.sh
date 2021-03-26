@@ -108,7 +108,6 @@ sudo docker run -d \
     -e CUSTOM_PORT=80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
-    -p 8080:80 \
     ntwine/evote_timer:latest
 
 echo "Done!"
