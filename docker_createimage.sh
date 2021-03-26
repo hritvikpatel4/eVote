@@ -12,6 +12,8 @@ echo "creating orderer image"
 sudo docker build -t ntwine/evote_orderer:latest ./orderer
 echo "creating load_balancer image"
 sudo docker build -t ntwine/evote_lb:latest ./load_balancer
+echo "creating timer image"
+sudo docker build -t ntwine/evote_timer:latest ./timer
 
 echo "pushing webserver image to docker registry"
 sudo docker push ntwine/evote_web:latest
@@ -23,5 +25,7 @@ echo "pushing orderer image to docker registry"
 sudo docker push ntwine/evote_orderer:latest
 echo "pushing load_balancer image to docker registry"
 sudo docker push ntwine/evote_lb:latest
+echo "pushing timer image to docker registry"
+sudo docker push ntwine/evote_timer:latest
 
 echo "Done!"

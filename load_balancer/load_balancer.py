@@ -1,6 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from custom_timer import RepeatedTimer
+# from custom_timer import RepeatedTimer
 from flask import Flask, make_response, jsonify, request
 from queue import Queue
 import docker, logging, os, random, re, requests, subprocess, threading
@@ -11,7 +11,7 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
-timer = None
+# timer = None
 load_balancer = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
@@ -74,7 +74,7 @@ def emptyTempQueue():
 
 def callOrdererBatching():
     global HOLD_VOTES_TEMPORARY
-    timer.pause()
+    # timer.pause()
 
     # Put extra votes into another temp queue
     HOLD_VOTES_TEMPORARY = True
@@ -96,6 +96,13 @@ def callOrdererBatching():
 def health():
     return make_response("Alive and running!", 200)
 
+@load_balancer.route("/api/lb/triggerBatching", methods=["GET"])
+# API which calls the callOrdererBatching
+def triggerBatching():
+    callOrdererBatching()
+
+    return make_response("", 200)
+
 @load_balancer.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
@@ -105,10 +112,14 @@ def receiveAck():
     logging.debug("emptying temp queue")
     empty_temp_queue_thread = threading.Thread(target=emptyTempQueue)
     empty_temp_queue_thread.start()
-    # emptyTempQueue()
     logging.debug("emptied temp queue")
     
-    timer.start()
+    res = requests.get("http://127.0.0.1" + ":8080" + "/resumeTimer")
+    if res.status_code != 200:
+        logging.error("Could not resume timer")
+        print("could not resume timer")
+    
+    # timer.start()
 
     return make_response("", 200)
 
@@ -162,9 +173,9 @@ def getElectionResult():
 
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
-    print("timer started")
-    timer = RepeatedTimer(60, callOrdererBatching)
-    timer.start()
+    # print("timer started")
+    # timer = RepeatedTimer(60, callOrdererBatching)
+    # timer.start()
     
     return load_balancer
 

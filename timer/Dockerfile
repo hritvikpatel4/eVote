@@ -14,10 +14,9 @@ WORKDIR /usr/src/app
 
 RUN git clone https://github.com/hritvikpatel4/eVote.git \
     && cd eVote && git checkout dev && rm -rf webserver && rm -rf dbserver && rm -f *.sh *.json *.py *.md *.txt \
-    && rm -rf Blockchain && rm -rf bc && rm -rf orderer && rm -rf timer \
-    && cd load_balancer && pip install -r requirements.txt
+    && rm -rf Blockchain && rm -rf bc && rm -rf orderer && rm -rf load_balancer \
+    && cd timer && pip install -r requirements.txt
 
 EXPOSE 80
 
-CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn --log-level debug load_balancer"]
-# CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn --log-level debug wsgi:application"]
+CMD ["sh", "-c", "cd eVote/timer && gunicorn --log-level debug timer"]

@@ -95,4 +95,20 @@ sudo docker run -d \
     -p 80:80 \
     ntwine/evote_lb:latest
 
+echo "Spawning timer"
+
+sudo docker run -d \
+    --name timer1 \
+    --hostname timer1 \
+    --network blockchain \
+    -e INTERVAL=90 \
+    -e CURRENT_LEVEL=1 \
+    -e HIGHEST_LEVEL=2 \
+    -e CLUSTER_ID=1 \
+    -e CUSTOM_PORT=80 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /home/blockchain/logs:/usr/src/app/logs \
+    -p 8080:80 \
+    ntwine/evote_timer:latest
+
 echo "Done!"
