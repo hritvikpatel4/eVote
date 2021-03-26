@@ -7,7 +7,7 @@ import os, requests
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 timerapp = Flask(__name__)
-countdowntimer = None
+countdowntimer = RepeatedTimer(int(os.environ["INTERVAL"]), triggerBatching)
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
@@ -34,7 +34,6 @@ def resumeTimer():
 
 def main():
     print("timer started")
-    countdowntimer = RepeatedTimer(int(os.environ["INTERVAL"]), triggerBatching)
     countdowntimer.start()
 
     timerapp.run(host="0.0.0.0", port=80, use_reloader=False, debug=False)
