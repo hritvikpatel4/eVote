@@ -94,13 +94,13 @@
                             <input type="radio" id="${party_names_arr[i]}" name="vote" value="${party_names_arr[i]}:::${rep_names_arr[i]}" required>
                         </div>
                         <div class="col-md-3">
-                            <h3>${party_names_arr[i]}</h3>
+                            <h3>${party_names_arr[i].replace(/_/g, " ")}</h3>
                         </div>
                         <div class="col-md-2">
                             <img src=${party_img_links[i]} width="90" />
                         </div>
                         <div class="col-md-3">
-                            <h3>${rep_names_arr[i]}</h3>
+                            <h3>${rep_names_arr[i].replace(/_/g, " ")}</h3>
                         </div>
                         <div class="col-md-2">
                             <img src=${rep_img_links[i]} width="90" />

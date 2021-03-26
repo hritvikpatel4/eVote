@@ -12,8 +12,6 @@ timer = None
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
 
 def triggerBatching():
-    global timer
-
     timer.pause()
     
     res = requests.get("http://127.0.0.1" + ":80" + "/api/lb/triggerBatching")
@@ -28,8 +26,6 @@ def triggerBatching():
 @timerapp.route("/resumeTimer", methods=["GET"])
 # Resumes the timer
 def resumeTimer():
-    global timer
-    
     timer.start()
 
     return make_response("", 200)
@@ -45,5 +41,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-application = main()
