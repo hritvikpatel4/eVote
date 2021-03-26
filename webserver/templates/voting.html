@@ -80,7 +80,7 @@
                     });
                 }
 
-                var voteform = document.querySelector("#buildform");
+                var voteformparent = document.querySelector("#buildform");
                 
                 for(var i = 0; i < data_size; i++) {
                     var childnode = document.createElement("div");
@@ -107,8 +107,8 @@
                         </div>
                     `;
                     
-                    voteform.appendChild(childnode);
-                    voteform.appendChild(brnode);
+                    voteformparent.appendChild(childnode);
+                    voteformparent.appendChild(brnode);
                 }
             }
         </script>

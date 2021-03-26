@@ -1,8 +1,11 @@
-function submitVote() {
+function submitVote(voteform) {
+    console.log(voteform);
+    console.log(typeof voteform);
+
     $.ajax({
         url: "/api/submitvote" + "?id=" + voter_id + "&ctx=" + voter_secretkey,
         type: "POST",
-        data: new FormData(document.getElementById("voteform")),
+        data: new FormData(voteform),
         processData: false,
         contentType: false,
         success: function(data, status) {
@@ -29,18 +32,19 @@ function submitVote() {
 $("input").keypress(function(e) {
     if(e.which == 13) {
         e.preventDefault();
-        submitVote();
+
+        console.log(document.querySelector("#voteform"));
+        console.log(typeof document.querySelector("#voteform"));
+        
+        submitVote(document.querySelector("#voteform"));
     }
 });
 
 $("#voteform").on('submit', function(e) {
     e.preventDefault();
+    
+    console.log(this);
+    console.log(typeof this);
 
-    submitVote();
-})
-
-// $(document).on("submit", "form", function(e) {
-//     e.preventDefault();
-
-//     submitVote();
-// });
+    submitVote(this);
+});
