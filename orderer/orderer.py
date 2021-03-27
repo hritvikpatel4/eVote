@@ -11,6 +11,8 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 
 current_orderer_name = node_name
 
+print("global scope =", node_name, node_ip, current_orderer_name)
+
 # mutex = threading.Lock()
 orderer = Flask(__name__)
 host = "0.0.0.0"
@@ -617,6 +619,9 @@ def main():
     process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
     orderer_name = process_output.stdout.decode()
     orderer_number = orderer_name[len("orderer"):]
+
+    print("Inside main")
+    print(orderer_name, orderer_number)
 
     return orderer
 
