@@ -431,11 +431,13 @@ def receiveFromBCNode():
     global unique_votes
     
     if PUT_IN_TIMEOUT_Q:
+        print("1 -> receiveFromBCNode tempqueue")
         params = request.get_json()
 
         during_timeout_q.append(params)
     
     else:
+        print("1 -> receiveFromBCNode ordererforward")
         params = request.get_json()
 
         uniq_data_tuple = (int(params["level_number"]), int(params["cluster_id"]), int(params["batch_id"]))
@@ -491,6 +493,8 @@ def receiveVoteFromOrderer():
     global unique_votes
 
     params = request.get_json()
+
+    print("1 -> receiveVoteFromOrderer")
     # logging.debug("Received vote data from peer orderer {}".format(params))
     # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
 
@@ -520,6 +524,8 @@ def receiveVoteFromOrderer():
 def startBatching():
     global PUT_IN_TIMEOUT_Q
     PUT_IN_TIMEOUT_Q = True
+
+    print("1 -> startBatching")
     
     # logging.info("Running send_batch_votes()")
     send_batch_votes()
@@ -532,6 +538,8 @@ def receiveBatchesFromPeerOrderer():
     global batched_batchvotes
     global number_of_orderers
     global PUT_IN_TIMEOUT_Q
+
+    print("1 -> receiveBatchesFromPeerOrderer")
     
     batch_data_received = request.get_json()["batch_data"]
     batched_batchvotes.append(batch_data_received)

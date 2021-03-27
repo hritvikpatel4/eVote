@@ -181,6 +181,7 @@ def receiveVoteFromLowLevel():
         }
     """
 
+    print("1 -> receiveVoteFromLowLevel")
     params = request.get_json()
     
     # logging.debug("Data {} received from lower level with IP = {}".format(params, request.remote_addr))
@@ -202,6 +203,7 @@ def receiveVoteFromLowLevel():
 @bc.route("/api/bc/writeToBlockchain", methods=["POST"])
 # Receive intersection batch from orderer and write to blockchain
 def writeToBlockchain():
+    print("1 -> writeToBlockchain")
     params = request.get_json()["final_batch"]
 
     if len(params) == 0:
@@ -227,6 +229,7 @@ def writeToBlockchain():
 @bc.route("/api/bc/calculateElectionResult", methods=["GET"])
 # Sends the tallied election result from this cluster to the load_balancer
 def calculateElectionResult():
+    print("1 -> calculateElectionResult")
     with open("bc.csv", "r") as fileptr:
         csv_data = fileptr.readlines()
         csv_header = csv_data[0].split(",")[3:-1]
