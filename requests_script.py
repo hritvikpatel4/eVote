@@ -25,7 +25,7 @@ for i in election_data_list:
         temp[j] = temp[j].replace('"', "")
     final_election_data_list.append(temp)
 
-for i in range(1, 6):
+for i in range(1, 151):
     data = {
         "level_number": 0,
         "cluster_id": 0,
@@ -51,5 +51,6 @@ for i in range(1, 6):
     
     else:
         print("sent request number {}".format(i))
+        print(data)
 
 print("DONE!")

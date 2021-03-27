@@ -26,6 +26,8 @@ for i in range(1, len(result)):
 
 final_result = sorted(temp_result.items(), key=lambda item: -item[1])
 
+print(final_result)
+
 print("\n\tWinners:")
 
 if final_result[0] > final_result[1]:
