@@ -100,6 +100,10 @@ def emptyTempQueue():
     logging.debug("----------------------------------------------------------------")
     logging.debug("Temp_Q {}".format(batchids_temp))
     logging.debug("----------------------------------------------------------------")
+
+    print("----------------------------------------------------------------")
+    print("Temp_Q {}".format(batchids_temp))
+    print("----------------------------------------------------------------")
     
     for batch in temp_q:
         res = requests.post("http://" + node_ip + ":80" + "/castVote", json=batch)
