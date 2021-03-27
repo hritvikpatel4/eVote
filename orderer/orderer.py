@@ -427,6 +427,8 @@ def send_batch_votes():
         
         batched_batchvotes.clear()
 
+        PUT_IN_TIMEOUT_Q = False
+
         timeout_q_thread = threading.Thread(target=flushTimeoutQ)
         timeout_q_thread.start()
         diff_q_thread = threading.Thread(target=flushDiffQ)
@@ -436,8 +438,6 @@ def send_batch_votes():
     emptyReceiverQ()
     # flushTimeoutQ()
     # flushDiffQ()
-
-    PUT_IN_TIMEOUT_Q = False
 
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - getNumberOfBC() - 1
@@ -612,6 +612,8 @@ def receiveBatchesFromPeerOrderer():
         
         batched_batchvotes.clear()
 
+        PUT_IN_TIMEOUT_Q = False
+
         emptyReceiverQ()
         timeout_q_thread = threading.Thread(target=flushTimeoutQ)
         timeout_q_thread.start()
@@ -619,8 +621,6 @@ def receiveBatchesFromPeerOrderer():
         diff_q_thread.start()
         # flushTimeoutQ()
         # flushDiffQ()
-
-        PUT_IN_TIMEOUT_Q = False
     
     else:
         print("else part for the len(batched_batchvotes) == number_of_orderers")
