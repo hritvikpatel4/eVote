@@ -19,7 +19,6 @@ host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
 orderer_port = 80
 bc_port = 80
-higher_level_port = 80
 BC_LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 CURRENT_LEVEL = os.environ["CURRENT_LEVEL"] # This indicates the level of the cluster in the hierarchy
 CLUSTER_ID = os.environ["CLUSTER_ID"]
@@ -147,6 +146,9 @@ def passToHigherLevel(batch):
         rand_bc_num += batch[i]["batch_id"]
     
     rand_bc_num = (rand_bc_num % getNumberOfBC()) + 1
+
+    print("before passing passToHigherLevel", bc_number, CURRENT_LEVEL, HIGHEST_LEVEL)
+    print("rand_bc_num = {} | bc_num = {}".format(rand_bc_num, bc_number))
     
     if rand_bc_num == int(bc_number) and (CURRENT_LEVEL < HIGHEST_LEVEL):
         ans = batch[0]
@@ -159,7 +161,7 @@ def passToHigherLevel(batch):
         ans["level_number"] = int(CURRENT_LEVEL)
         ans["cluster_id"] = int(CLUSTER_ID)
         db_ip = getDBIPs()[0]
-        batch_id_res = requests.get("http://" + db_ip + ":" + str(port) + "/api/db/generateBatchID")
+        batch_id_res = requests.get("http://" + db_ip + ":80" + "/api/db/generateBatchID")
         batch_id = batch_id_res.json()["batchid"]
         ans["batch_id"] = int(batch_id)
 
