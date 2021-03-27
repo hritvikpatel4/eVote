@@ -433,13 +433,13 @@ def send_batch_votes():
 
         PUT_IN_TIMEOUT_Q = False
 
+        emptyReceiverQ()
         timeout_q_thread = threading.Thread(target=flushTimeoutQ)
         timeout_q_thread.start()
         diff_q_thread = threading.Thread(target=flushDiffQ)
         diff_q_thread.start()
 
     # logging.debug("Sent batch to all peer orderers")
-    emptyReceiverQ()
     # flushTimeoutQ()
     # flushDiffQ()
 
