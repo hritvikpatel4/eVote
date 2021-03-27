@@ -1,7 +1,7 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
-import csv, docker, hashlib, logging, os, random, re, requests, subprocess, threading
+import copy, csv, docker, hashlib, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -243,11 +243,11 @@ def writeToBlockchain():
     
     print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
-    writeToCSV(params.copy())
+    writeToCSV(copy.deepcopy(params))
 
     print("Written to csv!")
     
-    passToHigherLevel(params.copy())
+    passToHigherLevel(copy.deepcopy(params))
 
     return make_response("Successfully written to blockchain", 200)
 

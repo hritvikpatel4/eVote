@@ -51,6 +51,6 @@ for i in range(1, 151):
     
     else:
         print("sent request number {}".format(i))
-        print(data)
+        # print(data)
 
 print("DONE!")
