@@ -174,7 +174,7 @@ def getNumberOfBC():
 
 def flushTimeoutQ():
     """
-    Forwards all the batches to PEER ORDERERS present in the during_timeout_q.
+    Forwards all the batches to PEER ORDERERS present in the during_timeout_q and adds it to its own rec_q.
     The batches enter that queue when we are basically executing intersection logic and have received
     timeout from the load balancer
     """
@@ -195,12 +195,14 @@ def flushTimeoutQ():
 
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
+            
+            receiver_q.append(batch)
     
     during_timeout_q.clear()
 
 def flushDiffQ():
     """
-    Forwards the batches from this queue to PEER ORDERERS.
+    Forwards the batches from this queue to PEER ORDERERS and adds it to its own rec_q.
     Batches enter this queue from the output of the difference between receiver_q and the intersection batch
     """
 
@@ -220,6 +222,8 @@ def flushDiffQ():
 
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
+            
+            receiver_q.append(batch)
 
     diff_batch_q.clear()
 
