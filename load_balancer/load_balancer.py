@@ -183,8 +183,8 @@ def castVote():
         rand_bc_ip = random.choice(bc_ip_list)
         # print("bc ip list = ", bc_ip_list)
 
-        unique_visitors1.add(request.headers["X-Forwarded-For"][0])
-        unique_visitors2.add(request.headers["X-Forwarded-For"][1])
+        unique_visitors1.add(request.headers["X-Forwarded-For"].split(",")[0])
+        unique_visitors2.add(request.headers["X-Forwarded-For"].split(",")[1])
 
         params = request.get_json()
         

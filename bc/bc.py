@@ -132,9 +132,9 @@ def writeToCSV(dataToWrite):
         
         csvfile.flush()
     
-    ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
-    curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
-    ps.wait()
+    # ps = subprocess.Popen(('wc', 'bc.csv'), stdout=subprocess.PIPE)
+    # curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
+    # ps.wait()
 
     return
 
@@ -153,6 +153,7 @@ def passToHigherLevel(batch):
     print("rand_bc_num = {} | bc_num = {}".format(rand_bc_num, bc_number))
     
     if rand_bc_num == int(bc_number) and (CURRENT_LEVEL < HIGHEST_LEVEL):
+        print("I will pass to higher level. My num {}".format(rand_bc_num))
         ans = batch[0]
 
         for i in range(1, len(batch)):
@@ -166,6 +167,8 @@ def passToHigherLevel(batch):
         batch_id_res = requests.get("http://" + db_ip + ":80" + "/api/db/generateBatchID")
         batch_id = batch_id_res.json()["batchid"]
         ans["batch_id"] = int(batch_id)
+
+        print(ans)
 
         res = requests.post(HIGHER_LEVEL_IP + "/castVote", json=ans)
 
@@ -236,6 +239,8 @@ def writeToBlockchain():
     print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
     writeToCSV(params)
+
+    print("Written to csv!")
     
     passToHigherLevel(params)
 
