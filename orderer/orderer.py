@@ -319,8 +319,10 @@ def intersect_and_chooseRandOrd():
 
     logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
 
+    print("1 -> orderer{} will be chosen. my ord num is {}".format(rand_ord_num, int(orderer_number)))
+
     if rand_ord_num == int(orderer_number):
-        print("1 -> i was chosen as random_ord")
+        print("1 -> i (orderer{}) was chosen as random_ord".format(rand_ord_num))
         data = {
             "final_batch": intersection_batch
         }
@@ -371,23 +373,6 @@ def send_batch_votes():
     print("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
     logging.debug("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
 
-    if len(batched_batchvotes) == number_of_orderers:
-        batchids_rec = getOnlyBatchIDs(receiver_q)
-        batchids_timeout = getOnlyBatchIDs(during_timeout_q)
-        batchids_diff = getOnlyBatchIDs(diff_batch_q)
-        
-        logging.debug("----------------------------------------------------------------")
-        logging.debug("Receiver_Q {}".format(batchids_rec))
-        logging.debug("----------------------------------------------------------------")
-        logging.debug("Timeout_Q {}".format(batchids_timeout))
-        logging.debug("----------------------------------------------------------------")
-        logging.debug("Diff_Q {}".format(batchids_diff))
-        logging.debug("----------------------------------------------------------------")
-
-        intersect_and_chooseRandOrd()
-        
-        batched_batchvotes.clear()
-
     orderer_ip_list = getOrdererIPs()
     # logging.debug("Starting broadcast to peer orderers with the receiver_q")
 
@@ -407,12 +392,30 @@ def send_batch_votes():
         if res.status_code != 200:
             logging.error("Failed to send receiver_q to peer orderer with IP = {}".format(ip))
     
+    if len(batched_batchvotes) == number_of_orderers:
+        batchids_rec = getOnlyBatchIDs(receiver_q)
+        batchids_timeout = getOnlyBatchIDs(during_timeout_q)
+        batchids_diff = getOnlyBatchIDs(diff_batch_q)
+        
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Receiver_Q {}".format(batchids_rec))
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Timeout_Q {}".format(batchids_timeout))
+        logging.debug("----------------------------------------------------------------")
+        logging.debug("Diff_Q {}".format(batchids_diff))
+        logging.debug("----------------------------------------------------------------")
+
+        intersect_and_chooseRandOrd()
+        
+        batched_batchvotes.clear()
+
+        timeout_q_thread = threading.Thread(target=flushTimeoutQ)
+        timeout_q_thread.start()
+        diff_q_thread = threading.Thread(target=flushDiffQ)
+        diff_q_thread.start()
+
     # logging.debug("Sent batch to all peer orderers")
     emptyReceiverQ()
-    timeout_q_thread = threading.Thread(target=flushTimeoutQ)
-    timeout_q_thread.start()
-    diff_q_thread = threading.Thread(target=flushDiffQ)
-    diff_q_thread.start()
     # flushTimeoutQ()
     # flushDiffQ()
 
