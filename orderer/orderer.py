@@ -11,7 +11,9 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 
 current_orderer_name = node_name
 
-print("global scope =", node_name, node_ip, current_orderer_name)
+orderer_number = int(node_name[len("orderer"):])              # the current orderer number which is running
+
+print("global scope =", node_name, node_ip, current_orderer_name, orderer_number)
 
 # mutex = threading.Lock()
 orderer = Flask(__name__)
@@ -31,7 +33,6 @@ during_timeout_q = []           # This Q contains the batches which were sent by
 diff_batch_q = []               # This Q contains the extra batches which are not in the intersection_batch
 batched_batchvotes = []         # This is a structure which stores the vote data. IT'S A LIST(LIST(DICT)) eventually
 number_of_orderers = 3          # total number of orderers in each hierarchy
-orderer_number = 0              # the current orderer number which is running
 unique_votes = {}               # This is a structure which is used for detecting duplicate batches
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
@@ -616,12 +617,13 @@ def receiveBatchesFromPeerOrderer():
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
 
-    process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
-    orderer_name = process_output.stdout.decode()
-    orderer_number = orderer_name[len("orderer"):]
+    # process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
+    # orderer_name = process_output.stdout.decode().strip("\n")
+    # orderer_number = orderer_name[len("orderer"):]
 
-    print("Inside main")
-    print(orderer_name, orderer_number)
+    # print("Inside main")
+    # print("process output", process_output)
+    # print(orderer_name, orderer_number)
 
     return orderer
 

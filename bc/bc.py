@@ -9,6 +9,10 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
+bc_number = int(node_name[len("bc"):])
+
+print("global scope =", node_name, node_ip, bc_number)
+
 # mutex = threading.Lock()
 bc = Flask(__name__)
 host = "0.0.0.0"
@@ -24,7 +28,6 @@ HIGHER_LEVEL_IP = os.environ["HIGHER_LEVEL_IP"] if CURRENT_LEVEL < HIGHEST_LEVEL
 curr_tail_ptr = 1
 prev_tail_ptr = 1
 csv_header_fields = []
-bc_number = 0
 INIT_CSV_HEADER = False
 
 # when sending to higher BC node, send values in the range [prev_tail_ptr + 1, curr_tail_ptr + 1)
@@ -262,9 +265,9 @@ def calculateElectionResult():
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
     
-    process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
-    bc_name = process_output.stdout.decode()
-    bc_number = bc_name[len("bc"):]
+    # process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
+    # bc_name = process_output.stdout.decode()
+    # bc_number = bc_name[len("bc"):]
 
     return bc
 
