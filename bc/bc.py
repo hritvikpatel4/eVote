@@ -160,7 +160,15 @@ def passToHigherLevel(batch):
             for key in batch[i].keys():
                 if key not in ["batch_id", "cluster_id", "level_number"]:
                     ans[key] += batch[i][key]
-    
+        
+        count = 0
+
+        for key in ans.keys():
+            if key not in ["batch_id", "cluster_id", "level_number"]:
+                count += ans[key]
+        
+        print("Total votes in ANS are {}".format(count))
+
         ans["level_number"] = int(CURRENT_LEVEL)
         ans["cluster_id"] = int(CLUSTER_ID)
         db_ip = getDBIPs()[0]

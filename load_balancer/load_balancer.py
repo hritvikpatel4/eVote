@@ -2,7 +2,7 @@
 
 # from custom_timer import RepeatedTimer
 from flask import Flask, make_response, jsonify, request
-from queue import Queue
+# from queue import Queue
 import docker, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
@@ -22,13 +22,20 @@ bc_port = 80
 orderer_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 HOLD_VOTES_TEMPORARY = False
-temp_q = Queue(maxsize=0)
-unique_visitors1 = set()
-unique_visitors2 = set()
+# temp_q = Queue(maxsize=0)
+temp_q = []
 
 logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
+
+def getOnlyBatchIDs(listdata):
+    batch_ids = []
+
+    for data in listdata:
+        batch_ids.append(data["batch_id"])
+    
+    return batch_ids
 
 def getTimerIPs():
     """
@@ -87,15 +94,22 @@ def getOrdererIPs():
 def emptyTempQueue():
     # with mutex:
     print("1 -> emptyTempQueue")
-    while not temp_q.empty():
-        vote = temp_q.get()
 
-        res = requests.post("http://" + node_ip + ":80" + "/castVote", json=vote)
-        
+    batchids_temp = getOnlyBatchIDs(temp_q)
+
+    logging.debug("----------------------------------------------------------------")
+    logging.debug("Temp_Q {}".format(batchids_temp))
+    logging.debug("----------------------------------------------------------------")
+    
+    for batch in temp_q:
+        res = requests.post("http://" + node_ip + ":80" + "/castVote", json=batch)
+
         if res.status_code == 200:
             continue
         else:
-            logging.debug("Failed to send this vote {}".format(vote))
+            logging.debug("Failed to send this vote {}".format(batch))
+    
+    temp_q.clear()
 
 def callOrdererBatching():
     # with mutex:
@@ -151,12 +165,6 @@ def receiveAck():
     if res.status_code != 200:
         logging.error("Could not resume timer")
         print("could not resume timer")
-    
-    print()
-    print(unique_visitors1)
-    print()
-    print(unique_visitors2)
-    print()
 
     return make_response("", 200)
 
@@ -174,7 +182,8 @@ def castVote():
                 return make_response("Invalid data sent!", 400)
         
         logging.debug("Pushing requests temporarily to another queue")
-        temp_q.put(params)
+        # temp_q.put(params)
+        temp_q.append(params)
     
     else:
         print("1 -> castVote bcforward")
@@ -182,9 +191,6 @@ def castVote():
 
         rand_bc_ip = random.choice(bc_ip_list)
         # print("bc ip list = ", bc_ip_list)
-
-        unique_visitors1.add(request.headers["X-Forwarded-For"].split(",")[0])
-        unique_visitors2.add(request.headers["X-Forwarded-For"].split(",")[1])
 
         params = request.get_json()
         
