@@ -31,8 +31,9 @@ gcs_bucket = storage_client.bucket("evote-cdn")
 # key: "admin id"
 # value: "admin masterpwd"
 details = {
-    "admin_1": "admin@12",
-    "admin_2": "admin@123"
+    "hp": "hp",
+    "ap": "ap",
+    "as": "as",
 }
 
 # ---------------------------------------- WEB SERVER ENDPOINTS ----------------------------------------
