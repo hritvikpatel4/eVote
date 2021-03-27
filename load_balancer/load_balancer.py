@@ -23,7 +23,8 @@ orderer_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 HOLD_VOTES_TEMPORARY = False
 temp_q = Queue(maxsize=0)
-unique_visitors = set()
+unique_visitors1 = set()
+unique_visitors2 = set()
 
 logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
@@ -151,7 +152,11 @@ def receiveAck():
         logging.error("Could not resume timer")
         print("could not resume timer")
     
-    print(unique_visitors)
+    print()
+    print(unique_visitors1)
+    print()
+    print(unique_visitors2)
+    print()
 
     return make_response("", 200)
 
@@ -178,7 +183,8 @@ def castVote():
         rand_bc_ip = random.choice(bc_ip_list)
         # print("bc ip list = ", bc_ip_list)
 
-        unique_visitors.add(request.remote_addr)
+        unique_visitors1.add(request.headers["X-Forwarded-For"][0])
+        unique_visitors2.add(request.headers["X-Forwarded-For"][1])
 
         params = request.get_json()
         

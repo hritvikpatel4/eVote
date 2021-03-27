@@ -136,6 +136,8 @@ def writeToCSV(dataToWrite):
     curr_tail_ptr = subprocess.check_output(('awk', 'END{print $1}'), stdin=ps.stdout).decode().strip("\n")
     ps.wait()
 
+    return
+
 # batch -> list of dict
 def passToHigherLevel(batch):
     print("1 -> passToHigherLevel")
@@ -233,9 +235,9 @@ def writeToBlockchain():
     
     print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
-    passToHigherLevel(params)
-
     writeToCSV(params)
+    
+    passToHigherLevel(params)
 
     return make_response("Successfully written to blockchain", 200)
 
