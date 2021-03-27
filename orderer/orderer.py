@@ -180,6 +180,11 @@ def flushTimeoutQ():
     """
 
     print("1 -> flushTimeoutQ")
+    batchids_timeout = getOnlyBatchIDs(during_timeout_q)
+
+    print("----------------------------------------------------------------")
+    print("Timeout_Q {}".format(batchids_timeout))
+    print("----------------------------------------------------------------")
     
     orderer_ip_list = getOrdererIPs()
 
@@ -200,6 +205,11 @@ def flushDiffQ():
     """
 
     print("1 -> flushDiffQ")
+    batchids_diff = getOnlyBatchIDs(diff_batch_q)
+
+    print("----------------------------------------------------------------")
+    print("Diff_Q {}".format(batchids_diff))
+    print("----------------------------------------------------------------")
 
     orderer_ip_list = getOrdererIPs()
     
@@ -219,6 +229,11 @@ def emptyReceiverQ():
     """
 
     print("1 -> emptyReceiverQ")
+    batchids_rec = getOnlyBatchIDs(receiver_q)
+
+    print("----------------------------------------------------------------")
+    print("Rec_Q {}".format(batchids_rec))
+    print("----------------------------------------------------------------")
     
     receiver_q.clear()
 
@@ -450,6 +465,8 @@ def receiveFromBCNode():
     """
 
     global unique_votes
+
+    print("------- PUT_IN_TIMEOUT_Q = {} -------".format(PUT_IN_TIMEOUT_Q))
     
     if PUT_IN_TIMEOUT_Q:
         print("1 -> receiveFromBCNode tempqueue")
@@ -516,6 +533,7 @@ def receiveVoteFromOrderer():
     params = request.get_json()
 
     print("1 -> receiveVoteFromOrderer")
+    print("------- PUT_IN_TIMEOUT_Q = {} -------".format(PUT_IN_TIMEOUT_Q))
     # logging.debug("Received vote data from peer orderer {}".format(params))
     # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
 
