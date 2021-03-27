@@ -224,7 +224,12 @@ def writeToBlockchain():
     print("1 -> writeToBlockchain")
     params = request.get_json()["final_batch"]
 
+    print("--------------- PARAMS ---------------")
+    print(params)
+    print("--------------------------------------")
+
     if len(params) == 0:
+        print("Empty batch")
         return make_response("Empty batch received", 200)
     
     if not os.path.exists("bc.csv"):
@@ -238,11 +243,11 @@ def writeToBlockchain():
     
     print("Got Batch ids {}\n from IP {}".format(batchids, request.remote_addr))
 
-    writeToCSV(params)
+    writeToCSV(params.copy())
 
     print("Written to csv!")
     
-    passToHigherLevel(params)
+    passToHigherLevel(params.copy())
 
     return make_response("Successfully written to blockchain", 200)
 
