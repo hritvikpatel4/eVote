@@ -29,6 +29,7 @@ def getLBIPs():
     return lb_ip_list
 
 def triggerBatching():
+    print("1 -> triggerBatching")
     countdowntimer.pause()
 
     lb_ip = getLBIPs()[0]
@@ -45,6 +46,7 @@ def triggerBatching():
 @timerapp.route("/resumeTimer", methods=["GET"])
 # Resumes the timer
 def resumeTimer():
+    print("1 -> resumeTimer")
     countdowntimer.start()
 
     return make_response("", 200)
