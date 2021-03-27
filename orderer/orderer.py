@@ -178,6 +178,7 @@ def flushTimeoutQ():
     The batches enter that queue when we are basically executing intersection logic and have received
     timeout from the load balancer
     """
+    global unique_votes
 
     print("1 -> flushTimeoutQ")
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)
@@ -196,7 +197,11 @@ def flushTimeoutQ():
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
             
-            receiver_q.append(batch)
+            uniq_data_tuple = (int(batch["level_number"]), int(batch["cluster_id"]), int(batch["batch_id"]))
+
+            if uniq_data_tuple not in unique_votes:
+                unique_votes[uniq_data_tuple] = True
+                receiver_q.append(batch)
     
     during_timeout_q.clear()
 
@@ -205,6 +210,7 @@ def flushDiffQ():
     Forwards the batches from this queue to PEER ORDERERS and adds it to its own rec_q.
     Batches enter this queue from the output of the difference between receiver_q and the intersection batch
     """
+    global unique_votes
 
     print("1 -> flushDiffQ")
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
@@ -223,7 +229,11 @@ def flushDiffQ():
             if res.status_code != 200:
                 logging.error("Error sending batch to orderer with IP = {}".format(ip))
             
-            receiver_q.append(batch)
+            uniq_data_tuple = (int(batch["level_number"]), int(batch["cluster_id"]), int(batch["batch_id"]))
+
+            if uniq_data_tuple not in unique_votes:
+                unique_votes[uniq_data_tuple] = True
+                receiver_q.append(batch)
 
     diff_batch_q.clear()
 
