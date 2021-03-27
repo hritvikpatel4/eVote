@@ -1,7 +1,7 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
-import csv, docker, hashlib, logging, os, random, re, requests, subprocess
+import csv, docker, hashlib, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -9,6 +9,7 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
+# mutex = threading.Lock()
 bc = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
@@ -84,6 +85,8 @@ def getNumberOfBC():
 
 def initCsvHeader(csv_header):
     global csv_header_fields
+
+    print("1 -> initCsvHeader")
     
     csv_header_fields = list(csv_header.keys())
     csv_header_fields.append("prevHash")
@@ -101,6 +104,7 @@ def initCsvHeader(csv_header):
         csvfile.flush()
 
 def generateHash(block):
+    print("1 -> generateHash")
     s = ":::".join(block)
     hashed_s = hashlib.sha256(s.encode()).hexdigest()
 
@@ -108,6 +112,8 @@ def generateHash(block):
 
 def writeToCSV(dataToWrite):
     global curr_tail_ptr
+
+    print("1 -> writeToCsv")
 
     with open("bc.csv", "a") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
@@ -130,6 +136,8 @@ def writeToCSV(dataToWrite):
 
 # batch -> list of dict
 def passToHigherLevel(batch):
+    print("1 -> passToHigherLevel")
+
     rand_bc_num = 0
     
     for i in range(len(batch)):

@@ -11,6 +11,7 @@ node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, ca
 
 current_orderer_name = node_name
 
+# mutex = threading.Lock()
 orderer = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
@@ -174,6 +175,8 @@ def flushTimeoutQ():
     The batches enter that queue when we are basically executing intersection logic and have received
     timeout from the load balancer
     """
+
+    print("1 -> flushTimeoutQ")
     
     orderer_ip_list = getOrdererIPs()
 
@@ -193,6 +196,8 @@ def flushDiffQ():
     Batches enter this queue from the output of the difference between receiver_q and the intersection batch
     """
 
+    print("1 -> flushDiffQ")
+
     orderer_ip_list = getOrdererIPs()
     
     for batch in diff_batch_q:
@@ -209,6 +214,8 @@ def emptyReceiverQ():
     """
     Empties the receiver_q
     """
+
+    print("1 -> emptyReceiverQ")
     
     receiver_q.clear()
 
@@ -217,6 +224,7 @@ def intersect():
     global number_of_orderers
 
     if len(batched_batchvotes) > 0:
+        print("1 -> intersect() > 0")
         number_of_orderers = getNumberOfOrderers()
 
         quorum = (number_of_orderers // 2) + 1
@@ -282,12 +290,16 @@ def intersect():
             return list()
     
     else:
+        print("1 -> intersect() else part")
         return list()
 
 def intersect_and_chooseRandOrd():
     intersection_batch = intersect()
 
+    print("1 -> intersect_and_chooseRandOrd")
+
     if len(intersection_batch) == 0:
+        print("1 -> intersect_and_chooseRandOrd == 0")
         lb_ip_list = getLBIPs()
 
         for ip in lb_ip_list:
@@ -308,6 +320,7 @@ def intersect_and_chooseRandOrd():
     logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
 
     if rand_ord_num == int(orderer_number):
+        print("1 -> i was chosen as random_ord")
         data = {
             "final_batch": intersection_batch
         }
@@ -338,6 +351,8 @@ def send_batch_votes():
     global batched_batchvotes
     global number_of_orderers
     global PUT_IN_TIMEOUT_Q
+
+    print("1 -> send_batch_votes")
 
     batchids_rec = getOnlyBatchIDs(receiver_q)
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)

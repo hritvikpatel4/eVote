@@ -11,8 +11,10 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
+print(threading.get_ident())
+
 # timer = None
-mutex = threading.Lock()
+# mutex = threading.Lock()
 load_balancer = Flask(__name__)
 host = "0.0.0.0"
 # port = os.environ["CUSTOM_PORT"]
@@ -81,36 +83,36 @@ def getOrdererIPs():
     return orderer_ip_list
 
 def emptyTempQueue():
-    with mutex:
-        print("1 -> emptyTempQueue")
-        while not temp_q.empty():
-            vote = temp_q.get()
+    # with mutex:
+    print("1 -> emptyTempQueue")
+    while not temp_q.empty():
+        vote = temp_q.get()
 
-            res = requests.post("http://" + node_ip + ":80" + "/castVote", json=vote)
-            
-            if res.status_code == 200:
-                continue
-            else:
-                logging.debug("Failed to send this vote {}".format(vote))
+        res = requests.post("http://" + node_ip + ":80" + "/castVote", json=vote)
+        
+        if res.status_code == 200:
+            continue
+        else:
+            logging.debug("Failed to send this vote {}".format(vote))
 
 def callOrdererBatching():
-    with mutex:
-        print("1 -> callOrdererBatching")
-        global HOLD_VOTES_TEMPORARY
-        # timer.pause()
+    # with mutex:
+    print("1 -> callOrdererBatching")
+    global HOLD_VOTES_TEMPORARY
+    # timer.pause()
 
-        # Put extra votes into another temp queue
-        HOLD_VOTES_TEMPORARY = True
-        
-        orderer_ip_list = getOrdererIPs()
+    # Put extra votes into another temp queue
+    HOLD_VOTES_TEMPORARY = True
+    
+    orderer_ip_list = getOrdererIPs()
 
-        for ip in orderer_ip_list:
-            requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startBatching")
-        
-        logging.debug("Finished calling batching API on peer orderers")
+    for ip in orderer_ip_list:
+        requests.get("http://" + ip + ":" + str(orderer_port) + "/api/orderer/startBatching")
+    
+    logging.debug("Finished calling batching API on peer orderers")
 
-        # Wait till we receive ack from random orderer. GOTO /receiveack
-        return
+    # Wait till we receive ack from random orderer. GOTO /receiveack
+    return
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
@@ -131,10 +133,10 @@ def triggerBatching():
 @load_balancer.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
+    # with mutex:
     global HOLD_VOTES_TEMPORARY
     HOLD_VOTES_TEMPORARY = False
 
-    # with mutex:
     print("1 -> receiveAck")
     logging.debug("emptying temp queue")
     empty_temp_queue_thread = threading.Thread(target=emptyTempQueue)
@@ -147,8 +149,6 @@ def receiveAck():
     if res.status_code != 200:
         logging.error("Could not resume timer")
         print("could not resume timer")
-    
-    # timer.start()
 
     return make_response("", 200)
 
