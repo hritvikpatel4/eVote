@@ -40,7 +40,7 @@ logging.basicConfig(filename=BC_LOG_FILE, filemode='w', level=logging.DEBUG, for
 def initFernet():
     encryption_key = Fernet.generate_key()
     
-    with open(key_filename, "rb") as fileptr:
+    with open(key_filename, "wb") as fileptr:
         fileptr.write(encryption_key)
 
         fileptr.flush()
