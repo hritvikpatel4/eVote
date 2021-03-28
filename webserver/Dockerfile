@@ -8,16 +8,16 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN mkdir -p /usr/src/app/logs
 
 RUN apt update \
-    && apt install -y git
-
-RUN curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-333.0.0-linux-x86_64.tar.gz > /tmp/gcloud-sdk.tar.gz
-RUN mkdir -p /usr/local/gcloud \
+    && apt install -y git \
+    && curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-333.0.0-linux-x86_64.tar.gz > /tmp/gcloud-sdk.tar.gz \
+    && mkdir -p /usr/local/gcloud \
     && tar -C /usr/local/gcloud -xvf /tmp/gcloud-sdk.tar.gz \
     && /usr/local/gcloud/google-cloud-sdk/install.sh --quiet
 
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 COPY capstone-304713.json /tmp
 RUN gcloud auth activate-service-account capstone-service@capstone-304713.iam.gserviceaccount.com --key-file=/tmp/capstone-304713.json --project=capstone-304713
+RUN cd /tmp && rm -f capstone-304713.json gcloud-sdk.tar.gz
 
 WORKDIR /usr/src/app
 
