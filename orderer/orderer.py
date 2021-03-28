@@ -299,6 +299,14 @@ def intersect():
             diff_batch = transformed_rev_q.difference(ans)
             diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
 
+            print("----------------------------------------------------------------")
+            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
+            print("----------------------------------------------------------------")
+
+            print("----------------------------------------------------------------")
+            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
+            print("----------------------------------------------------------------")
+
             result = buildBatchFromMapping(list(ans), id_batch_mapping)
             result = sorted(result, key=lambda x: (x["level_number"], x["cluster_id"], x["batch_id"]))
 
@@ -318,6 +326,14 @@ def intersect():
             
             diff_batch = transformed_rev_q.difference(ans)
             diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
+
+            print("----------------------------------------------------------------")
+            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
+            print("----------------------------------------------------------------")
+
+            print("----------------------------------------------------------------")
+            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
+            print("----------------------------------------------------------------")
 
             return list()
     
