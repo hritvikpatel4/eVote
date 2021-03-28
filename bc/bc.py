@@ -1,6 +1,7 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
+from cryptography.fernet import Fernet
 import copy, csv, docker, hashlib, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
@@ -28,12 +29,26 @@ curr_tail_ptr = 1
 prev_tail_ptr = 1
 csv_header_fields = []
 INIT_CSV_HEADER = False
+key_filename = "{}_{}".format("bc", bc_number)
 
 # when sending to higher BC node, send values in the range [prev_tail_ptr + 1, curr_tail_ptr + 1)
 
 logging.basicConfig(filename=BC_LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
 
 # ---------------------------------------- MISC HANDLER FUNCTIONS ----------------------------------------
+
+def initFernet():
+    encryption_key = Fernet.generate_key()
+    
+    with open(key_filename, "rb") as fileptr:
+        fileptr.write(encryption_key)
+
+        fileptr.flush()
+
+    return
+
+def loadFernet():
+    return open(key_filename, "rb").read()
 
 def getDBIPs():
     """
@@ -98,10 +113,23 @@ def initCsvHeader(csv_header):
     for i in range(len(csv_header_fields)):
         genesisBlock[csv_header_fields[i]] = 0
 
-    with open("bc.csv", "a") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
-        writer.writeheader()
-        writer.writerow(genesisBlock)
+    with open("bc.csv", "ab") as csvfile:
+        fernet_key = Fernet(loadFernet())
+
+        csvfile.write(fernet_key.encode((",".join(csv_header_fields)).encode()) + b"\n")
+        
+        raw_s = ""
+
+        for i in csv_header_fields:
+            raw_s += genesisBlock[i] + ","
+        
+        raw_s = raw_s[:-1]
+
+        csvfile.write(fernet_key.encode(raw_s.encode()) + b"\n")
+
+        # writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
+        # writer.writeheader()
+        # writer.writerow(genesisBlock)
 
         csvfile.flush()
 
@@ -117,17 +145,27 @@ def writeToCSV(dataToWrite):
 
     print("1 -> writeToCsv")
 
-    with open("bc.csv", "a") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
+    with open("bc.csv", "ab") as csvfile:
+        # writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
+        fernet_key = Fernet(loadFernet())
         
         for i in range(len(dataToWrite)):
             last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
-            prev_batch = last_line.split(",")
+            prev_batch = fernet_key.decrypt(last_line).decode().strip("\n")
             prev_hash = generateHash(prev_batch)
             
             dataToWrite[i]["prevHash"] = prev_hash
             
-            writer.writerow(dataToWrite[i])
+            # writer.writerow(dataToWrite[i])
+            raw_s = ""
+
+            for i in csv_header_fields:
+                raw_s += dataToWrite[i] + ","
+            
+            raw_s = raw_s[:-1]
+
+            csvfile.write(fernet_key.encode(raw_s.encode()) + b"\n")
+
             csvfile.flush()
         
         csvfile.flush()
@@ -263,22 +301,56 @@ def writeToBlockchain():
 # Sends the tallied election result from this cluster to the load_balancer
 def calculateElectionResult():
     print("1 -> calculateElectionResult")
-    with open("bc.csv", "r") as fileptr:
-        csv_data = fileptr.readlines()
-        csv_header = csv_data[0].split(",")[3:-1]
+    with open("bc.csv", "rb") as fileptr:
+        fernet_key = Fernet(loadFernet())
+        
+        with open("{}_bc.csv".format("decrypted"), "a") as temp_ptr:
+            while True:
+                data = fileptr.readline()
 
-        data = [0] * len(csv_header)
+                if not data:
+                    break #EOF
 
-        for i in range(1, len(csv_data)):
-            temp = csv_data[i].split(",")[3:-1]
-            
-            for j in range(len(temp)):
-                data[j] += int(temp[j])
+                decrypted_data = fernet_key.decrypt(data).decode().strip("\n")
+                temp_ptr.write(decrypted_data + "\n")
+
+                temp_ptr.flush()
     
-    result = {}
+    with open("{}_bc.csv".format("decrypted"), "r") as fileptr:
+        fileptr.readline()
+        headers = csv_header_fields[3:-1]
 
-    for i in range(len(data)):
-        result[csv_header[i]] = data[i]
+        temp_values = [0] * len(headers)
+
+        while True:
+            data = fileptr.readline()[3:-1]
+            
+            while not data:
+                break #EOF
+
+            for i in range(len(data)):
+                temp_values[i] += int(data[i])
+    
+        result = {}
+
+        for i in range(len(headers)):
+            result[headers[i]] = temp_values[i]
+
+    # csv_data = fileptr.readlines()
+    # csv_header = csv_data[0].split(",")[3:-1]
+
+    # data = [0] * len(csv_header)
+
+    # for i in range(1, len(csv_data)):
+    #     temp = csv_data[i].split(",")[3:-1]
+        
+    #     for j in range(len(temp)):
+    #         data[j] += int(temp[j])
+    
+    # result = {}
+
+    # for i in range(len(data)):
+    #     result[csv_header[i]] = data[i]
 
     return make_response(result, 200)
 
@@ -290,6 +362,8 @@ def main():
     # process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
     # bc_name = process_output.stdout.decode()
     # bc_number = bc_name[len("bc"):]
+    
+    initFernet()
 
     return bc
 

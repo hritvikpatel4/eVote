@@ -6,3 +6,4 @@ venv*
 *.log
 *.json
 *.csv
+imp_commands.txt
