@@ -116,7 +116,7 @@ def initCsvHeader(csv_header):
     with open("bc.csv", "ab") as csvfile:
         fernet_key = Fernet(loadFernet())
 
-        csvfile.write(fernet_key.encode((",".join(csv_header_fields)).encode()) + b"\n")
+        csvfile.write(fernet_key.encrypt((",".join(csv_header_fields)).encode()) + b"\n")
         
         raw_s = ""
 
@@ -125,7 +125,7 @@ def initCsvHeader(csv_header):
         
         raw_s = raw_s[:-1]
 
-        csvfile.write(fernet_key.encode(raw_s.encode()) + b"\n")
+        csvfile.write(fernet_key.encrypt(raw_s.encode()) + b"\n")
 
         # writer = csv.DictWriter(csvfile, fieldnames=csv_header_fields)
         # writer.writeheader()
@@ -164,7 +164,7 @@ def writeToCSV(dataToWrite):
             
             raw_s = raw_s[:-1]
 
-            csvfile.write(fernet_key.encode(raw_s.encode()) + b"\n")
+            csvfile.write(fernet_key.encrypt(raw_s.encode()) + b"\n")
 
             csvfile.flush()
         
@@ -304,7 +304,7 @@ def calculateElectionResult():
     with open("bc.csv", "rb") as fileptr:
         fernet_key = Fernet(loadFernet())
         
-        with open("{}_bc.csv".format("decrypted"), "a") as temp_ptr:
+        with open("{}_bc.csv".format("decrypted"), "w") as temp_ptr:
             while True:
                 data = fileptr.readline()
 
