@@ -33,7 +33,7 @@
             <div class="container w-75 position-absolute top-50 start-50 translate-middle shadow p-3 bg-white rounded text-center">
                 <div class="dropdown">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Create Election</button>
-                    <div class="dropdown-menu translate-middle-y  shadow p-2 bg-white rounded" aria-labelledby="admin_dropdown">
+                    <div class="dropdown-menu translate-middle-y shadow p-2 bg-white rounded" aria-labelledby="admin_dropdown">
                         <div class="alert alert-danger" role="alert">Please do not use whitespaces in the names. Instead use underscores as a space.</div>
                         <div class="alert alert-danger" role="alert">Allowed file formats ".jpg", ".png", ".jpeg". The filenames should not have spaces in between.</div>
                         <form class="p-3 container-fluid" enctype="multipart/form-data">
@@ -70,6 +70,7 @@
                 </div>
                 <br/><br/>
                 <button id="get_results" type="button" class="btn btn-primary">Get Election Results</button>
+                <div class="dropdown-menu translate-middle-y shadow p-2 bg-white rounded" aria-labelledby="admin_dropdown"></div>
             </div>
         </div>
         <div id="snackbar"></div>

@@ -44,3 +44,15 @@ $('#logout-button').click(function(e) {
 
     window.location.replace(logout_url);
 });
+
+$("#get_results").on('click', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: "/api/election/complete",
+        type: "GET",
+        success: function(data, status) {
+             console.log(data);
+        }
+    })
+});

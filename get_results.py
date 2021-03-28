@@ -30,8 +30,11 @@ print(final_result)
 
 print("\n\tWinners:")
 
+winners = []
+
 if final_result[0] > final_result[1]:
     print("\t\t{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+    winners.append("\t\t{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
 
 else:
     print("\t\t{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
@@ -40,8 +43,13 @@ else:
         while final_result[0] == final_result[i]:
             print("\t\t{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
             i += 1
+            winners.append("\t\t{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
     
     except IndexError:
         pass
 print()
 os.remove("data.json")
+
+final_result["winners"] = winners
+
+print(json.dumps(final_result, indent=2))
