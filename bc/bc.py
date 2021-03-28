@@ -152,9 +152,9 @@ def writeToCSV(dataToWrite):
         fernet_key = Fernet(loadFernet())
         
         for i in range(len(dataToWrite)):
-            last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
+            last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout
             print("last_line {}".format(last_line))
-            prev_batch = fernet_key.decrypt(last_line).decode().strip("\n")
+            prev_batch = ((fernet_key.decrypt(last_line)).decode()).strip("\n")
             print("prev_batch {}".format(prev_batch))
             prev_hash = generateHash(prev_batch)
             
