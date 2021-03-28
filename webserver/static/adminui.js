@@ -52,7 +52,7 @@ $("#get_results").on('click', function(e) {
         url: "/api/election/complete",
         type: "GET",
         success: function(data, status) {
-             console.log(data);
+            console.log(data);
         }
     })
 });

@@ -201,7 +201,8 @@ def flushTimeoutQ():
 
             if uniq_data_tuple not in unique_votes:
                 unique_votes[uniq_data_tuple] = True
-                receiver_q.append(batch)
+            
+            receiver_q.append(batch)
     
     during_timeout_q.clear()
 
@@ -233,7 +234,8 @@ def flushDiffQ():
 
             if uniq_data_tuple not in unique_votes:
                 unique_votes[uniq_data_tuple] = True
-                receiver_q.append(batch)
+            
+            receiver_q.append(batch)
 
     diff_batch_q.clear()
 

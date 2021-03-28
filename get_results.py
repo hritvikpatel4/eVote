@@ -48,6 +48,7 @@ else:
     
     except IndexError:
         pass
+
 print()
 os.remove("data.json")
 
@@ -65,32 +66,6 @@ json_result["winners"] = winners
 print(json.dumps(json_result, indent=2))
 
 """
-Temp_Q [121]
-1 -> emptyTempQueue
-Temp_Q [179, 181, 182, 183, 184, 185, 186]
-1 -> emptyTempQueue
-Temp_Q [246, 248]
-1 -> emptyTempQueue
-Temp_Q [310, 311]
-1 -> emptyTempQueue
-Temp_Q [375]
-1 -> emptyTempQueue
-Temp_Q [435]
 
-------------------------------------------------
-
-Temp_Q [113, 114]
-1 -> emptyTempQueue
-Temp_Q [173, 174]
-1 -> emptyTempQueue
-Temp_Q [235, 236, 237, 238, 239]
-1 -> emptyTempQueue
-Temp_Q [299, 300, 301, 303]
-1 -> emptyTempQueue
-Temp_Q [361, 362, 363, 364, 366, 367, 369]
-1 -> emptyTempQueue
-Temp_Q [426, 427, 428]
-1 -> emptyTempQueue
-Temp_Q [486]
 
 """

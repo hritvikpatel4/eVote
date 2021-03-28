@@ -400,26 +400,40 @@ def completeElection():
 
     winners = []
 
-    if final_result[0] > final_result[1]:
-        winners.append("\t\t{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+    if final_result[0][1] > final_result[1][1]:
+        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
 
     else:
+        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
         try:
             i = 1
-            while final_result[0] == final_result[i]:
+            while final_result[0][1] == final_result[i][1]:
+                winners.append("{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
                 i += 1
-                winners.append("\t\t{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
         
         except IndexError:
             pass
     
     os.remove("data.json")
-    final_result["winners"] = winners
+
+    final_result_list = []
+
+    for data in final_result:
+        temp = list(data)
+
+        final_result_list.append(temp)
+
+    json_result = {}
+    json_result["final_result"] = final_result_list
+    json_result["winners"] = winners
     
     # Once results of election is given, clear all the databases
-    requests.post(db_ip + "/api/db/clear")
+    # res = requests.post(db_ip + "/api/db/clear")
 
-    return make_response(final_result, 200)
+    # if res.status_code != 200:
+    #     print("Error clearing DB")
+
+    return make_response(json_result, 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

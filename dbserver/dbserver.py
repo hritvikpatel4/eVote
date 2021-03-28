@@ -150,8 +150,15 @@ def clearDB():
     }
 
     try:
-        requests.post("http://" + db_ip + ":" + str(port) + "/api/db/modify", json = data1)
-        requests.post("http://" + db_ip + ":" + str(port) + "/api/db/modify", json = data2)
+        requests.post("http://" + db_ip + ":80" + "/api/db/modify", json = data1)
+        requests.post("http://" + db_ip + ":80" + "/api/db/modify", json = data2)
+
+        conn = connectDB(counter_db)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE counter SET batch_id = 1;")
+        conn.commit()
+        cursor.close()
+        conn.close()
         
         return make_response("", 200)
     
