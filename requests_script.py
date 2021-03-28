@@ -28,7 +28,7 @@ for i in election_data_list:
 for i in range(1, 501):
     data = {
         "level_number": 0,
-        "cluster_id": 0,
+        "cluster_id": 1,
         "batch_id": i
     }
 
