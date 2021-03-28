@@ -153,6 +153,7 @@ def writeToCSV(dataToWrite):
         
         for i in range(len(dataToWrite)):
             last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout.decode()
+            print("last_line {}".format(last_line))
             prev_batch = fernet_key.decrypt(last_line).decode().strip("\n")
             print("prev_batch {}".format(prev_batch))
             prev_hash = generateHash(prev_batch)
@@ -162,8 +163,8 @@ def writeToCSV(dataToWrite):
             # writer.writerow(dataToWrite[i])
             raw_s = ""
 
-            for i in csv_header_fields:
-                raw_s += (str(dataToWrite[i]) + ",")
+            for header in csv_header_fields:
+                raw_s += (str(dataToWrite[i][header]) + ",")
             
             raw_s = raw_s[:-1]
 
