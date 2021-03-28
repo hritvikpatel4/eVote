@@ -259,6 +259,7 @@ def emptyReceiverQ():
     
     receiver_q.clear()
 
+"""
 def intersect():
     global diff_batch_q
     global number_of_orderers
@@ -348,8 +349,8 @@ def intersect():
     else:
         print("1 -> intersect() else part")
         return list()
-
 """
+
 def intersect():
     global diff_batch_q
     global number_of_orderers
@@ -449,7 +450,6 @@ def intersect():
     else:
         print("1 -> intersect() else part")
         return list()
-"""
 
 def intersect_and_chooseRandOrd():
     intersection_batch = intersect()
