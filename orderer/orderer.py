@@ -381,7 +381,10 @@ def intersect():
         
         if i < len(extracted_batched_batchvotes):
             for j in range(len(extracted_batched_batchvotes[i])):
-                batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+                if extracted_batched_batchvotes[i][j] in batch_ids_freq:
+                    batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+                else:
+                    batch_ids_freq[extracted_batched_batchvotes[i][j]] = 1
 
             while i < len(extracted_batched_batchvotes):
                 if len(extracted_batched_batchvotes[i]) == 0:
@@ -391,7 +394,10 @@ def intersect():
                     print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
                     
                     for j in range(len(extracted_batched_batchvotes[i])):
-                        batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+                        if extracted_batched_batchvotes[i][j] in batch_ids_freq:
+                            batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+                        else:
+                            batch_ids_freq[extracted_batched_batchvotes[i][j]] = 1
                     
                     count += 1
                 
