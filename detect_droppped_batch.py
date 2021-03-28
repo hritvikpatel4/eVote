@@ -13,6 +13,7 @@ for i in range(len(files)):
         data = fileptr.readlines()[2:]
 
         for j in range(len(data)):
-            votes.remove(int(data[j].split(",")[2]))
+            if int(data[j].split(",")[2]) in votes:
+                votes.remove(int(data[j].split(",")[2]))
 
 print(votes)

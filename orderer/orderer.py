@@ -202,6 +202,9 @@ def flushTimeoutQ():
             if uniq_data_tuple not in unique_votes:
                 unique_votes[uniq_data_tuple] = True
             
+            if batch in receiver_q:
+                receiver_q.remove(batch)
+            
             receiver_q.append(batch)
     
     during_timeout_q.clear()
@@ -234,6 +237,9 @@ def flushDiffQ():
 
             if uniq_data_tuple not in unique_votes:
                 unique_votes[uniq_data_tuple] = True
+            
+            if batch in receiver_q:
+                receiver_q.remove(batch)
             
             receiver_q.append(batch)
 
@@ -342,6 +348,108 @@ def intersect():
     else:
         print("1 -> intersect() else part")
         return list()
+
+"""
+def intersect():
+    global diff_batch_q
+    global number_of_orderers
+
+    if len(batched_batchvotes) > 0:
+        print("1 -> intersect() > 0")
+        number_of_orderers = getNumberOfOrderers()
+
+        quorum = (number_of_orderers // 2) + 1
+        
+        logging.debug("Starting intersection")
+
+        id_batch_mapping = {}
+        ans = set()
+        
+        # extracted_batched_batchvotes = list(list(tuple(int))) where int is the type of any of these values (level_number, cluster_id, batch_id)
+        extracted_batched_batchvotes, id_batch_mapping = extractAllIDs(batched_batchvotes, id_batch_mapping)
+
+        batch_ids_freq = {}
+
+        i = 0
+        count = 0
+
+        while i < len(extracted_batched_batchvotes) and len(extracted_batched_batchvotes[i]) == 0:
+            i += 1
+        
+        print("i {}".format(i))
+        
+        if i < len(extracted_batched_batchvotes):
+            for j in range(len(extracted_batched_batchvotes[i])):
+                batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+
+            while i < len(extracted_batched_batchvotes):
+                if len(extracted_batched_batchvotes[i]) == 0:
+                    print("skipped batch i={} because it was empty".format(i))
+
+                else:
+                    print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
+                    
+                    for j in range(len(extracted_batched_batchvotes[i])):
+                        batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
+                    
+                    count += 1
+                
+                i += 1
+        
+        for key in batch_ids_freq:
+            if batch_ids_freq[key] >= quorum:
+                ans.add(key)
+        
+        print("count for quorum {}".format(count))
+        
+        if count >= quorum:
+            transformed_rev_q = set(transformRecQ(receiver_q))
+            
+            diff_batch = transformed_rev_q.difference(ans)
+            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
+
+            print("----------------------------------------------------------------")
+            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
+            print("----------------------------------------------------------------")
+
+            print("----------------------------------------------------------------")
+            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
+            print("----------------------------------------------------------------")
+
+            result = buildBatchFromMapping(list(ans), id_batch_mapping)
+            result = sorted(result, key=lambda x: (x["level_number"], x["cluster_id"], x["batch_id"]))
+
+            batch_ids = getOnlyBatchIDs(result)
+
+            print("Intersection batch {}".format(batch_ids))
+            logging.debug("----------------------------------------------------------------")
+            logging.debug("Intersection batch {}".format(batch_ids))
+            logging.debug("----------------------------------------------------------------")
+
+            id_batch_mapping.clear()
+
+            return result
+        
+        else:
+            transformed_rev_q = set(transformRecQ(receiver_q))
+            
+            diff_batch = transformed_rev_q.difference(ans)
+            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
+
+            print("----------------------------------------------------------------")
+            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
+            print("----------------------------------------------------------------")
+
+            print("----------------------------------------------------------------")
+            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
+            print("----------------------------------------------------------------")
+
+            return list()
+    
+    else:
+        print("1 -> intersect() else part")
+        return list()
+"""
 
 def intersect_and_chooseRandOrd():
     intersection_batch = intersect()
