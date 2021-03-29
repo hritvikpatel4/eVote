@@ -55,7 +55,7 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
             console.log(data);
             console.log(typeof data);
             // var results_data = JSON.parse(data);
-            document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(results_data, undefined, 4);
+            document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(data, undefined, 4);
         }
     });
 });
