@@ -53,7 +53,8 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
         type: "GET",
         success: function(data, status) {
             console.log(data);
-            var results_data = JSON.parse(data);
+            console.log(typeof data);
+            // var results_data = JSON.parse(data);
             document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(results_data, undefined, 4);
         }
     });
