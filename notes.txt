@@ -50,7 +50,6 @@ Low-level Report formatting - Saturday (20th March)
 
 ——————————————————————————————————————
 
-Fernet package csv encryption
 RSA auth
 
 ——————————————————————————————————————
@@ -60,7 +59,8 @@ RSA auth
 1. After review 2, we tested wtih 200 votes, we got a result of 197 votes being written to the blockchain
     batch id which were not written were -> 116, 117, 154
 
-2. To solve the above issue, here is a solution
+2.                              [NOT REQUIRED AS PROBLEM FIXED]
+    To solve the above issue, here is a solution
     Use Redis as a shared in-memory store/dictionary.
     On the bc side, every batch which comes in, take its batch id and add it to redis.
     When the intersection is calculated by the orderer, and a random orderer sends it back to the bc node,
@@ -84,8 +84,6 @@ RSA auth
             4, 5, 6 - to be sent by the bc to the orderer
 
 3. Make a flowchart for the algorithms
-
-4. automation of deploy.py from another central instance which will also serve the purpose of generating clusterid
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -127,5 +125,4 @@ Also writing to blockchain code has to be modified to take the cluster_id into a
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-CSV encryption
 RSA

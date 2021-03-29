@@ -16,4 +16,6 @@
 
 - 9. check all environ vars and the deploy scripts before testing it out -> 19th march
 
-10. RSA and CSV encryption
+10. RSA
+
+- 11. CSV encryption
