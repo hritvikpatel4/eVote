@@ -53,6 +53,8 @@ $("#get_results").on('click', function(e) {
         type: "GET",
         success: function(data, status) {
             console.log(data);
+            var results_data = JSON.parse(data);
+            document.getElementById("election-results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(results_data, undefined, 4);
         }
     })
 });

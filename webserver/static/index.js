@@ -20,10 +20,14 @@ function authorize() {
             window.location.assign(voting_url + "?id=" + voter_id.value + "&ctx=" + voter_secretkey.value);
         }
 
+        else if(this.readyState === 3) {
+            
+        }
+
         else {
             document.body.innerText = "Error! Please login again";
 
-            setTimeout(function() {window.location.replace(url_redirect);}, 5000);
+            setTimeout(function() {window.location.replace(url_redirect);}, 10000);
         }
     }
 

@@ -323,6 +323,8 @@ def calculateElectionResult():
 
                 temp_ptr.flush()
     
+    result = {}
+
     with open("{}_bc.csv".format("decrypted"), "r") as fileptr:
         fileptr.readline()
         headers = csv_header_fields[3:-1]
@@ -337,8 +339,6 @@ def calculateElectionResult():
 
             for i in range(len(data)):
                 temp_values[i] += int(data[i])
-    
-        result = {}
 
         for i in range(len(headers)):
             result[headers[i]] = temp_values[i]
