@@ -53,7 +53,19 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
         type: "GET",
         success: function(data, status) {
             console.log(data);
-            $("pre").html(JSON.stringify(data, undefined, 4));
+
+            var winners = data["winners"];
+            $("#election_results").append(`<h2>Winners</h2>`);
+            for(var i = 0; i < winners.length; i++) {
+                $("#election_results").append(`<h4>${winners[i].replace("::", " ")}</h4>`);
+            }
+
+            var final_result = data["final_result"];
+            $("#election_results").append(`<h3>Election Results</h3>`);
+            for(var i = 0; i < final_result.length; i++) {
+                $("#election_results").append(`<p>${final_result[i][0].replace("::", " ")} - ${final_result[i][1]} votes</p>`);
+            }
+            // $("pre").html(JSON.stringify(data, undefined, 4));
         }
     });
 });
