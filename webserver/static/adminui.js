@@ -45,16 +45,18 @@ $('#logout-button').click(function(e) {
     window.location.replace(logout_url);
 });
 
-$("#get_results").on('click', function(e) {
-    e.preventDefault();
-
+$('.results_dropdown').on('show.bs.dropdown', function() {
     $.ajax({
-        url: "/api/election/complete",
+        url: "http://34.117.18.201:80" + "/api/election/complete",
         type: "GET",
         success: function(data, status) {
             console.log(data);
             var results_data = JSON.parse(data);
-            document.getElementById("election-results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(results_data, undefined, 4);
+            document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(results_data, undefined, 4);
         }
-    })
+    });
+});
+
+$('.results_dropdown').on('hide.bs.dropdown', function() {
+    document.getElementById("election_results").innerHTML = "";
 });

@@ -153,9 +153,9 @@ def writeToCSV(dataToWrite):
         
         for i in range(len(dataToWrite)):
             last_line = subprocess.run(["tail", "-1", "bc.csv"], shell=False, capture_output=True).stdout
-            print("last_line {}".format(last_line))
+            # print("last_line {}".format(last_line))
             prev_batch = ((fernet_key.decrypt(last_line)).decode()).strip("\n")
-            print("prev_batch {}".format(prev_batch))
+            # print("prev_batch {}".format(prev_batch))
             prev_hash = generateHash(prev_batch)
             
             dataToWrite[i]["prevHash"] = prev_hash
@@ -168,7 +168,7 @@ def writeToCSV(dataToWrite):
             
             raw_s = raw_s[:-1]
 
-            print("raw_s {}".format(raw_s))
+            # print("raw_s {}".format(raw_s))
 
             csvfile.write(fernet_key.encrypt(raw_s.encode()) + b"\n")
 
@@ -336,7 +336,7 @@ def calculateElectionResult():
             data = fileptr.readline().split(",")[3:-1]
             print("data {}".format(data))
             
-            while not data:
+            if not data:
                 break #EOF
 
             for i in range(len(data)):
