@@ -55,13 +55,13 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
             console.log(data);
 
             var winners = data["winners"];
-            $("#election_results").append(`<h2>Winners</h2>`);
+            $("#election_results").append(`<h2 class="text-center">Winners</h2>`);
             for(var i = 0; i < winners.length; i++) {
-                $("#election_results").append(`<h4>${winners[i].replace("::", " ")}</h4>`);
+                $("#election_results").append(`<p>${winners[i].replace("::", " ")}</p>`);
             }
 
             var final_result = data["final_result"];
-            $("#election_results").append(`<h3>Election Results</h3>`);
+            $("#election_results").append(`<h3 class="text-center">Election Results</h3>`);
             for(var i = 0; i < final_result.length; i++) {
                 $("#election_results").append(`<p>${final_result[i][0].replace("::", " ")} - ${final_result[i][1]} votes</p>`);
             }
