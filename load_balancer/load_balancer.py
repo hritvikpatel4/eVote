@@ -219,6 +219,13 @@ def getElectionResult():
 
     res = requests.get("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/calculateElectionResult")
 
+    if res.status_code != 200:
+        return make_response("Error to retrieve result", 400)
+    
+    print("---------")
+    print("result {}".format(res.json()))
+    print("---------")
+
     result = res.json()
     
     return make_response(result, 200)
