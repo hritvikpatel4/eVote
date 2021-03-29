@@ -16,7 +16,8 @@ result = []
 for ip in ip_list:
     res = requests.get("http://" + ip + ":80" + "/getElectionResult")
 
-    result.append(res.json())
+    if res.status_code == 200:
+            result.append(res.json())
 
 temp_result = result[0]
 

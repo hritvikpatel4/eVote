@@ -46,6 +46,8 @@ $('#logout-button').click(function(e) {
 });
 
 $('.results_dropdown').on('show.bs.dropdown', function() {
+    console.log("Show Event fired!");
+
     $.ajax({
         url: "http://34.117.18.201:80" + "/api/election/complete",
         type: "GET",
@@ -58,5 +60,7 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
 });
 
 $('.results_dropdown').on('hide.bs.dropdown', function() {
+    console.log("Hide Event fired!");
+
     document.getElementById("election_results").innerHTML = "";
 });
