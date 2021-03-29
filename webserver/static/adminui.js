@@ -45,8 +45,8 @@ $('#logout-button').click(function(e) {
     window.location.replace(logout_url);
 });
 
-$('.results_dropdown').on('show.bs.dropdown', function() {
-    console.log("Show Event fired!");
+$("election_results_button").on('click', function(e) {
+    e.preventDefault();
 
     $.ajax({
         url: "http://34.117.18.201:80" + "/api/election/complete",
@@ -56,12 +56,28 @@ $('.results_dropdown').on('show.bs.dropdown', function() {
             console.log(typeof data);
             // var results_data = JSON.parse(data);
             document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(data, undefined, 4);
+            $("#election_results").dropdown("show");
         }
     });
 });
 
-$('.results_dropdown').on('hide.bs.dropdown', function() {
-    console.log("Hide Event fired!");
+// $('.results_dropdown').on('show.bs.dropdown', function() {
+//     console.log("Show Event fired!");
+//     $("#election_results").dropdown("hide");
 
+//     $.ajax({
+//         url: "http://34.117.18.201:80" + "/api/election/complete",
+//         type: "GET",
+//         success: function(data, status) {
+//             console.log(data);
+//             console.log(typeof data);
+//             // var results_data = JSON.parse(data);
+//             document.getElementById("election_results").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(data, undefined, 4);
+//             $("#election_results").dropdown("show");
+//         }
+//     });
+// });
+
+$('.results_dropdown').on('hide.bs.dropdown', function() {
     document.getElementById("election_results").innerHTML = "";
 });
