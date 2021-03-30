@@ -1,4 +1,0 @@
-requests
-Flask
-cryptography
-docker

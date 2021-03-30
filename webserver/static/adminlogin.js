@@ -1,14 +1,12 @@
 var auth_admin = document.getElementById("authAdmin");
 var voter_button = document.getElementById("voter_login_button");
 
-auth_admin.addEventListener("click", function(e) {
-    e.preventDefault();
-
+function authorize_admin() {
     let admin_id = document.querySelector("#admin_id");
     let admin_masterpwd = document.querySelector("#admin_masterpwd");
 
-    let api_url = "http://localhost:8000/api/admin/login";
-    let adminui_url = "http://localhost:8000/api/admin/ui";
+    let api_url = "http://34.117.18.201:80/api/admin/login";
+    let adminui_url = "http://34.117.18.201:80/api/admin/ui";
 
     let xhr = new XMLHttpRequest();
 
@@ -28,12 +26,25 @@ auth_admin.addEventListener("click", function(e) {
     var payload = JSON.stringify({ "admin_id": admin_id.value, "admin_masterpwd": admin_masterpwd.value});
 
     xhr.send(payload);
+}
+
+auth_admin.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    authorize_admin();
+});
+
+$("input").keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
+        authorize_admin();
+    }
 });
 
 voter_button.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let voter_url_redirect = "http://localhost:8000/";
+    let voter_url_redirect = "http://34.117.18.201:80/";
 
     window.location.replace(voter_url_redirect);
 });

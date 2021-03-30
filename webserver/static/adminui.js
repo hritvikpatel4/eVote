@@ -1,4 +1,4 @@
-let logout_url = "http://localhost:8000/adminlogin";
+let logout_url = "http://34.117.18.201:80/adminlogin";
 
 $(document).ready(function() {
     $('#add_field_button').click(function(e) {
@@ -43,4 +43,33 @@ $('#logout-button').click(function(e) {
     e.preventDefault();
 
     window.location.replace(logout_url);
+});
+
+$('.results_dropdown').on('show.bs.dropdown', function() {
+    console.log("Show Event fired!");
+
+    $.ajax({
+        url: "http://34.117.18.201:80" + "/api/election/complete",
+        type: "GET",
+        success: function(data, status) {
+            console.log(data);
+
+            var winners = data["winners"];
+            $("#election_results").append(`<h2 class="text-center">Winners</h2>`);
+            for(var i = 0; i < winners.length; i++) {
+                $("#election_results").append(`<p>${winners[i].replace("::", " ")}</p>`);
+            }
+
+            var final_result = data["final_result"];
+            $("#election_results").append(`<h3 class="text-center">Election Results</h3>`);
+            for(var i = 0; i < final_result.length; i++) {
+                $("#election_results").append(`<p>${final_result[i][0].replace("::", " ")} - ${final_result[i][1]} votes</p>`);
+            }
+            // $("pre").html(JSON.stringify(data, undefined, 4));
+        }
+    });
+});
+
+$('.results_dropdown').on('hide.bs.dropdown', function() {
+    document.getElementById("election_results").innerHTML = "";
 });

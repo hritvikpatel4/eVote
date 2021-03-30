@@ -1,8 +1,9 @@
 var register_footer = document.getElementById("register_footer");
+var register_button = document.getElementById("register_button");
 document.querySelector("#displaycode_card").style.display = "none";
 document.querySelector("#displaycode_container").style.display = "none";
-let api_url = "http://localhost:8000/api/register";
-let url_redirect = "http://localhost:8000/";
+let api_url = "http://34.117.18.201:80/api/register";
+let url_redirect = "http://34.117.18.201:80/";
 
 document.querySelector("#displaycode_close_button").addEventListener("click", function(e) {
     e.preventDefault();
@@ -13,10 +14,7 @@ document.querySelector("#displaycode_close_button").addEventListener("click", fu
     window.location.assign(url_redirect);
 });
 
-var register_button = document.getElementById("register_button");
-register_button.addEventListener("click", function(e) {
-    e.preventDefault();
-    
+function register() {
     let voter_id = document.querySelector("#voter_id");
     let voter_name = document.querySelector("#voter_name");
     let voter_dob = document.querySelector("#voter_dob");
@@ -31,6 +29,7 @@ register_button.addEventListener("click", function(e) {
     }
 
     xhr.onload = function() {
+        // document.querySelector("#registerForm").style.display = "none";
         document.querySelector("#displaycode_container").style.display = "block";
         document.querySelector("#displaycode_card").style.display = "block";
         document.querySelector("#displaycode_card").innerHTML = this.responseText;
@@ -46,4 +45,17 @@ register_button.addEventListener("click", function(e) {
     var payload = JSON.stringify({ "voter_id": voter_id.value, "voter_name": voter_name.value, "voter_dob": voter_dob.value});
 
     xhr.send(payload);
+}
+
+$("input").keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
+        register();
+    }
+});
+
+register_button.addEventListener("click", function(e) {
+    e.preventDefault();
+    
+    register();
 });

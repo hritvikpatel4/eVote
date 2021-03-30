@@ -2,90 +2,72 @@
 <html>
     <head>
         <title>eVote-Register</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <link href="{{url_for('static', filename='register.css')}}" rel="stylesheet">
+        <script type="text/javascript">
+            function mainCopyToClipboard(ele) {
+                ele.focus();
+                ele.select();
+
+                var success = document.execCommand('copy');
+
+                if(success) {
+                    showSnackMessage("Copied!", 3000);
+                    // alert("Copied!");
+                }
+                else {
+                    showSnackMessage("Unable to copy to clipboard", 5000);
+                    // alert("Unable to copy!");
+                }
+            }
+        </script>
     </head>
     <body>
         <div class="container-fluid">
-            <h2 class="position-absolute top-0 start-50 translate-middle-x shadow p-3 mb-5 bg-white rounded">eVote Registration</h2>
-            <form class="position-absolute top-50 start-50 translate-middle shadow p-3 mb-5 bg-white rounded">
-                <h3>Register</h3>
-                <br/>
-                <div class="mb-3">
-                    <label for="voter_id" class="form-label">Voter ID</label>
-                    <input type="text" class="form-control" id="voter_id" placeholder="Enter Voter ID">
-                </div>
-                <div class="mb-3">
-                    <label for="voter_name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="voter_name" placeholder="Enter Name as on Voter Card">
-                </div>
-                <div class="mb-3">
-                    <label for="voter_dob" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="voter_dob">
-                </div>
-                <div class="text-center" id="register_footer">
-                    <button id="register_button" type="button" class="btn btn-primary">Register</button>
-                </div>
-                <br/>
-            </form>
+            <div id="registerForm">
+                <h2 class="position-absolute top-0 start-50 translate-middle-x shadow p-3 mb-5 bg-white rounded">eVote Registration</h2>
+                <form class="position-absolute top-50 start-50 translate-middle shadow p-3 mb-5 bg-white rounded">
+                    <h3>Register</h3>
+                    <br/>
+                    <div class="mb-3">
+                        <label for="voter_id" class="form-label">Voter ID</label>
+                        <input type="text" class="form-control" id="voter_id" placeholder="Enter Voter ID" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="voter_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="voter_name" placeholder="Enter Name as on Voter Card" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="voter_dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="voter_dob" required>
+                    </div>
+                    <div class="text-center" id="register_footer">
+                        <button id="register_button" type="button" class="btn btn-primary">Register</button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
             <div id="displaycode_container" class="container-fluid position-absolute top-50 start-50 translate-middle shadow-lg p-3 bg-white rounded w-50">
                 <button type="button" id="displaycode_close_button" class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
                 <div id="displaycode_card" class="card">
                 </div>
             </div>
         </div>
+        <div id="snackbar"></div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
         <script src="{{url_for('static', filename='register.js')}}"></script>
-        <!-- <script>
-            var register_footer = document.getElementById("register_footer");
-            document.querySelector("#displaycode_card").style.display = "none";
-            document.querySelector("#displaycode_container").style.display = "none";
-            let api_url = "http://localhost:8000/api/register";
-            let url_redirect = "http://localhost:8000/";
+        <script type="text/javascript">
+            function showSnackMessage(message, timeDuration) {
+                var showsnack = document.getElementById("snackbar");
+                showsnack.innerText = message;
+                showsnack.className = "show";
 
-            document.querySelector("#displaycode_close_button").addEventListener("click", function(e) {
-                e.preventDefault();
-
-                document.querySelector("#displaycode_card").style.display = "none";
-                document.querySelector("#displaycode_container").style.display = "none";
-
-                window.location.assign(url_redirect);
-            });
-
-            var register_button = document.getElementById("register_button");
-            register_button.addEventListener("click", function(e) {
-                e.preventDefault();
-                
-                let voter_id = document.querySelector("#voter_id");
-                let voter_name = document.querySelector("#voter_name");
-                let voter_dob = document.querySelector("#voter_dob");
-
-                let xhr = new XMLHttpRequest();
-                
-                xhr.open("POST", api_url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                xhr.onloadstart = function() {
-                    register_footer.innerHTML = '<div id="registering_progress" class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>';
-                }
-
-                xhr.onload = function() {
-                    document.querySelector("#displaycode_container").style.display = "block";
-                    document.querySelector("#displaycode_card").style.display = "block";
-                    document.querySelector("#displaycode_card").innerHTML = this.responseText;
-                    register_footer.innerHTML = '<button id="register_button" type="button" class="btn btn-primary" disabled>Register</button>';
-
-                    if(this.readyState === 4 && this.status === 400) {
-                        document.body.innerText = "Error! Voter already exists!";
-
-                        setTimeout(function() {window.location.replace(url_redirect);}, 5000);
-                    }
-                }
-
-                var payload = JSON.stringify({ "voter_id": voter_id.value, "voter_name": voter_name.value, "voter_dob": voter_dob.value});
-
-                xhr.send(payload);
-            });
-        </script> -->
+                setTimeout(function() {
+                    showsnack.className = showsnack.className.replace("show", "");
+                }, timeDuration);
+            }
+        </script>
     </body>
 </html>

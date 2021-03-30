@@ -1,19 +1,28 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-from flask import render_template, Flask, jsonify, make_response, request, send_from_directory
+from flask import render_template, Flask, json, jsonify, make_response, request, send_from_directory
+from google.cloud import storage
+from google.oauth2 import service_account
 from werkzeug.utils import secure_filename
-import os, random, requests, string, time
+import datetime, json, os, random, requests, string, subprocess, time
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 webserver = Flask(__name__)
-port = 8000
+# port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
-db_ip = "http://127.0.0.1:5000"
+db_ip = os.environ["DB_IP"]
+CLUSTER_ID = os.environ["CLUSTER_ID"]
+CURRENT_LEVEL = os.environ["CURRENT_LEVEL"]
+HIGHEST_LEVEL = os.environ["HIGHEST_LEVEL"]
+VOTE_ENDPOINT = os.environ["VOTE_ENDPOINT"]
 UPLOAD_FOLDER = "./upload"
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
 webserver.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 webserver.config['CUSTOM_STATIC_CDN'] = "/upload/"
+gcs_cred = service_account.Credentials.from_service_account_file("./capstone-304713.json")
+storage_client = storage.Client(credentials = gcs_cred)
+gcs_bucket = storage_client.bucket("evote-cdn")
 
 # ---------------------------------------- ADMIN SETTINGS ----------------------------------------
 
@@ -22,16 +31,23 @@ webserver.config['CUSTOM_STATIC_CDN'] = "/upload/"
 # key: "admin id"
 # value: "admin masterpwd"
 details = {
-    "admin_1": "admin@12",
-    "admin_2": "admin@123"
+    "hp": "hp",
+    "ap": "ap",
+    "as": "as",
 }
 
 # ---------------------------------------- WEB SERVER ENDPOINTS ----------------------------------------
 
+@webserver.route("/health")
+# API to handle health requests from google
+def health():
+    return make_response("Alive and running!", 200)
+
 @webserver.route("/upload/<path:filename>")
 # API to handle requests for the static files for the voting page
 def upload(filename):
-    return send_from_directory(webserver.root_path + webserver.config["CUSTOM_STATIC_CDN"], filename, conditional=True)
+    file_blob = gcs_bucket.get_blob(filename)
+    return file_blob.generate_signed_url(version='v4', expiration=datetime.timedelta(hours=1))
 
 @webserver.route("/", methods=["GET"])
 # API to handle the requests for the index page
@@ -111,8 +127,19 @@ def requestVoterUI(voter_id = None, voter_secretkey = None):
                 temp[j] = temp[j].replace('"', "")
             
             final_election_data_list.append(temp)
+        
+        party_names = []
+        party_images = []
+        rep_names = []
+        rep_images = []
 
-        return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, election_data = final_election_data_list, election_data_size = len(final_election_data_list))
+        for i in range(len(final_election_data_list)):
+            party_names.append(final_election_data_list[i][0])
+            party_images.append(final_election_data_list[i][1])
+            rep_names.append(final_election_data_list[i][2])
+            rep_images.append(final_election_data_list[i][3])
+
+        return render_template("voting.html", voter_id = voter_id, voter_secretkey = voter_secretkey, party_names = json.dumps(party_names), party_images = json.dumps(party_images), rep_names = json.dumps(rep_names), rep_images = json.dumps(rep_images), data_size = len(final_election_data_list))
     
     # Wrong context sent
     return make_response("Bad Request", 400)
@@ -152,6 +179,52 @@ def submitVote(voter_id = None, voter_secretkey = None):
 
         # Voter did not cast vote yet
         if code2[0][0] == 0:
+            vote_data = {
+                "level_number": int(CURRENT_LEVEL),
+                "cluster_id": int(CLUSTER_ID)
+            }
+
+            batch_id_res = requests.get(db_ip + "/api/db/generateBatchID")
+            batch_id = batch_id_res.json()["batchid"]
+            vote_data["batch_id"] = int(batch_id)
+
+            election_data_fetch = {
+                "operation": "SELECT",
+                "columns": "*",
+                "tablename": "votingperiod",
+                "where": ["1=1"]
+            }
+
+            election_data = requests.post(db_ip + "/api/db/read", json=election_data_fetch)
+            election_data_string = election_data.text.replace(" ", "").replace("\n", "")
+            indices = [i for i, x in enumerate(election_data_string) if x == "]"]
+            indices.pop()
+            indices.insert(0, 0)
+            election_data_list = [election_data_string[indices[i]: indices[i + 1]] for i in range(len(indices) - 1)]
+            for i in range(len(election_data_list)):
+                election_data_list[i] = election_data_list[i].replace("[", "").replace("]", "").strip(",")            
+            final_election_data_list = []
+            for i in election_data_list:
+                temp = i.split(",")
+                for j in range(len(temp)):
+                    temp[j] = temp[j].replace('"', "")
+                final_election_data_list.append(temp)
+
+            print(voted_for)
+            print(final_election_data_list)
+
+            for i in range(len(final_election_data_list)):
+                temp = "{}::{}".format(final_election_data_list[i][0], final_election_data_list[i][2])
+                
+                vote_data[temp] = 0
+            
+            vote_data["{}::{}".format(party_name, representative_name)] = 1
+
+            cast_vote_res = requests.post(VOTE_ENDPOINT + "/castVote", json=vote_data)
+
+            if cast_vote_res.status_code != 200:
+                return make_response("Error!", 400)
+
             data3 = {
                 "operation": "UPDATE",
                 "tablename": "voters",
@@ -271,14 +344,16 @@ def createElection():
     for ele in request.files.getlist("pp[]"):
         if allowed_file(ele.filename):
             filename = secure_filename(ele.filename)
+            file_blob = gcs_bucket.blob(filename)
+            file_blob.upload_from_string(ele.read(), content_type=ele.content_type)
             pps.append(filename)
-            ele.save(os.path.join(webserver.config['UPLOAD_FOLDER'], filename))
     
     for ele in request.files.getlist("rp[]"):
         if allowed_file(ele.filename):
             filename = secure_filename(ele.filename)
+            file_blob = gcs_bucket.blob(filename)
+            file_blob.upload_from_string(ele.read(), content_type=ele.content_type)
             rps.append(filename)
-            ele.save(os.path.join(webserver.config['UPLOAD_FOLDER'], filename))
 
     election_data = set(zip(pns, pps, rns, rps))
 
@@ -297,17 +372,79 @@ def createElection():
 @webserver.route("/api/election/complete", methods=["GET"])
 # API to fetch election results
 def completeElection():
+    p1 = subprocess.Popen(("gcloud", "compute", "instances", "list", "--format=json"), stdout=subprocess.PIPE)
+    subprocess.check_output(("tee", "data.json"), stdin=p1.stdout)
+    p1.wait()
+
+    json_data = json.load(open("data.json", "r"))
+    ip_list = []
+
+    for i in range(len(json_data)):
+        if "hbc" in json_data[i]["name"]:
+            ip_list.append(json_data[i]["networkInterfaces"][0]["accessConfigs"][0]["natIP"])
+
+    result = []
+
+    for ip in ip_list:
+        res = requests.get("http://" + ip + ":80" + "/getElectionResult")
+
+        if res.status_code == 200:
+            result.append(res.json())
+
+    temp_result = result[0]
+
+    for i in range(1, len(result)):
+        for key in result[i].keys():
+            temp_result[key] += result[i][key]
+
+    final_result = sorted(temp_result.items(), key=lambda item: -item[1])
+
+    winners = []
+
+    if final_result[0][1] > final_result[1][1]:
+        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+
+    else:
+        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+        try:
+            i = 1
+            while final_result[0][1] == final_result[i][1]:
+                winners.append("{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
+                i += 1
+        
+        except IndexError:
+            pass
     
-    # ------------------------
-    #           TODO
-    # ------------------------
+    os.remove("data.json")
+
+    final_result_list = []
+
+    for data in final_result:
+        temp = list(data)
+
+        final_result_list.append(temp)
+
+    json_result = {}
+    json_result["final_result"] = final_result_list
+    json_result["winners"] = winners
     
     # Once results of election is given, clear all the databases
-    requests.post(db_ip + "/api/db/clear")
+    # res = requests.post(db_ip + "/api/db/clear")
 
-    return make_response("", 200)
+    # if res.status_code != 200:
+    #     print("Error clearing DB")
+
+    return make_response(json_result, 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 
+def main():
+    # webserver = Flask(__name__)
+    
+    return webserver
+    # webserver.run(debug=False, host=host, use_reloader=False)
+
 if __name__ == '__main__':
-    webserver.run(debug=True, port=port, host=host, use_reloader=False)
+    main()
+
+application = main()
