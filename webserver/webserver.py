@@ -4,7 +4,11 @@ from flask import render_template, Flask, json, jsonify, make_response, request,
 from google.cloud import storage
 from google.oauth2 import service_account
 from werkzeug.utils import secure_filename
-import datetime, json, os, random, requests, string, subprocess, time
+import datetime, email, json, os, random, requests, smtplib, ssl, string, subprocess, threading, time
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # ---------------------------------------- CONFIGS ----------------------------------------
 
@@ -23,6 +27,9 @@ webserver.config['CUSTOM_STATIC_CDN'] = "/upload/"
 gcs_cred = service_account.Credentials.from_service_account_file("./capstone-304713.json")
 storage_client = storage.Client(credentials = gcs_cred)
 gcs_bucket = storage_client.bucket("evote-cdn")
+sender_email, sender_password = open("/tmp/email_creds.txt", "r").read().splitlines()
+os.remove("/tmp/email_creds.txt")
+receiver_emails = ["hritvik.patel4@gmail.com", "anishpoddar2307@gmail.com", "pogchampoo24@gmail.com"]
 
 # ---------------------------------------- ADMIN SETTINGS ----------------------------------------
 
@@ -37,6 +44,11 @@ details = {
 }
 
 # ---------------------------------------- WEB SERVER ENDPOINTS ----------------------------------------
+
+@webserver.route(".", methods=["GET"])
+# Handle cerbot requests
+def verifyCertbot():
+    return make_response("Success!", 200)
 
 @webserver.route("/health")
 # API to handle health requests from google
@@ -277,7 +289,7 @@ def registerVoter(voter_id = None, voter_name = None, voter_dob = None, voter_se
     
     # Voter does not exist is database. Insert his details in the database
     if(voter_id and voter_name and voter_dob):
-        voter_secretkey = ''.join(random.choices(string.ascii_letters + string.digits + "-_", k = 8))
+        voter_secretkey = ''.join(random.choices(string.ascii_uppercase + string.digits + "-_", k = 8))
 
         data_insert = {
             "operation": "INSERT",
@@ -384,49 +396,65 @@ def completeElection():
             ip_list.append(json_data[i]["networkInterfaces"][0]["accessConfigs"][0]["natIP"])
 
     result = []
+    threads = []
+    lock = threading.Lock()
+
+    def sendRequest(ip_addr):
+        res = requests.get("http://" + ip_addr + ":80" + "/getElectionResult")
+
+        if res.status_code == 202:
+            with lock:
+                result.append(res.status_code)
 
     for ip in ip_list:
-        res = requests.get("http://" + ip + ":80" + "/getElectionResult")
-
-        if res.status_code == 200:
-            result.append(res.json())
-
-    temp_result = result[0]
-
-    for i in range(1, len(result)):
-        for key in result[i].keys():
-            temp_result[key] += result[i][key]
-
-    final_result = sorted(temp_result.items(), key=lambda item: -item[1])
-
-    winners = []
-
-    if final_result[0][1] > final_result[1][1]:
-        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
-
-    else:
-        winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
-        try:
-            i = 1
-            while final_result[0][1] == final_result[i][1]:
-                winners.append("{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
-                i += 1
-        
-        except IndexError:
-            pass
+        thread = threading.Thread(target=sendRequest, args=(ip, ))
+        threads.append(thread)
+    
+    for thread in threads:
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     os.remove("data.json")
 
-    final_result_list = []
+    if len(result) == len(ip_list):
+        subprocess.run(["gcloud", "dataproc", "jobs", "submit", "spark", "--async", "--cluster=evote-spark-cluster", "--region=us-west1", "--jar=gs://evote-cdn/jar/evote-spark_2.12-1.0.0.jar", "--", "gs://evote-cdn/input/*.csv", "gs://evote-cdn/output/"], shell=False, capture_output=True)
 
-    for data in final_result:
-        temp = list(data)
+    # temp_result = result[0]
 
-        final_result_list.append(temp)
+    # for i in range(1, len(result)):
+    #     for key in result[i].keys():
+    #         temp_result[key] += result[i][key]
 
-    json_result = {}
-    json_result["final_result"] = final_result_list
-    json_result["winners"] = winners
+    # final_result = sorted(temp_result.items(), key=lambda item: -item[1])
+
+    # winners = []
+
+    # if final_result[0][1] > final_result[1][1]:
+    #     winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+
+    # else:
+    #     winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
+    #     try:
+    #         i = 1
+    #         while final_result[0][1] == final_result[i][1]:
+    #             winners.append("{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
+    #             i += 1
+        
+    #     except IndexError:
+    #         pass
+
+    # final_result_list = []
+
+    # for data in final_result:
+    #     temp = list(data)
+
+    #     final_result_list.append(temp)
+
+    # json_result = {}
+    # json_result["final_result"] = final_result_list
+    # json_result["winners"] = winners
     
     # Once results of election is given, clear all the databases
     # res = requests.post(db_ip + "/api/db/clear")
@@ -434,7 +462,44 @@ def completeElection():
     # if res.status_code != 200:
     #     print("Error clearing DB")
 
-    return make_response(json_result, 200)
+    return make_response("Calculating results", 201)
+
+@webserver.route("/api/job/complete", methods=["GET"])
+# API which responds to the spark job completion acknowledgement
+def sendResults():
+    for blob in storage_client.list_blobs("evote-cdn", prefix="output"):
+        if ".json" in blob.name:
+            fileblob = gcs_bucket.get_blob(blob.name)
+            fileblob.download_to_filename("result.json")
+    
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = ",".join(receiver_emails)
+    message["Subject"] = "eVote - Results"
+    body = "Hi, Please find the election results attached with this email"
+    message.attach(MIMEText(body, "plain"))
+
+    filename = "result.json"
+    with open(filename, "rb") as attachment:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachment.read())
+    
+    encoders.encode_base64(part)
+
+    part.add_header(
+        "Content-Disposition",
+        f"attachment; filename= {filename}",
+    )
+
+    message.attach(part)
+    text = message.as_string()
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, receiver_emails, text)
+    
+    return make_response("Success", 200)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

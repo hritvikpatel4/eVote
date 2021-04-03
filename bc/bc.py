@@ -1,6 +1,9 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
 from flask import Flask, jsonify, make_response, request
+from google.cloud import storage
+from google.cloud.storage.blob import Blob
+from google.oauth2 import service_account
 from cryptography.fernet import Fernet
 import copy, csv, docker, hashlib, logging, os, random, re, requests, subprocess, threading
 
@@ -30,6 +33,10 @@ prev_tail_ptr = 1
 csv_header_fields = []
 INIT_CSV_HEADER = False
 key_filename = "{}_{}".format("bc", bc_number)
+dest_bc_csv_filename = "{}_{}.csv".format(CURRENT_LEVEL, CLUSTER_ID)
+gcs_cred = service_account.Credentials.from_service_account_file("./capstone-304713.json")
+storage_client = storage.Client(credentials = gcs_cred)
+gcs_bucket = storage_client.bucket("evote-cdn")
 
 # when sending to higher BC node, send values in the range [prev_tail_ptr + 1, curr_tail_ptr + 1)
 
@@ -307,63 +314,32 @@ def writeToBlockchain():
 # Sends the tallied election result from this cluster to the load_balancer
 def calculateElectionResult():
     print("1 -> calculateElectionResult")
-    with open("bc.csv", "rb") as fileptr:
-        fernet_key = Fernet(loadFernet())
-        
-        with open("{}_bc.csv".format("decrypted"), "w") as temp_ptr:
-            while True:
-                data = fileptr.readline()
 
-                if not data:
-                    break #EOF
-
-                decrypted_data = fernet_key.decrypt(data).decode().strip("\n")
-                print("decrypted_data {}".format(decrypted_data))
-                temp_ptr.write(decrypted_data + "\n")
-
-                temp_ptr.flush()
+    if isinstance(gcs_bucket.get_blob("input/" + dest_bc_csv_filename), Blob):
+        return make_response("File already uploaded", 300)
     
-    result = {}
-
-    with open("{}_bc.csv".format("decrypted"), "r") as fileptr:
-        _ = fileptr.readline()
-        headers = csv_header_fields[3:-1]
-        print("headers {}".format(headers))
-
-        temp_values = [0] * len(headers)
-
-        while True:
-            data = fileptr.readline().split(",")[3:-1]
-            print("data {}".format(data))
+    else:
+        with open("bc.csv", "rb") as fileptr:
+            fernet_key = Fernet(loadFernet())
             
-            if not data:
-                break #EOF
+            with open("{}_bc.csv".format("decrypted"), "w") as temp_ptr:
+                while True:
+                    data = fileptr.readline()
 
-            for i in range(len(data)):
-                temp_values[i] += int(data[i])
+                    if not data:
+                        break #EOF
 
-        for i in range(len(headers)):
-            result[headers[i]] = temp_values[i]
+                    decrypted_data = fernet_key.decrypt(data).decode().strip("\n")
+                    temp_ptr.write(decrypted_data + "\n")
+
+                    temp_ptr.flush()
         
-        print("result {}".format(result))
+        file_blob = gcs_bucket.blob("input/" + dest_bc_csv_filename)
+        file_blob.upload_from_filename("decrypted_bc.csv")
 
-    # csv_data = fileptr.readlines()
-    # csv_header = csv_data[0].split(",")[3:-1]
+        os.remove("decrypted_bc.csv")
 
-    # data = [0] * len(csv_header)
-
-    # for i in range(1, len(csv_data)):
-    #     temp = csv_data[i].split(",")[3:-1]
-        
-    #     for j in range(len(temp)):
-    #         data[j] += int(temp[j])
-    
-    # result = {}
-
-    # for i in range(len(data)):
-    #     result[csv_header[i]] = data[i]
-
-    return make_response(result, 200)
+    return make_response("Uploaded csv", 202)
 
 # ---------------------------------------- MAIN ----------------------------------------
 

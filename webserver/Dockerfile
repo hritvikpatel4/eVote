@@ -27,8 +27,8 @@ RUN git clone https://github.com/hritvikpatel4/eVote.git \
     && cd webserver && pip install -r requirements.txt
 
 COPY capstone-304713.json /usr/src/app/eVote/webserver
+COPY email_creds.txt /tmp
 
-EXPOSE 80
+EXPOSE 443
 
 CMD ["sh", "-c", "cd eVote/webserver && gunicorn --log-level debug webserver"]
-# CMD ["sh", "-c", "cd eVote/webserver && gunicorn --log-level debug wsgi:application"]

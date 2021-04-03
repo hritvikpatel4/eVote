@@ -20,4 +20,3 @@ RUN git clone https://github.com/hritvikpatel4/eVote.git \
 EXPOSE 80
 
 CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn --log-level debug load_balancer"]
-# CMD ["sh", "-c", "cd eVote/load_balancer && gunicorn --log-level debug wsgi:application"]

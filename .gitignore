@@ -7,3 +7,6 @@ venv*
 *.json
 *.csv
 imp_commands.txt
+.metals
+.vscode
+testcsv

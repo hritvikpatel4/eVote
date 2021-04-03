@@ -20,4 +20,3 @@ RUN git clone https://github.com/hritvikpatel4/eVote.git \
 EXPOSE 80
 
 CMD ["sh", "-c", "cd eVote/dbserver && gunicorn --log-level debug dbserver"]
-# CMD ["sh", "-c", "cd eVote/dbserver && gunicorn --log-level debug wsgi:application"]
