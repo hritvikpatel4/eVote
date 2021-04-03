@@ -12,10 +12,16 @@ RUN apt update \
 
 WORKDIR /usr/src/app
 
-RUN git clone https://github.com/hritvikpatel4/eVote.git \
+COPY github_key .
+RUN eval $(ssh-agent) \
+    && ssh-add github_key \
+    && ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts \
+    && git clone git@github.com:hritvikpatel4/eVote.git \
     && cd eVote && git checkout dev && rm -rf webserver && rm -rf dbserver && rm -f *.sh *.json *.py *.md *.txt \
     && rm -rf Blockchain && rm -rf load_balancer && rm -rf bc && rm -rf timer \
     && cd orderer && pip install -r requirements.txt
+
+RUN rm -f github_key
 
 EXPOSE 80
 

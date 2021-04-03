@@ -21,11 +21,16 @@ RUN cd /tmp && rm -f capstone-304713.json gcloud-sdk.tar.gz
 
 WORKDIR /usr/src/app
 
-RUN git clone https://github.com/hritvikpatel4/eVote.git \
+COPY github_key .
+RUN eval $(ssh-agent) \
+    && ssh-add github_key \
+    && ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts \
+    && git clone git@github.com:hritvikpatel4/eVote.git \
     && cd eVote && git checkout dev && rm -rf webserver && rm -rf dbserver && rm -f *.sh *.json *.py *.md *.txt \
     && rm -rf Blockchain && rm -rf load_balancer && rm -rf orderer && rm -rf timer \
     && cd bc && pip install -r requirements.txt
 
+RUN rm -f github_key
 COPY capstone-304713.json /usr/src/app/eVote/bc
 
 EXPOSE 80
