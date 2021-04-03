@@ -21,7 +21,7 @@ RUN eval $(ssh-agent) \
     && rm -rf Blockchain && rm -rf bc && rm -rf orderer && rm -rf timer \
     && cd load_balancer && pip install -r requirements.txt
 
-RUN rm -f github_key
+RUN rm -f github_key && rm -rf /etc/ssh && rm -rf ~/.ssh
 
 EXPOSE 80
 
