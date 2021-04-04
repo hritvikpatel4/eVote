@@ -269,6 +269,10 @@ def registerVoter(voter_id = None, voter_name = None, voter_dob = None, voter_se
     voter_name = params["voter_name"]
     voter_dob = params["voter_dob"]
 
+    print("----------------------")
+    print(voter_id, voter_name, voter_dob)
+    print("----------------------")
+
     # Check if voter already exists
     data = {
         "operation": "SELECT",

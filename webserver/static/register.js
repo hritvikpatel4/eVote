@@ -47,8 +47,9 @@ function register() {
     var date = voter_dob.value.split("-");
     var checkeddate = check(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]));
 
-    if(checkeddate === false) {
+    if(checkeddate != true) {
         showErrorMessage("Error! You need to be over 21 years of age to register!", 5000);
+        setTimeout(function() {window.location.replace("https://hritvikpatel.me/register");}, 5000);
     }
 
     else {
