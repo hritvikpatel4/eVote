@@ -45,11 +45,6 @@ details = {
 
 # ---------------------------------------- WEB SERVER ENDPOINTS ----------------------------------------
 
-@webserver.route(".", methods=["GET"])
-# Handle cerbot requests
-def verifyCertbot():
-    return make_response("Success!", 200)
-
 @webserver.route("/health")
 # API to handle health requests from google
 def health():
