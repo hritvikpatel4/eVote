@@ -9,7 +9,7 @@ RUN mkdir -p /usr/src/app/logs
 
 RUN apt update \
     && apt install -y git \
-    && curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-333.0.0-linux-x86_64.tar.gz > /tmp/gcloud-sdk.tar.gz \
+    && curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-334.0.0-linux-x86_64.tar.gz > /tmp/gcloud-sdk.tar.gz \
     && mkdir -p /usr/local/gcloud \
     && tar -C /usr/local/gcloud -xvf /tmp/gcloud-sdk.tar.gz \
     && /usr/local/gcloud/google-cloud-sdk/install.sh --quiet
