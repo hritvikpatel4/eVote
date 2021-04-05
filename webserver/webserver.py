@@ -29,7 +29,7 @@ storage_client = storage.Client(credentials = gcs_cred)
 gcs_bucket = storage_client.bucket("evote-cdn")
 sender_email, sender_password = open("/tmp/email_creds.txt", "r").read().splitlines()
 os.remove("/tmp/email_creds.txt")
-receiver_emails = ["hritvik.patel4@gmail.com", "anishpoddar2307@gmail.com", "pogchampoo24@gmail.com"]
+receiver_emails = ["evote-results@googlegroups.com"]
 
 # ---------------------------------------- ADMIN SETTINGS ----------------------------------------
 
