@@ -45,7 +45,7 @@ $('#logout-button').click(function(e) {
     window.location.replace(logout_url);
 });
 
-$("#election_result").on('click', function(e) {
+$("#election_results").on('click', function(e) {
     e.preventDefault();
 
     console.log("Fetch Election Results event fired!");
