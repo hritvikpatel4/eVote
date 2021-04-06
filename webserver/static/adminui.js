@@ -48,6 +48,8 @@ $('#logout-button').click(function(e) {
 $("#election_result").on('click', function(e) {
     e.preventDefault();
 
+    console.log("Fetch Election Results event fired!");
+
     getElectionResults();
     // $.ajax({
     //     url: "https://hritvikpatel.me" + "/api/election/complete",

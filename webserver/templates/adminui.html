@@ -9,6 +9,7 @@
         <script>
             $(document).ready(() => {
                 function getElectionResults() {
+                    console.log("Inside getElectionResults function");
                     $.ajax({
                         url: "https://hritvikpatel.me" + "/api/election/complete",
                         type: "GET",
