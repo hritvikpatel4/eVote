@@ -8,6 +8,7 @@ function submitVote(voteform) {
         data: new FormData(voteform),
         processData: false,
         contentType: false,
+        async: false,
         success: function(data, textStatus, jqXHR) {
             var showsnack = document.getElementById("snackbar");
             showsnack.innerText = "Success! Now redirecting to the login page"

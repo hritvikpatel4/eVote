@@ -12,7 +12,7 @@ function authorize() {
 
     let xhr = new XMLHttpRequest();
     
-    xhr.open("POST", api_url, true);
+    xhr.open("POST", api_url, false);
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onreadystatechange = function() {

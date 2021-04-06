@@ -45,10 +45,13 @@ $('#logout-button').click(function(e) {
     window.location.replace(logout_url);
 });
 
-$("#election_result").on('click', function() {
+$("#election_result").on('click', function(e) {
+    e.preventDefault();
+
     $.ajax({
         url: "https://hritvikpatel.me" + "/api/election/complete",
         type: "GET",
+        async: false,
         success: function(data, textStatus, jqXHR) {
             if(jqXHR.status === 201) {
                 var showsnack = document.getElementById("snackbar");

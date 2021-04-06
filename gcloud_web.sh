@@ -41,7 +41,7 @@ sudo docker run -d \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -v /home/blockchain/upload:/usr/src/app/upload \
-    -p 443:443 \
+    -p 80:443 \
     ntwine/evote_web:latest
 
 echo "Done!"

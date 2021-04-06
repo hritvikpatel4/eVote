@@ -44,7 +44,7 @@ for i in range(1, 501):
     data["{}::{}".format(lucky_party, lucky_candidate)] = 1
 
     # res = requests.post("http://146.148.43.144:80/castVote", json=data)
-    res = requests.post("https://hritvikpatel.me/castVote", json=data)
+    res = requests.post("http://34.117.144.244:80/castVote", json=data)
 
     if res.status_code != 200:
         print("error sending request number {}".format(i))
