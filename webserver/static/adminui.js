@@ -49,24 +49,23 @@ $("#election_results").on('click', function(e) {
     e.preventDefault();
 
     console.log("Fetch Election Results event fired!");
+    
+    $.ajax({
+        url: "https://hritvikpatel.me" + "/api/election/complete",
+        type: "GET",
+        async: false,
+        success: function(data, textStatus, jqXHR) {
+            if(jqXHR.status === 201) {
+                var showsnack = document.getElementById("snackbar");
+                showsnack.innerText = "Results will be sent shortly to your email...";
+                showsnack.className = "show";
 
-    getElectionResults();
-    // $.ajax({
-    //     url: "https://hritvikpatel.me" + "/api/election/complete",
-    //     type: "GET",
-    //     async: false,
-    //     success: function(data, textStatus, jqXHR) {
-    //         if(jqXHR.status === 201) {
-    //             var showsnack = document.getElementById("snackbar");
-    //             showsnack.innerText = "Results will be sent shortly to your email...";
-    //             showsnack.className = "show";
-
-    //             setTimeout(function() {
-    //                 showsnack.className = showsnack.className.replace("show", "");
-    //             }, 5000);
-    //         }
-    //     }
-    // });
+                setTimeout(function() {
+                    showsnack.className = showsnack.className.replace("show", "");
+                }, 5000);
+            }
+        }
+    });
 });
 
 // $('.results_dropdown').on('show.bs.dropdown', function() {
