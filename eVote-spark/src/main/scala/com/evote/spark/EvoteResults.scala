@@ -1,16 +1,9 @@
 package com.evote.spark
 
-//import akka.actor.typed.ActorSystem
-//import akka.actor.typed.scaladsl.Behaviors
-//import akka.http.scaladsl.Http
-//import akka.http.scaladsl.model._
-import scalaj.http._
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.DataTypes
-
-//import scala.concurrent.Future
-//import scala.util.{Failure, Success}
+import scala.sys.process._
 
 object EvoteResults {
   def main(args: Array[String]): Unit = {
@@ -59,18 +52,8 @@ object EvoteResults {
       .option("header", "true")
       .json(outputPath)
 
-    val response: HttpResponse[String] = Http("https://hritvikpatel.me/api/job/complete").asString
-    println(s"${response.code} - ${response.body}")
-
-//    implicit val system = ActorSystem(Behaviors.empty, "SingleRequest")
-//    implicit val executionContext = system.executionContext
-
-//    val responseFuture: Future[HttpResponse] = Http(system).singleRequest(HttpRequest(uri = "https://hritvikpatel.me/api/job/complete"))
-
-//    responseFuture.onComplete {
-//      case Success(res) => println(res)
-//      case Failure(_) => sys.error("Error sending ack for job completion to webserver")
-//    }
+    val jobComplete = Seq("curl", "https://hritvikpatel.me/api/job/complete")
+    jobComplete.!
 
 //    Thread.sleep(10000)
 
