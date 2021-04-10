@@ -36,12 +36,12 @@ sudo docker run -d \
     -e HIGHEST_LEVEL=2 \
     -e VOTE_ENDPOINT="http://34.117.144.244:80" \
     -e CLUSTER_ID=0 \
-    -e CUSTOM_PORT=80 \
+    -e CUSTOM_PORT=443 \
     -e DB_IP="http://34.66.242.58:80" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/blockchain/logs:/usr/src/app/logs \
     -v /home/blockchain/upload:/usr/src/app/upload \
-    -p 80:80 \
+    -p 80:443 \
     ntwine/evote_web:latest
 
 echo "Done!"

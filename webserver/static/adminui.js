@@ -1,4 +1,4 @@
-let logout_url = "http://34.117.18.201:80/adminlogin";
+let logout_url = "https://hritvikpatel.me/adminlogin";
 
 $(document).ready(function() {
     $('#add_field_button').click(function(e) {
@@ -18,7 +18,7 @@ $(document).on("submit", "form", function(e) {
         data: new FormData(this),
         processData: false,
         contentType: false,
-        success: function(data, status) {
+        success: function(data, textStatus, jqXHR) {
             var showsnack = document.getElementById("snackbar");
             showsnack.innerText = "Success!"
             showsnack.className = "show";
@@ -27,7 +27,7 @@ $(document).on("submit", "form", function(e) {
                 showsnack.className = showsnack.className.replace("show", "");
             }, 3000);
         },
-        error: function(data, status) {
+        error: function(jqXHR, textStatus, errorThrown) {
             var showsnack = document.getElementById("snackbar");
             showsnack.innerText = "Error!"
             showsnack.className = "show";
@@ -45,31 +45,52 @@ $('#logout-button').click(function(e) {
     window.location.replace(logout_url);
 });
 
-$('.results_dropdown').on('show.bs.dropdown', function() {
-    console.log("Show Event fired!");
+$("#election_results").on('click', function(e) {
+    e.preventDefault();
 
+    console.log("Fetch Election Results event fired!");
+    
     $.ajax({
-        url: "http://34.117.18.201:80" + "/api/election/complete",
+        url: "https://hritvikpatel.me" + "/api/election/complete",
         type: "GET",
-        success: function(data, status) {
-            console.log(data);
+        async: false,
+        success: function(data, textStatus, jqXHR) {
+            if(jqXHR.status === 201) {
+                var showsnack = document.getElementById("snackbar");
+                showsnack.innerText = "Results will be sent shortly to your email...";
+                showsnack.className = "show";
 
-            var winners = data["winners"];
-            $("#election_results").append(`<h2 class="text-center">Winners</h2>`);
-            for(var i = 0; i < winners.length; i++) {
-                $("#election_results").append(`<p>${winners[i].replace("::", " ")}</p>`);
+                setTimeout(function() {
+                    showsnack.className = showsnack.className.replace("show", "");
+                }, 5000);
             }
-
-            var final_result = data["final_result"];
-            $("#election_results").append(`<h3 class="text-center">Election Results</h3>`);
-            for(var i = 0; i < final_result.length; i++) {
-                $("#election_results").append(`<p>${final_result[i][0].replace("::", " ")} - ${final_result[i][1]} votes</p>`);
-            }
-            // $("pre").html(JSON.stringify(data, undefined, 4));
         }
     });
 });
 
-$('.results_dropdown').on('hide.bs.dropdown', function() {
-    document.getElementById("election_results").innerHTML = "";
-});
+// $('.results_dropdown').on('show.bs.dropdown', function() {
+//     console.log("Show Event fired!");
+
+//     $.ajax({
+//         url: "https://hritvikpatel.me" + "/api/election/complete",
+//         type: "GET",
+//         success: function(data, status) {
+
+//             var winners = data["winners"];
+//             $("#election_results").append(`<h2 class="text-center">Winners</h2>`);
+//             for(var i = 0; i < winners.length; i++) {
+//                 $("#election_results").append(`<p>${winners[i].replace("::", " ")}</p>`);
+//             }
+
+//             var final_result = data["final_result"];
+//             $("#election_results").append(`<h3 class="text-center">Election Results</h3>`);
+//             for(var i = 0; i < final_result.length; i++) {
+//                 $("#election_results").append(`<p>${final_result[i][0].replace("::", " ")} - ${final_result[i][1]} votes</p>`);
+//             }
+//         }
+//     });
+// });
+
+// $('.results_dropdown').on('hide.bs.dropdown', function() {
+//     document.getElementById("election_results").innerHTML = "";
+// });

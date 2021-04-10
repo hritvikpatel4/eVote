@@ -65,8 +65,3 @@ json_result["final_result"] = final_result_list
 json_result["winners"] = winners
 
 print(json.dumps(json_result, indent=2))
-
-"""
-
-
-"""

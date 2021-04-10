@@ -5,12 +5,12 @@ function authorize_admin() {
     let admin_id = document.querySelector("#admin_id");
     let admin_masterpwd = document.querySelector("#admin_masterpwd");
 
-    let api_url = "http://34.117.18.201:80/api/admin/login";
-    let adminui_url = "http://34.117.18.201:80/api/admin/ui";
+    let api_url = "https://hritvikpatel.me/api/admin/login";
+    let adminui_url = "https://hritvikpatel.me/api/admin/ui";
 
     let xhr = new XMLHttpRequest();
 
-    xhr.open("POST", api_url, true);
+    xhr.open("POST", api_url, false);
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onreadystatechange = function() {
@@ -44,7 +44,7 @@ $("input").keypress(function(e) {
 voter_button.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let voter_url_redirect = "http://34.117.18.201:80/";
+    let voter_url_redirect = "https://hritvikpatel.me";
 
     window.location.replace(voter_url_redirect);
 });

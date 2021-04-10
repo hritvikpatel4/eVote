@@ -8,18 +8,23 @@ function submitVote(voteform) {
         data: new FormData(voteform),
         processData: false,
         contentType: false,
-        success: function(data, status) {
+        async: false,
+        success: function(data, textStatus, jqXHR) {
             var showsnack = document.getElementById("snackbar");
-            showsnack.innerText = "Success!"
+            showsnack.innerText = "Success! Now redirecting to the login page"
             showsnack.className = "show";
 
             setTimeout(function() {
                 showsnack.className = showsnack.className.replace("show", "");
             }, 3000);
+
+            setTimeout(function() {
+                window.location.replace("https://hritvikpatel.me");
+            }, 4000);
         },
-        error: function(data, status) {
+        error: function(jqXHR, textStatus, errorThrown) {
             var showsnack = document.getElementById("snackbar");
-            showsnack.innerText = "Error!"
+            showsnack.innerText = "Error! Please try again"
             showsnack.className = "show";
 
             setTimeout(function() {
@@ -32,9 +37,6 @@ function submitVote(voteform) {
 $("input").keypress(function(e) {
     if(e.which == 13) {
         e.preventDefault();
-
-        console.log(document.querySelector("#voteform"));
-        console.log(typeof document.querySelector("#voteform"));
         
         submitVote(document.querySelector("#voteform"));
     }
@@ -42,9 +44,6 @@ $("input").keypress(function(e) {
 
 $("#voteform").on('submit', function(e) {
     e.preventDefault();
-    
-    console.log(this);
-    console.log(typeof this);
 
     submitVote(this);
 });

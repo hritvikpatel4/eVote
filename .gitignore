@@ -7,3 +7,8 @@ venv*
 *.json
 *.csv
 imp_commands.txt
+.metals
+.vscode
+testcsv
+github_key*
+data

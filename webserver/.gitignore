@@ -1,2 +1,3 @@
 *.log
 .DS_Store
+email_creds.txt
