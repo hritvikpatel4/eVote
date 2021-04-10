@@ -13,12 +13,8 @@ current_orderer_name = node_name
 
 orderer_number = int(node_name[len("orderer"):])              # the current orderer number which is running
 
-print("global scope =", node_name, node_ip, current_orderer_name, orderer_number)
-
-# mutex = threading.Lock()
 orderer = Flask(__name__)
 host = "0.0.0.0"
-# port = os.environ["CUSTOM_PORT"]
 lower_level_port = 80
 orderer_port = 80
 bc_port = 80
@@ -54,7 +50,6 @@ def extractAllIDs(data, dictmapping):
             
             temp_tuple = (current_level, current_clusterid, current_batchid)
             dictmapping[temp_tuple] = data[i][j]
-            # dictmapping[str(current_batchid)] = data[i][j]
             
             l2.append(temp_tuple)
         
@@ -73,7 +68,6 @@ def transformRecQ(data):
 
         temp_tuple = (current_level, current_clusterid, current_batchid)
         temp.append(temp_tuple)
-        # temp.append(data[i]["batch_id"])
     
     return temp
 
@@ -180,18 +174,12 @@ def flushTimeoutQ():
     """
     global unique_votes
 
-    print("1 -> flushTimeoutQ")
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)
-
-    print("----------------------------------------------------------------")
-    print("Timeout_Q {}".format(batchids_timeout))
-    print("----------------------------------------------------------------")
     
     orderer_ip_list = getOrdererIPs()
 
     for batch in during_timeout_q:
         for ip in orderer_ip_list:
-            # data = json.loads(batch)
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -216,18 +204,12 @@ def flushDiffQ():
     """
     global unique_votes
 
-    print("1 -> flushDiffQ")
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
-
-    print("----------------------------------------------------------------")
-    print("Diff_Q {}".format(batchids_diff))
-    print("----------------------------------------------------------------")
 
     orderer_ip_list = getOrdererIPs()
     
     for batch in diff_batch_q:
         for ip in orderer_ip_list:
-            # data = json.loads(batch)
             res = requests.post("http://" + ip + ":" + str(orderer_port) + "/api/orderer/receiveBatchFromPeerOrderer", json=batch)
 
             if res.status_code != 200:
@@ -250,13 +232,8 @@ def emptyReceiverQ():
     Empties the receiver_q
     """
 
-    print("1 -> emptyReceiverQ")
     batchids_rec = getOnlyBatchIDs(receiver_q)
 
-    print("----------------------------------------------------------------")
-    print("Rec_Q {}".format(batchids_rec))
-    print("----------------------------------------------------------------")
-    
     receiver_q.clear()
 
 """
@@ -356,7 +333,6 @@ def intersect():
     global number_of_orderers
 
     if len(batched_batchvotes) > 0:
-        print("1 -> intersect() > 0")
         number_of_orderers = getNumberOfOrderers()
 
         quorum = (number_of_orderers // 2) + 1
@@ -377,8 +353,6 @@ def intersect():
         while i < len(extracted_batched_batchvotes) and len(extracted_batched_batchvotes[i]) == 0:
             i += 1
         
-        print("i {}".format(i))
-        
         if i < len(extracted_batched_batchvotes):
             for j in range(len(extracted_batched_batchvotes[i])):
                 if extracted_batched_batchvotes[i][j] in batch_ids_freq:
@@ -391,8 +365,6 @@ def intersect():
                     print("skipped batch i={} because it was empty".format(i))
 
                 else:
-                    print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
-                    
                     for j in range(len(extracted_batched_batchvotes[i])):
                         if extracted_batched_batchvotes[i][j] in batch_ids_freq:
                             batch_ids_freq[extracted_batched_batchvotes[i][j]] += 1
@@ -407,28 +379,16 @@ def intersect():
             if batch_ids_freq[key] >= quorum:
                 ans.add(key)
         
-        print("count for quorum {}".format(count))
-        
         if count >= quorum:
             transformed_rev_q = set(transformRecQ(receiver_q))
             
             diff_batch = transformed_rev_q.difference(ans)
             diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
 
-            print("----------------------------------------------------------------")
-            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
-            print("----------------------------------------------------------------")
-
-            print("----------------------------------------------------------------")
-            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
-            print("----------------------------------------------------------------")
-
             result = buildBatchFromMapping(list(ans), id_batch_mapping)
             result = sorted(result, key=lambda x: (x["level_number"], x["cluster_id"], x["batch_id"]))
 
             batch_ids = getOnlyBatchIDs(result)
-
-            print("Intersection batch {}".format(batch_ids))
             logging.debug("----------------------------------------------------------------")
             logging.debug("Intersection batch {}".format(batch_ids))
             logging.debug("----------------------------------------------------------------")
@@ -443,27 +403,15 @@ def intersect():
             diff_batch = transformed_rev_q.difference(ans)
             diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
 
-            print("----------------------------------------------------------------")
-            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
-            print("----------------------------------------------------------------")
-
-            print("----------------------------------------------------------------")
-            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
-            print("----------------------------------------------------------------")
-
             return list()
     
     else:
-        print("1 -> intersect() else part")
         return list()
 
 def intersect_and_chooseRandOrd():
     intersection_batch = intersect()
 
-    print("1 -> intersect_and_chooseRandOrd")
-
     if len(intersection_batch) == 0:
-        print("1 -> intersect_and_chooseRandOrd == 0")
         lb_ip_list = getLBIPs()
 
         for ip in lb_ip_list:
@@ -483,10 +431,7 @@ def intersect_and_chooseRandOrd():
 
     logging.debug("Random orderer{} will broadcast".format(rand_ord_num))
 
-    print("1 -> orderer{} will be chosen. my ord num is {}".format(rand_ord_num, int(orderer_number)))
-
     if rand_ord_num == int(orderer_number):
-        print("1 -> i (orderer{}) was chosen as random_ord".format(rand_ord_num))
         data = {
             "final_batch": intersection_batch
         }
@@ -518,8 +463,6 @@ def send_batch_votes():
     global number_of_orderers
     global PUT_IN_TIMEOUT_Q
 
-    print("1 -> send_batch_votes")
-
     batchids_rec = getOnlyBatchIDs(receiver_q)
     batchids_timeout = getOnlyBatchIDs(during_timeout_q)
     batchids_diff = getOnlyBatchIDs(diff_batch_q)
@@ -534,7 +477,6 @@ def send_batch_votes():
 
     number_of_orderers = getNumberOfOrderers()
     batched_batchvotes.append(receiver_q)
-    print("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
     logging.debug("send_batch_votes len(batched_batchvotes) = {}".format(len(batched_batchvotes)))
 
     orderer_ip_list = getOrdererIPs()
@@ -581,10 +523,6 @@ def send_batch_votes():
         diff_q_thread = threading.Thread(target=flushDiffQ)
         diff_q_thread.start()
 
-    # logging.debug("Sent batch to all peer orderers")
-    # flushTimeoutQ()
-    # flushDiffQ()
-
 def getOrdererNumber(ip):
     return int(ip.split(".")[-1]) - getNumberOfBC() - 1
 
@@ -611,30 +549,23 @@ def receiveFromBCNode():
     """
 
     global unique_votes
-
-    print("------- PUT_IN_TIMEOUT_Q = {} -------".format(PUT_IN_TIMEOUT_Q))
     
     if PUT_IN_TIMEOUT_Q:
-        print("1 -> receiveFromBCNode tempqueue")
         params = request.get_json()
 
         during_timeout_q.append(params)
     
     else:
-        print("1 -> receiveFromBCNode ordererforward")
         params = request.get_json()
 
         uniq_data_tuple = (int(params["level_number"]), int(params["cluster_id"]), int(params["batch_id"]))
 
         if uniq_data_tuple not in unique_votes:
-            print("batchid = {} from bc{}".format(params["batch_id"], getBCNumber(request.remote_addr)))
-        
             logging.debug("----------------------------------------------------------------")
             logging.debug("batchid = {} from bc{}".format(params["batch_id"], getBCNumber(request.remote_addr)))
             logging.debug("----------------------------------------------------------------")
 
             receiver_q.append(params)
-            # unique_votes[str(params["batch_id"])] = True
             unique_votes[uniq_data_tuple] = True
 
             orderer_ip_list = getOrdererIPs()
@@ -677,9 +608,6 @@ def receiveVoteFromOrderer():
     global unique_votes
 
     params = request.get_json()
-
-    print("1 -> receiveVoteFromOrderer")
-    print("------- PUT_IN_TIMEOUT_Q = {} -------".format(PUT_IN_TIMEOUT_Q))
     # logging.debug("Received vote data from peer orderer {}".format(params))
     # print("batchid = {} from IP = {}".format(params["batch_id"], request.remote_addr))
 
@@ -687,8 +615,6 @@ def receiveVoteFromOrderer():
 
     # Detect duplicate votes
     if uniq_data_tuple not in unique_votes:
-        print("batchid = {} from orderer{}".format(params["batch_id"], getOrdererNumber(request.remote_addr)))
-        
         logging.debug("----------------------------------------------------------------")
         logging.debug("batchid = {} from orderer{}".format(params["batch_id"], getOrdererNumber(request.remote_addr)))
         logging.debug("----------------------------------------------------------------")
@@ -709,8 +635,6 @@ def receiveVoteFromOrderer():
 def startBatching():
     global PUT_IN_TIMEOUT_Q
     PUT_IN_TIMEOUT_Q = True
-
-    print("1 -> startBatching")
     
     # logging.info("Running send_batch_votes()")
     send_batch_votes()
@@ -723,8 +647,6 @@ def receiveBatchesFromPeerOrderer():
     global batched_batchvotes
     global number_of_orderers
     global PUT_IN_TIMEOUT_Q
-
-    print("1 -> receiveBatchesFromPeerOrderer")
     
     batch_data_received = request.get_json()["batch_data"]
     batched_batchvotes.append(batch_data_received)
@@ -738,7 +660,6 @@ def receiveBatchesFromPeerOrderer():
     logging.debug("----------------------------------------------------------------")
 
     number_of_orderers = getNumberOfOrderers()
-    print("\nlen(batched_batchvotes) = {}".format(len(batched_batchvotes)))
 
     # This executes only when all batches from peers have been received
     if len(batched_batchvotes) == number_of_orderers:
@@ -765,11 +686,8 @@ def receiveBatchesFromPeerOrderer():
         timeout_q_thread.start()
         diff_q_thread = threading.Thread(target=flushDiffQ)
         diff_q_thread.start()
-        # flushTimeoutQ()
-        # flushDiffQ()
     
     else:
-        print("else part for the len(batched_batchvotes) == number_of_orderers")
         logging.debug("----------------------------------------------------------------")
         logging.debug("else part for the len(batched_batchvotes) == number_of_orderers")
         logging.debug("----------------------------------------------------------------")
@@ -780,14 +698,6 @@ def receiveBatchesFromPeerOrderer():
 
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
-
-    # process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
-    # orderer_name = process_output.stdout.decode().strip("\n")
-    # orderer_number = orderer_name[len("orderer"):]
-
-    # print("Inside main")
-    # print("process output", process_output)
-    # print(orderer_name, orderer_number)
 
     return orderer
 

@@ -7,7 +7,6 @@ import os, requests
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 dbserver = Flask(__name__)
-# port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 dbfile = "evote.db"
 counter_db = "counter.db"
@@ -169,7 +168,6 @@ def clearDB():
 
 def main():
     return dbserver
-    # dbserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()

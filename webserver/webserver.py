@@ -13,7 +13,6 @@ from email.mime.text import MIMEText
 # ---------------------------------------- CONFIGS ----------------------------------------
 
 webserver = Flask(__name__)
-# port = os.environ["CUSTOM_PORT"]
 host = "0.0.0.0"
 db_ip = os.environ["DB_IP"]
 CLUSTER_ID = os.environ["CLUSTER_ID"]
@@ -217,9 +216,6 @@ def submitVote(voter_id = None, voter_secretkey = None):
                     temp[j] = temp[j].replace('"', "")
                 final_election_data_list.append(temp)
 
-            print(voted_for)
-            print(final_election_data_list)
-
             for i in range(len(final_election_data_list)):
                 temp = "{}::{}".format(final_election_data_list[i][0], final_election_data_list[i][2])
                 
@@ -268,10 +264,6 @@ def registerVoter(voter_id = None, voter_name = None, voter_dob = None, voter_se
     voter_id = params["voter_id"]
     voter_name = params["voter_name"]
     voter_dob = params["voter_dob"]
-
-    print("----------------------")
-    print(voter_id, voter_name, voter_dob)
-    print("----------------------")
 
     # Check if voter already exists
     data = {
@@ -420,47 +412,6 @@ def completeElection():
     if len(result) == len(ip_list):
         subprocess.run(["gcloud", "dataproc", "jobs", "submit", "spark", "--async", "--cluster=evote-spark-cluster", "--region=us-west1", "--jar=gs://evote-cdn/jar/evote-spark_2.12-1.0.0.jar", "--", "gs://evote-cdn/input/*.csv", "gs://evote-cdn/output/"], shell=False, capture_output=True)
 
-    # temp_result = result[0]
-
-    # for i in range(1, len(result)):
-    #     for key in result[i].keys():
-    #         temp_result[key] += result[i][key]
-
-    # final_result = sorted(temp_result.items(), key=lambda item: -item[1])
-
-    # winners = []
-
-    # if final_result[0][1] > final_result[1][1]:
-    #     winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
-
-    # else:
-    #     winners.append("{} with a total of {} votes".format(final_result[0][0], final_result[0][1]))
-    #     try:
-    #         i = 1
-    #         while final_result[0][1] == final_result[i][1]:
-    #             winners.append("{} with a total of {} votes".format(final_result[i][0], final_result[i][1]))
-    #             i += 1
-        
-    #     except IndexError:
-    #         pass
-
-    # final_result_list = []
-
-    # for data in final_result:
-    #     temp = list(data)
-
-    #     final_result_list.append(temp)
-
-    # json_result = {}
-    # json_result["final_result"] = final_result_list
-    # json_result["winners"] = winners
-    
-    # Once results of election is given, clear all the databases
-    # res = requests.post(db_ip + "/api/db/clear")
-
-    # if res.status_code != 200:
-    #     print("Error clearing DB")
-
     return make_response("Calculating results", 201)
 
 @webserver.route("/api/job/complete", methods=["GET"])
@@ -503,10 +454,7 @@ def sendResults():
 # ---------------------------------------- MAIN ----------------------------------------
 
 def main():
-    # webserver = Flask(__name__)
-    
     return webserver
-    # webserver.run(debug=False, host=host, use_reloader=False)
 
 if __name__ == '__main__':
     main()

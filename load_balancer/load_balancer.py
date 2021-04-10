@@ -1,8 +1,6 @@
 # ---------------------------------------- IMPORT HERE ----------------------------------------
 
-# from custom_timer import RepeatedTimer
 from flask import Flask, make_response, jsonify, request
-# from queue import Queue
 import docker, logging, os, random, re, requests, subprocess, threading
 
 # ---------------------------------------- CONFIGS ----------------------------------------
@@ -11,18 +9,12 @@ process_output = subprocess.run(["hostname"], shell=False, capture_output=True)
 node_name = process_output.stdout.decode().split("\n")[0]
 node_ip = subprocess.run(["awk", "END{print $1}", "/etc/hosts"], shell=False, capture_output=True).stdout.decode().strip("\n")
 
-print(threading.get_ident())
-
-# timer = None
-# mutex = threading.Lock()
 load_balancer = Flask(__name__)
 host = "0.0.0.0"
-# port = os.environ["CUSTOM_PORT"]
 bc_port = 80
 orderer_port = 80
 LOG_FILE = "/usr/src/app/logs/{}.log".format(node_name)
 HOLD_VOTES_TEMPORARY = False
-# temp_q = Queue(maxsize=0)
 temp_q = []
 
 logging.basicConfig(filename=LOG_FILE, filemode='w', level=logging.DEBUG, format='%(asctime)s : %(name)s => %(levelname)s - %(message)s')
@@ -92,19 +84,12 @@ def getOrdererIPs():
     return orderer_ip_list
 
 def emptyTempQueue():
-    # with mutex:
-    print("1 -> emptyTempQueue")
-
     batchids_temp = getOnlyBatchIDs(temp_q)
 
     logging.debug("----------------------------------------------------------------")
     logging.debug("Temp_Q {}".format(batchids_temp))
     logging.debug("----------------------------------------------------------------")
 
-    print("----------------------------------------------------------------")
-    print("Temp_Q {}".format(batchids_temp))
-    print("----------------------------------------------------------------")
-    
     for batch in temp_q:
         res = requests.post("http://" + node_ip + ":80" + "/castVote", json=batch)
 
@@ -116,10 +101,7 @@ def emptyTempQueue():
     temp_q.clear()
 
 def callOrdererBatching():
-    # with mutex:
-    print("1 -> callOrdererBatching")
     global HOLD_VOTES_TEMPORARY
-    # timer.pause()
 
     # Put extra votes into another temp queue
     HOLD_VOTES_TEMPORARY = True
@@ -144,8 +126,6 @@ def health():
 @load_balancer.route("/api/lb/triggerBatching", methods=["GET"])
 # API which calls the callOrdererBatching
 def triggerBatching():
-    # with mutex:
-    print("1 -> triggerBatching")
     callOrdererBatching()
 
     return make_response("", 200)
@@ -153,11 +133,9 @@ def triggerBatching():
 @load_balancer.route("/api/lb/receiveAck", methods=["GET"])
 # Receives ack from random orderer that intersection is done and now send the temp votes back
 def receiveAck():
-    # with mutex:
     global HOLD_VOTES_TEMPORARY
     HOLD_VOTES_TEMPORARY = False
 
-    print("1 -> receiveAck")
     logging.debug("emptying temp queue")
     empty_temp_queue_thread = threading.Thread(target=emptyTempQueue)
     empty_temp_queue_thread.start()
@@ -175,7 +153,6 @@ def receiveAck():
 @load_balancer.route('/castVote', methods=['POST'])
 # forwards vote from webserver to lbc
 def castVote():
-    # with mutex:
     # Check if we should put data into temp_q
     if HOLD_VOTES_TEMPORARY:
         print("1 -> castVote tempqueue")
@@ -186,23 +163,18 @@ def castVote():
                 return make_response("Invalid data sent!", 400)
         
         logging.debug("Pushing requests temporarily to another queue")
-        # temp_q.put(params)
         temp_q.append(params)
     
     else:
-        print("1 -> castVote bcforward")
         bc_ip_list = getBCIPs()
 
         rand_bc_ip = random.choice(bc_ip_list)
-        # print("bc ip list = ", bc_ip_list)
 
         params = request.get_json()
         
         for data in params:
             if isinstance(params[data], int) == False:
                 return make_response("Invalid data sent!", 400)
-        
-        print(params)
         
         requests.post("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
         print("rand bc ip = ", rand_bc_ip)
@@ -213,7 +185,6 @@ def castVote():
 @load_balancer.route('/getElectionResult', methods=["GET"])
 # returns the election result back to the client
 def getElectionResult():
-    # with mutex:
     bc_ip_list = getBCIPs()
     rand_bc_ip = random.choice(bc_ip_list)
 
@@ -225,9 +196,6 @@ def getElectionResult():
 
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
-    # print("timer started")
-    # timer = RepeatedTimer(60, callOrdererBatching)
-    # timer.start()
     
     return load_balancer
 
