@@ -155,7 +155,6 @@ def receiveAck():
 def castVote():
     # Check if we should put data into temp_q
     if HOLD_VOTES_TEMPORARY:
-        print("1 -> castVote tempqueue")
         params = request.get_json()
         
         for data in params:
@@ -166,9 +165,7 @@ def castVote():
         temp_q.append(params)
     
     else:
-        bc_ip_list = getBCIPs()
-
-        rand_bc_ip = random.choice(bc_ip_list)
+        rand_bc_ip = random.choice(bc_ips)
 
         params = request.get_json()
         
@@ -177,8 +174,7 @@ def castVote():
                 return make_response("Invalid data sent!", 400)
         
         requests.post("http://" + rand_bc_ip + ":" + str(bc_port) + "/api/bc/receiveVoteFromLowLevel", json=params)
-        print("rand bc ip = ", rand_bc_ip)
-        print()
+        print("rand bc ip = {}\n".format(rand_bc_ip))
 
     return make_response("Sent vote to BC", 200)
 
@@ -193,6 +189,8 @@ def getElectionResult():
     return make_response(res.text, res.status_code)
 
 # ---------------------------------------- MAIN ----------------------------------------
+
+bc_ips = getBCIPs()
 
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))
