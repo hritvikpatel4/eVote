@@ -108,18 +108,21 @@ success_ctr = FastCounter()
 failure_ctr = FastCounter()
 
 async def start_requests():
-    async with ClientSession(connector=TCPConnector(limit=limit, limit_per_host=limit), timeout=ClientTimeout(total=(2*60*60))) as session:
+    # async with ClientSession(connector=TCPConnector(limit=limit, limit_per_host=limit), timeout=ClientTimeout(total=(2*60*60))) as session:
+    async with ClientSession(timeout=ClientTimeout(total=None, connect=None, sock_connect=None, sock_read=None)) as session:
         # tasks = list()
 
         sem = asyncio.Semaphore(limit)
 
-        tasks = [asyncio.ensure_future(bound_request(sem, session, num)) for num in range(1, total + 1)]
+        # tasks = [asyncio.ensure_future(bound_request(sem, session, num)) for num in range(1, total + 1)]
+        tasks = [asyncio.create_task(bound_request(sem, session, num)) for num in range(1, total + 1)]
 
         # for num in range(1, total + 1):
         #     task = asyncio.ensure_future(bound_request(sem, session, num))
         #     tasks.append(task)
         
-        await asyncio.gather(*tasks)
+        await asyncio.gather(tasks)
+    return
 
 loop = asyncio.get_event_loop()
 
