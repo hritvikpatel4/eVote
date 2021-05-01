@@ -31,23 +31,19 @@ echo "Creating docker network"
 
 sudo docker network create --driver bridge blockchain || true
 
-echo "Spawning bc nodes"
+echo "Spawning dbserver"
 
-for bc_num in 1 2 3
-do
-    sudo docker run -d \
-        --name "bc$bc_num" \
-        --hostname "bc$bc_num" \
-        --network blockchain \
-        -e CURRENT_LEVEL=1 \
-        -e HIGHEST_LEVEL=2 \
-        -e HIGHER_LEVEL_IP="http://34.117.6.106:80" \
-        -e CLUSTER_ID=2 \
-        -e CUSTOM_PORT=80 \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /home/blockchain/logs:/usr/src/app/logs \
-        ntwine/evote_bc:latest
-done
+sudo docker run -d \
+    --name db1 \
+    --hostname db1 \
+    --network blockchain \
+    -e CURRENT_LEVEL=1 \
+    -e HIGHEST_LEVEL=2 \
+    -e CLUSTER_ID=2 \
+    -e CUSTOM_PORT=80 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /home/blockchain/logs:/usr/src/app/logs \
+    ntwine/evote_db:latest
 
 echo "Spawning orderer nodes"
 
@@ -66,19 +62,23 @@ do
         ntwine/evote_orderer:latest
 done
 
-echo "Spawning dbserver"
+echo "Spawning bc nodes"
 
-sudo docker run -d \
-    --name db1 \
-    --hostname db1 \
-    --network blockchain \
-    -e CURRENT_LEVEL=1 \
-    -e HIGHEST_LEVEL=2 \
-    -e CLUSTER_ID=2 \
-    -e CUSTOM_PORT=80 \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /home/blockchain/logs:/usr/src/app/logs \
-    ntwine/evote_db:latest
+for bc_num in 1 2 3
+do
+    sudo docker run -d \
+        --name "bc$bc_num" \
+        --hostname "bc$bc_num" \
+        --network blockchain \
+        -e CURRENT_LEVEL=1 \
+        -e HIGHEST_LEVEL=2 \
+        -e HIGHER_LEVEL_IP="http://34.117.6.106:80" \
+        -e CLUSTER_ID=2 \
+        -e CUSTOM_PORT=80 \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v /home/blockchain/logs:/usr/src/app/logs \
+        ntwine/evote_bc:latest
+done
 
 echo "Spawning load_balancer"
 
@@ -101,7 +101,7 @@ sudo docker run -d \
     --name timer1 \
     --hostname timer1 \
     --network blockchain \
-    -e INTERVAL=90 \
+    -e INTERVAL=120 \
     -e CURRENT_LEVEL=1 \
     -e HIGHEST_LEVEL=2 \
     -e CLUSTER_ID=2 \

@@ -221,7 +221,6 @@ def receiveVoteFromLowLevel():
     # logging.debug("Data {} received from lower level with IP = {}".format(params, request.remote_addr))
 
     # select a random orderer from the orderer_ip_list to forward the votedata received from lower level using params
-    orderer_ip_list = getOrdererIPs()
     rand_ord_ip = random.choice(orderer_ip_list)
 
     res = requests.post("http://" + rand_ord_ip + ":" + str(orderer_port) + "/api/orderer/receiveFromBCNode", json=params)
@@ -286,6 +285,8 @@ def calculateElectionResult():
     return make_response("Uploaded csv", 202)
 
 # ---------------------------------------- MAIN ----------------------------------------
+
+orderer_ip_list = getOrdererIPs()
 
 def main():
     logging.info("{} has started. It's IP is {}".format(node_name, node_ip))

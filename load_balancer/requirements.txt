@@ -2,4 +2,6 @@ requests
 flask
 cryptography
 docker
+gevent
 gunicorn
+gunicorn[gevent]

@@ -236,98 +236,6 @@ def emptyReceiverQ():
 
     receiver_q.clear()
 
-"""
-def intersect():
-    global diff_batch_q
-    global number_of_orderers
-
-    if len(batched_batchvotes) > 0:
-        print("1 -> intersect() > 0")
-        number_of_orderers = getNumberOfOrderers()
-
-        quorum = (number_of_orderers // 2) + 1
-        
-        logging.debug("Starting intersection")
-
-        id_batch_mapping = {}
-        ans = set()
-        
-        # extracted_batched_batchvotes = list(list(tuple(int))) where int is the type of any of these values level_number, cluster_id, batch_id
-        extracted_batched_batchvotes, id_batch_mapping = extractAllIDs(batched_batchvotes, id_batch_mapping)
-        
-        i = 0
-        count = 0
-
-        while i < len(extracted_batched_batchvotes) and len(extracted_batched_batchvotes[i]) == 0:
-            i += 1
-        
-        print("i {}".format(i))
-        
-        if i < len(extracted_batched_batchvotes):
-            ans = set(extracted_batched_batchvotes[i])
-
-            while i < len(extracted_batched_batchvotes):
-                if len(extracted_batched_batchvotes[i]) == 0:
-                    print("skipped batch i={} because it was empty".format(i))
-
-                else:
-                    print("Batch taken for intersection {}".format(extracted_batched_batchvotes[i]))
-                    ans = ans.intersection(set(extracted_batched_batchvotes[i]))
-                    count += 1
-                
-                i += 1
-        
-        print("count for quorum {}".format(count))
-        
-        if count >= quorum:
-            transformed_rev_q = set(transformRecQ(receiver_q))
-            
-            diff_batch = transformed_rev_q.difference(ans)
-            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
-
-            print("----------------------------------------------------------------")
-            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
-            print("----------------------------------------------------------------")
-
-            print("----------------------------------------------------------------")
-            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
-            print("----------------------------------------------------------------")
-
-            result = buildBatchFromMapping(list(ans), id_batch_mapping)
-            result = sorted(result, key=lambda x: (x["level_number"], x["cluster_id"], x["batch_id"]))
-
-            batch_ids = getOnlyBatchIDs(result)
-
-            print("Intersection batch {}".format(batch_ids))
-            logging.debug("----------------------------------------------------------------")
-            logging.debug("Intersection batch {}".format(batch_ids))
-            logging.debug("----------------------------------------------------------------")
-
-            id_batch_mapping.clear()
-
-            return result
-        
-        else:
-            transformed_rev_q = set(transformRecQ(receiver_q))
-            
-            diff_batch = transformed_rev_q.difference(ans)
-            diff_batch_q = buildBatchFromMapping(list(diff_batch), id_batch_mapping)
-
-            print("----------------------------------------------------------------")
-            print("transformed_rec_q {}".format(getOnlyBatchIDs(receiver_q)))
-            print("----------------------------------------------------------------")
-
-            print("----------------------------------------------------------------")
-            print("diff_batch_q {}".format(getOnlyBatchIDs(diff_batch_q)))
-            print("----------------------------------------------------------------")
-
-            return list()
-    
-    else:
-        print("1 -> intersect() else part")
-        return list()
-"""
-
 def intersect():
     global diff_batch_q
     global number_of_orderers
@@ -524,10 +432,10 @@ def send_batch_votes():
         diff_q_thread.start()
 
 def getOrdererNumber(ip):
-    return int(ip.split(".")[-1]) - getNumberOfBC() - 1
+    return int(ip.split(".")[-1]) - 1
 
 def getBCNumber(ip):
-    return int(ip.split(".")[-1]) - 1
+    return int(ip.split(".")[-1]) - getNumberOfBC() - 1
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
