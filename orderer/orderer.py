@@ -432,10 +432,10 @@ def send_batch_votes():
         diff_q_thread.start()
 
 def getOrdererNumber(ip):
-    return int(ip.split(".")[-1]) - getNumberOfBC() - 1
+    return int(ip.split(".")[-1]) - 1
 
 def getBCNumber(ip):
-    return int(ip.split(".")[-1]) - 1
+    return int(ip.split(".")[-1]) - getNumberOfBC() - 1
 
 # ---------------------------------------- API ENDPOINTS ----------------------------------------
 
