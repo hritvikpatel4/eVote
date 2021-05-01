@@ -55,7 +55,7 @@ func send_request(workerid int, batch_ids <-chan int, responses chan<- string, e
 			data[election_data_arr[i]] = 0
 		}
 
-		arr_index, err := rand.Int(rand.Reader, big.NewInt(int64(len(election_data_arr)-1)))
+		arr_index, err := rand.Int(rand.Reader, big.NewInt(int64(len(election_data_arr))))
 		if err != nil {
 			panic(err)
 		}
@@ -101,23 +101,25 @@ func main() {
 
 	start := time.Now()
 
-	number_of_requests := 501
+	start_id := 1
+	number_of_requests := 5_000
 
 	batch_ids := make(chan int, number_of_requests)
 	responses := make(chan string, number_of_requests)
 
-	for num := 1; num <= 4; num++ {
+	for num := 1; num <= 12; num++ {
 		go send_request(num, batch_ids, responses, election_data_arr)
 	}
 
-	for num := 1; num < number_of_requests; num++ {
+	for num := start_id; num < start_id+number_of_requests; num++ {
 		batch_ids <- num
 	}
 	close(batch_ids)
 
-	for num := 1; num < number_of_requests; num++ {
+	for num := start_id; num < start_id+number_of_requests; num++ {
 		fmt.Println(<-responses)
 	}
+	close(responses)
 
 	fmt.Println(time.Since(start).Seconds())
 	fmt.Printf("Successful requests = %d | %f rps\n", success, float64(float64(success)/float64(time.Since(start).Seconds())))
