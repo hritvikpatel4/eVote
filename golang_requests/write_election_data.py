@@ -25,32 +25,12 @@ for i in election_data_list:
         temp[j] = temp[j].replace('"', "")
     final_election_data_list.append(temp)
 
-for i in range(1, 501):
-    data = {
-        "level_number": 0,
-        "cluster_id": 2,
-        "batch_id": i
-    }
-
-    for j in range(len(final_election_data_list)):
-        temp = "{}::{}".format(final_election_data_list[j][0], final_election_data_list[j][2])
-        
-        data[temp] = 0
-
-    x = random.randint(0, len(final_election_data_list) - 1)
-    lucky_candidate = final_election_data_list[x][2]
-    lucky_party = final_election_data_list[x][0]
+with open("election_data.txt", "w") as fileptr:
+    for i in range(len(final_election_data_list) - 1):
+        fileptr.write("{}::{}\n".format(final_election_data_list[i][0], final_election_data_list[i][2]))
     
-    data["{}::{}".format(lucky_party, lucky_candidate)] = 1
-
-    # res = requests.post("http://146.148.43.144:80/castVote", json=data)
-    res = requests.post("http://34.117.144.244:80/castVote", json=data)
-
-    if res.status_code != 200:
-        print("error sending request number {}".format(i))
+    fileptr.write("{}::{}".format(final_election_data_list[-1][0], final_election_data_list[-1][2]))
     
-    else:
-        print("sent request number {}".format(i))
-        # print(data)
+    fileptr.flush()
 
-print("DONE!")
+print("Done!")
