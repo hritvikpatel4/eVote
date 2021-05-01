@@ -102,7 +102,7 @@ func main() {
 	start := time.Now()
 
 	start_id := 1
-	number_of_requests := 5_000
+	number_of_requests := 1_000
 
 	batch_ids := make(chan int, number_of_requests)
 	responses := make(chan string, number_of_requests)
